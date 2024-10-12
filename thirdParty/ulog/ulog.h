@@ -62,7 +62,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifndef ULOG_H_
 #define ULOG_H_
-#include "ProjDefine.h"
+#include "projDefine.h"
 #ifdef __cplusplus
 extern "C" {
     #endif

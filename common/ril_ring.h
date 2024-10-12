@@ -1,8 +1,8 @@
 #ifndef  RIL_RING_H
 #define RIL_RING_H
+#include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
-#include "../Inc/ProjDefine.h"
-#include "ringbuffer.h"
+#include "../thirdParty/thirdPartyInclude.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,5 @@
 #include "ril_ring.h"
-
+#include "../port/arnicsPort.h"
 
 
 #ifdef _USE_RING_
@@ -28,7 +28,7 @@ static unsigned int debug_uart_write(const void *buf, unsigned int len)
 {
     unsigned int ret;
     ret = ring_buf_put(&debug_rbsend, (unsigned char *)buf, len);
-    __HAL_UART_ENABLE_IT(&g_UARTDBG, UART_IT_TXE);
+    enable_debug_uart_IT_TXE();
     return ret;
 }
 /**

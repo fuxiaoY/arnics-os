@@ -31,7 +31,9 @@
 #include <limits.h>
 #include <ctype.h>
 #include "../src/cJSON.c"
-#include "../../../Inc/ProjDefine.h"
+#include "../../../Inc/projDefine.h"
+#include "../../../common/commonInclude.h"
+
 static const char *ep;
 
 const char *cJSON_GetErrorPtr(void) {return ep;}
@@ -42,14 +44,10 @@ static int cJSON_strcasecmp(const char *s1,const char *s2)
 	for(; tolower(*s1) == tolower(*s2); ++s1, ++s2)	if(*s1 == 0)	return 0;
 	return tolower(*(const unsigned char *)s1) - tolower(*(const unsigned char *)s2);
 }
-#ifdef _USE_FREERTOS_
-#include "FreeRTOS.h"
-static void *(*cJSON_malloc)(size_t sz) = pvPortMalloc;
-static void (*cJSON_free)(void *ptr) = vPortFree;
-#else
-static void *(*cJSON_malloc)(size_t sz) = malloc;
-static void (*cJSON_free)(void *ptr) = free;
-#endif
+
+static void *(*cJSON_malloc)(size_t sz) = arnicsMalloc;
+static void (*cJSON_free)(void *ptr) = arnicsFree;
+
 static char* cJSON_strdup(const char* str)
 {
       size_t len;
@@ -64,22 +62,12 @@ static char* cJSON_strdup(const char* str)
 void cJSON_InitHooks(cJSON_Hooks* hooks)
 {
     if (!hooks) { /* Reset hooks */
-#ifdef _USE_FREERTOS_
-        cJSON_malloc = pvPortMalloc;
-        cJSON_free = vPortFree;
-#else
-        cJSON_malloc = malloc;
-        cJSON_free = free;
-#endif
+        cJSON_malloc = arnicsMalloc;
+        cJSON_free = arnicsFree;
         return;
     }
-#ifdef _USE_FREERTOS_
-	cJSON_malloc = (hooks->malloc_fn)?hooks->malloc_fn:pvPortMalloc;
-	cJSON_free	 = (hooks->free_fn)?hooks->free_fn:vPortFree;
-#else
-	cJSON_malloc = (hooks->malloc_fn)?hooks->malloc_fn:malloc;
-	cJSON_free	 = (hooks->free_fn)?hooks->free_fn:free;
-#endif
+	cJSON_malloc = (hooks->malloc_fn)?hooks->malloc_fn:arnicsFree;
+	cJSON_free	 = (hooks->free_fn)?hooks->free_fn:arnicsFree;
 }
 
 /* Internal constructor. */

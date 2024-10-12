@@ -1,5 +1,5 @@
 #include "delay.h"
-
+#ifdef STM32CHIP
 static void DelayDisableSysTick(void)
 {
   // 禁用 SysTick 中断
@@ -104,6 +104,49 @@ void Delay_ms(uint32_t ms)
         DelayDisableSysTick();
     }
 }
+#else
+void Delay1us()     //@80MHz
+{
+    unsigned char i;
+
+    _nop_();
+    _nop_();
+    i = 40;  // 调整循环次数以接近1微秒
+    while (--i);
+}
+
+void Delay1ms()     //@80MHz
+{
+    unsigned int i, j;
+
+    i = 4000;  // 外层循环次数
+    j = 20;    // 内层循环次数
+
+    while (i--) {
+        j = 20;
+        while (j--);
+    }
+}
+// 毫秒级延时函数
+void Delay_ms(uint32_t ms)
+{
+    while (ms--)
+    {
+        Delay1ms();
+    }
+}
+
+// 微秒级延时函数
+void Delay_us(uint32_t nus)
+{
+    while (nus--)
+    {
+        Delay1us();
+    }
+}
+#endif
+
+
 
 #include "TaskTimer.h"
 void test_delay_check() {

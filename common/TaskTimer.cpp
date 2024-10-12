@@ -1,17 +1,14 @@
 
 #include "TaskTimer.h"
-
-#ifndef TASKTIMER_ENABLED
-uint32_t usr_systick = 0;
-#endif
+#include "../dataPlat/entry_dataPlat_api.h"
 uint32_t usr_xTaskGetTickCount()
 {
-  return usr_systick;
+  return arnics_systick;
 }
 
 void usr_addTick(uint32_t addTime)
 {
-  usr_systick += addTime;
+  arnics_systick += addTime;
 }
 
 /**

@@ -1,6 +1,11 @@
 #ifndef _TASKTIMER_H_
 #define _TASKTIMER_H_
+#include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct
 {
@@ -8,13 +13,9 @@ typedef struct
     uint32_t interval;
 } tSwTimer;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern uint32_t usr_xTaskGetTickCount();
 
-uint32_t usr_xTaskGetTickCount();
-
-void usr_addTick(uint32_t addTime);
+extern void usr_addTick(uint32_t addTime);
 /**
   * @brief  软定时器定时间隔设置
   * @param  [in]  t-软定时器

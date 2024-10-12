@@ -1,9 +1,7 @@
+#include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
-#include "../Inc/ProjDefine.h"
 
-
-
-#ifdef _STDIO_REDEFINE_
+#ifdef STM32CHIP
 #include "usart.h"
 /*
 今天我用到RTX里面使用printf ，发现程序死掉了
@@ -51,10 +49,6 @@ int _ttywrch(int ch) {
 int fputc(int ch, FILE *stream) {
     return _ttywrch(ch);
 }
-
-
-
-
 
 #endif 
 
