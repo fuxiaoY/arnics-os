@@ -12,7 +12,7 @@ extern "C" {
 /*-系统参数-------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------*/
 #define Unity_System_START                 0                     
-#define Unity_System_usr_systick          (1 + Unity_System_g_InitTs)   // 用户系统滴答计数
+#define Unity_System_usr_systick          (1 + Unity_System_START)   // 用户系统滴答计数
 
 /*---------------------------------------------------------------------------------------------*/
 /*-global_state--------------------------------------------------------------------------------*/
@@ -63,11 +63,11 @@ typedef struct {
     uint16_t len;
     const char *key;
 } unityParaList_t;
-extern void UintySystemInterface(const char *ArgReq);
-extern char* UintyUploadInterface(const char *ArgReq);
-extern void Uintyglobal_cfgInterface(const char *ArgReq);
-extern void Uintyglobal_stateInterface(const char *ArgReq);
-extern char* UintyWanInterface(const char *ArgReq);
+extern void UnitySystemInterface(const char *ArgReq);
+extern char* UnityUploadInterface(const char *ArgReq);
+extern void Unityglobal_cfgInterface(const char *ArgReq);
+extern void Unityglobal_stateInterface(const char *ArgReq);
+extern char* UnityWanInterface(const char *ArgReq);
 
 extern void SystemParaLoad();
 extern void SystemParaStore();

@@ -13,8 +13,7 @@ static void DelayEnableSysTick(void)
   // 配置 SysTick 为 1 kHz，即每毫秒产生一次中断
   if (HAL_SYSTICK_Config(SystemCoreClock / 1000) != HAL_OK)
   {
-    // 错误处理
-    Error_Handler();
+
   }
   // 使能 SysTick 中断
   SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
@@ -109,8 +108,8 @@ void Delay1us()     //@80MHz
 {
     unsigned char i;
 
-    _nop_();
-    _nop_();
+    __asm__("nop");
+    __asm__("nop");
     i = 40;  // 调整循环次数以接近1微秒
     while (--i);
 }
@@ -148,7 +147,7 @@ void Delay_us(uint32_t nus)
 
 
 
-#include "TaskTimer.h"
+#include "../common/TaskTimer.h"
 void test_delay_check() {
     uint32_t start_tick = usr_xTaskGetTickCount();
     Delay_ms(10); // 延时10ms

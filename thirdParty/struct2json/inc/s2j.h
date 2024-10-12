@@ -29,7 +29,7 @@
 #ifndef __S2J_H__
 #define __S2J_H__
 
-#include <cJSON.h>
+#include "cJSON.h"
 #include <string.h>
 #include "s2jdef.h"
 

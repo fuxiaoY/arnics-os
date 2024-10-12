@@ -1,7 +1,8 @@
 #ifndef _USR_ASSERT_H_
 #define _USR_ASSERT_H_
 
-
+#include "../../Inc/typedef.h"
+#include "../../Inc/projDefine.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

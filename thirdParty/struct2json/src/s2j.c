@@ -25,9 +25,8 @@
  * Function: Initialize interface for this library.
  * Created on: 2015-10-14
  */
-
-#include <s2j.h>
 #include <stdlib.h>
+#include "../inc/s2j.h"
 #include "../../../Inc/projDefine.h"
 #include "../../../common/commonInclude.h"
 

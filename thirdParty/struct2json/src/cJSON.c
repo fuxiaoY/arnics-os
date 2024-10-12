@@ -30,7 +30,7 @@
 #include <float.h>
 #include <limits.h>
 #include <ctype.h>
-#include "../src/cJSON.c"
+#include "../inc/cJSON.h"
 #include "../../../Inc/projDefine.h"
 #include "../../../common/commonInclude.h"
 

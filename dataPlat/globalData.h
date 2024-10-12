@@ -8,6 +8,7 @@ extern "C" {
 
 
 // 系统参数
+extern bool arnics_start;
 extern volatile uint32_t arnics_systick;
 
 // 运行与配置参数

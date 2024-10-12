@@ -6,7 +6,7 @@ extern "C" {
 #endif
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
-
+#include "arnicsPort.h"
 void Delay_us(uint32_t ms); 
 void Delay_ms(uint32_t ms);
 void test_delay_check();

@@ -10,7 +10,7 @@ SytemState *unityGlobalStatPara = &global_state;
 // S权限由督查中心开机后自动更新存取
 static const unityParaList_t unity_system_ParaList[] = 
 {
-    {R|W,  Unity_System_usr_systick,               UINT32_TYPE, NULL_TYPE,   (void*)&usr_systick,                       sizeof(uint32_t),       "usr_systick"}
+    {R|W,  Unity_System_usr_systick,               UINT32_TYPE, NULL_TYPE,   (void*)&arnics_systick,                       sizeof(uint32_t),       "arnics_systick"}
 };
 
 
