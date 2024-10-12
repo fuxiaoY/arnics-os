@@ -347,7 +347,7 @@ static cJSON *jsonMethod(const char *ArgReq, const unityParaList_t *unityPara, u
     return json_obj;
 }
 
-char *UintyParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityPara, uint16_t len,JsonFomat format)
+char *UnityParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityPara, uint16_t len,JsonFomat format)
 {
     // 转换为 JSON
     cJSON *json = jsonMethod(ArgReq, unityPara, len);
@@ -377,46 +377,46 @@ char *UintyParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityP
 /*-接口----------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------*/
 
-void UintySystemInterface(const char *ArgReq)
+void UnitySystemInterface(const char *ArgReq)
 {
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
     {
-        JsonOut = UintyParaInterfaceGetSet("all", unity_system_ParaList, Unity_systemParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet("all", unity_system_ParaList, Unity_systemParaNumGet(),FORMAT);
     }
     else if (ArgReq != NULL)
     {
-        JsonOut = UintyParaInterfaceGetSet(ArgReq, unity_system_ParaList, Unity_systemParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_system_ParaList, Unity_systemParaNumGet(),FORMAT);
     }
     printf("%s\r\n", JsonOut);
     arnicsFree(JsonOut);
 }
 
-void UintyGlobalStatInterface(const char *ArgReq)
+void UnityGlobalStatInterface(const char *ArgReq)
 {
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
     {
-        JsonOut = UintyParaInterfaceGetSet("all", unity_GlobalStat_ParaList, Unity_GlobalStatParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet("all", unity_GlobalStat_ParaList, Unity_GlobalStatParaNumGet(),FORMAT);
     }
     else if (ArgReq != NULL)
     {
-        JsonOut = UintyParaInterfaceGetSet(ArgReq, unity_GlobalStat_ParaList, Unity_GlobalStatParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_GlobalStat_ParaList, Unity_GlobalStatParaNumGet(),FORMAT);
     }
     printf("%s\r\n", JsonOut);
     arnicsFree(JsonOut);
 }
 
-void UintyGlobalCfgInterface(const char *ArgReq)
+void UnityGlobalCfgInterface(const char *ArgReq)
 {
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
     {
-        JsonOut = UintyParaInterfaceGetSet("all", unity_GlobalCfg_ParaList, Unity_GlobalCfgParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet("all", unity_GlobalCfg_ParaList, Unity_GlobalCfgParaNumGet(),FORMAT);
     }
     else if (ArgReq != NULL)
     {
-        JsonOut = UintyParaInterfaceGetSet(ArgReq, unity_GlobalCfg_ParaList, Unity_GlobalCfgParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_GlobalCfg_ParaList, Unity_GlobalCfgParaNumGet(),FORMAT);
     }
     printf("%s\r\n", JsonOut);
     arnicsFree(JsonOut);
