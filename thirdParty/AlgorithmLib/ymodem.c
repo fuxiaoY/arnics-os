@@ -1,11 +1,10 @@
 /**
   ******************************************************************************
   * @attention
-  *   (c) Copyright 2017-2037, Shenzhen Kaifa Technology (Chengdu) Co., Ltd.
-  *                        All Rights Reserved.
+
   ******************************************************************************
   * @file     ymodem.c
-  * @author   Kaifa DLMS Software Team
+  * @author   
   * @version  V1.0
   * @date     2017/12/04
   * @brief    Description
@@ -263,4 +262,4 @@ int ymodem_recv(modem_struct* mblock)
 }
 
 
-/******* (C) COPYRIGHT ShenZhen Kaifa Technology (Chengdu) *****END OF FILE****/
+/******* *****END OF FILE****/
