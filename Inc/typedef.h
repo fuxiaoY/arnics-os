@@ -1,6 +1,11 @@
 
 #ifndef __TYPEDEF_H
 #define __TYPEDEF_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -223,5 +228,8 @@ enum Enum_BOOLValue
 /** @} */
 /** @} */
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* __TYPEDEF_H */
 
