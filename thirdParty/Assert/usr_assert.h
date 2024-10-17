@@ -11,7 +11,7 @@ extern "C" {
 #ifdef _USE_USERASSERT_ 
 #define USER_ASSERT(test_) do { if (!(test_)) {                   \
         critical_enter();                                             \
-        user_port_assert(__FUNCTION__, __LINE__);                       \
+        user_port_assert(__FUNCTION__, __FILE__,__LINE__);                       \
     } } while (0)
 
 #else

@@ -20,16 +20,14 @@ void critical_exit(void)
 
 unsigned int Error_id = 0;
 
-void user_port_assert(const char * funcname,unsigned int error_id)
+void user_port_assert(const char * funcname,const char * file,unsigned int error_id)
 {
     Error_id = error_id;
     printf("------------------------------------\r\n");
-    printf("ASSERT >>> User, func: %s  ErrorId: %d.\r\n",funcname, Error_id);
+    printf("ASSERT >>> User, func: %s  file:%s ErrorId: %d.\r\n",funcname,file, Error_id);
     printf("------------------------------------\r\n");
     
     while (1) 
     {
     }
 }
-
-
