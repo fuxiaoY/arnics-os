@@ -50,11 +50,11 @@ typedef struct
 #define ARNICS_REGISTER(name, func, department, level) \
     _USED ARNICS_TYPE(const ArnicsFuncItem, funCb_##func) \
     _SECTION(STRCAT(arnics, department, level)) = {name, func, level}
-
-#define DRIVER_INIT(name,func)      ARNICS_REGISTER(name,func,"init",1)
-#define SYSTEM_INIT(name,func)      ARNICS_REGISTER(name,func,"init",2)
-#define COMPONENT_INIT(name,func)   ARNICS_REGISTER(name,func,"init",3)
-#define DEPARTMENT_INIT(name,func)  ARNICS_REGISTER(name,func,"init",4)
+#define INIT_TAG "init"
+#define DRIVER_INIT(name,func)      ARNICS_REGISTER(name,func,INIT_TAG,1)
+#define SYSTEM_INIT(name,func)      ARNICS_REGISTER(name,func,INIT_TAG,2)
+#define COMPONENT_INIT(name,func)   ARNICS_REGISTER(name,func,INIT_TAG,3)
+#define DEPARTMENT_INIT(name,func)  ARNICS_REGISTER(name,func,INIT_TAG,4)
 
 struct ArnicsCoreData
 {
