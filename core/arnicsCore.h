@@ -41,13 +41,13 @@ typedef struct
 } ArnicsFuncItem;
 
 /*---------------------------------------------------------------*/
-#define  STRCAT(a, b)                 #a "." #b
+#define  STRCAT(a, b ,c)                 #a "." b "."  #c
 #define  ARNICS_DEF(type,funcname,line)  type  funcname##line
 #define  ARNICS_TYPE(type,funcname)      ARNICS_DEF(type, funcname, __LINE__)
 
 #define ARNICS_REGISTER(name, func, department, level) \
     _USED ARNICS_TYPE(const ArnicsFuncItem, funCb##func) \
-    _SECTION(STRCAT("arnics", STRCAT(department, level))) = {name, func, level}
+    _SECTION(STRCAT(arnics, department, level)) = {name, func, level}
 
 #define DRIVER_INIT(name,func)      ARNICS_REGISTER(name,func,"init",1)
 #define SYSTEM_INIT(name,func)      ARNICS_REGISTER(name,func,"init",2)
@@ -64,7 +64,7 @@ struct ArnicsCoreData
 // 定义 nop_process 函数
 static inline void nop_process(void) {}
 #define DEFINE_ARNICS_FUNC_ITEM(name, department, level) \
-    const ArnicsFuncItem name _SECTION(STRCAT("arnics", STRCAT(department, level))) = \
+    const ArnicsFuncItem name _SECTION(STRCAT(arnics, department, level)) = \
     { \
         "", nop_process \
     }

@@ -17,7 +17,7 @@ void arnics_addTick(uint32_t addTime)
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
 
-DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_init_item, "init", 0, 5);
+DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_init_item, INIT_TAG, 0, 5);
 
 void arnics_core_init()
 {
