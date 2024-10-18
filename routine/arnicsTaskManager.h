@@ -1,5 +1,5 @@
-#ifndef _RTTASK_H
-#define _RTTASK_H
+﻿#ifndef _AENICSTASKMANAGER_H
+#define _AENICSTASKMANAGER_H
 
 #ifdef __cplusplus
 extern "C" {

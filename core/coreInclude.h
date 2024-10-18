@@ -3,6 +3,5 @@
 
 #include "separateSM/separate_core.h"
 #include "ptThread/pt.h"
-#include "arnicsTaskManager.h"
 #include "arnicsCore.h"
 #endif

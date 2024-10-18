@@ -8,6 +8,15 @@ extern "C" {
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 
+#define TASK_FUNC(func)   {func}
+/* \brief Function pointer define */
+typedef void (*funcPointer) (void);
+
+typedef struct
+{
+    funcPointer func;
+
+} tTaskFunc;
 
 
 /*匿名类型定义 -----------------------------------------------------------*/
@@ -48,18 +57,23 @@ typedef struct
 {
     const char *name;               
     void (*init)(void);             
-}ArnicsInitItem;
-typedef struct ArnicsInitItem *pArnicsInitItem;
+}ArnicsInitItem,*pArnicsInitItem;;
+
 
 
 struct ArnicsCoreData
 {
     volatile uint32_t arnics_systick;
-}
+};
 extern ArnicsCoreData arnics_core_data;
 extern void arnics_addTick(uint32_t addTime);
 extern void arnics_systick_handler();
 extern void arnics_core_init();
+
+/* public fun  -----------------------------------------------------------*/
+extern const tTaskFunc initTaskList[];
+extern const tTaskFunc preloadTaskList[]; 
+extern const tTaskFunc deviceTaskList[]; 
 
 #ifdef __cplusplus
 }
