@@ -42,11 +42,13 @@ typedef struct
 
 /*---------------------------------------------------------------*/
 #define  STRCAT(a, b ,c)                 #a "." b "."  #c
-#define  ARNICS_DEF(type,funcname,line)  type  funcname##line
-#define  ARNICS_TYPE(type,funcname)      ARNICS_DEF(type, funcname, __LINE__)
+
+#define  ARNICS_CONN(type, funcname, line)  type  funcname##_##line
+#define  ARNICS_DEF(type,funcname,line)     ARNICS_CONN(type, funcname, line)
+#define  ARNICS_TYPE(type,funcname)         ARNICS_DEF(type, funcname, __LINE__)
 
 #define ARNICS_REGISTER(name, func, department, level) \
-    _USED ARNICS_TYPE(const ArnicsFuncItem, funCb##func) \
+    _USED ARNICS_TYPE(const ArnicsFuncItem, funCb_##func) \
     _SECTION(STRCAT(arnics, department, level)) = {name, func, level}
 
 #define DRIVER_INIT(name,func)      ARNICS_REGISTER(name,func,"init",1)
