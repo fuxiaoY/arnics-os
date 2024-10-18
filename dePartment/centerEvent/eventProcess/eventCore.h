@@ -54,6 +54,7 @@ extern time_t ID_Ts;                       // 外部消息id
 extern void onWaittingOutMessage();
 extern void eventAction();
 extern void onSendingMessage();
+extern void Event_Process();
 
 #ifdef __cplusplus
 }

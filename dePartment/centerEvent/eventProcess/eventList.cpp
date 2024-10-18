@@ -1,17 +1,14 @@
 #include "eventCore.h"
 
 
-
-ARNICS_REGISTER("Buzzer_action",,EVENT_TAG,1)
-ARNICS_REGISTER("battery_check",,EVENT_TAG,1)
-
-
-__weak void buzzer_action(void)
+_WEAK void led_action(void)
 {
 
 }
+ARNICS_REGISTER("led_action",led_action,EVENT_TAG,1);
 
-__weak void battery_check(void)
+_WEAK void battery_check(void)
 {
 
 }
+ARNICS_REGISTER("battery_check",battery_check,EVENT_TAG,1);

@@ -16,12 +16,12 @@ typedef union
     uint32_t byte;
     struct
     {
-        uint32_t F_Buzzer_action : 1;      // 1 bit
+        uint32_t F_led_action : 1;         // 1 bit
         uint32_t F_battery_check : 1;      // 1 bit
-        uint32_t F_posture_check : 1;      // 1 bit
-        uint32_t F_sensorIR_check : 1;     // 1 bit
-        uint32_t F_RFID_check : 1;         // 1 bit
-        uint32_t F_GNSS_check : 1;         // 1 bit
+        uint32_t F_B2 : 1;                 // 1 bit
+        uint32_t F_B3 : 1;                 // 1 bit
+        uint32_t F_B4 : 1;                 // 1 bit
+        uint32_t F_B5 : 1;                 // 1 bit
         uint32_t F_B6 : 1;                 // 1 bit
         uint32_t F_B7 : 1;                 // 1 bit
 
