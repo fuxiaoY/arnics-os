@@ -15,7 +15,6 @@ typedef struct
 
 extern uint32_t usr_xTaskGetTickCount();
 
-extern void usr_addTick(uint32_t addTime);
 /**
   * @brief  软定时器定时间隔设置
   * @param  [in]  t-软定时器

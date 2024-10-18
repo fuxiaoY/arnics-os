@@ -4,7 +4,9 @@
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 #include "globalDef.h"
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(UnitySystemInterface))(const char*);
 
@@ -34,4 +36,7 @@ extern const tDATAPLATEntry entry_dataplat_list;
 #define global_state          DATAPLAT_MICRODEF_VAR(global_state, SytemState)
 #define UnitySystemInterface    MICRODEF(UnitySystemInterface)
 
+#ifdef __cplusplus
+}
+#endif
 #endif // ENTRY_DATAPLAT_API_H_

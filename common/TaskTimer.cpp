@@ -6,10 +6,6 @@ uint32_t usr_xTaskGetTickCount()
   return arnics_systick;
 }
 
-void usr_addTick(uint32_t addTime)
-{
-  arnics_systick += addTime;
-}
 
 /**
  * @brief  软定时器定时间隔设置

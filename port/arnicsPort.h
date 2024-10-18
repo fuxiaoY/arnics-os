@@ -1,11 +1,14 @@
 #ifndef _ARNICSPORT_H
 #define _ARNICSPORT_H
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "../Inc/projDefine.h"
+#include "../Inc/typedef.h"
+
 /*------------------------------------------------------------*/
 #ifdef STM32CHIP
 #include "main.h"
