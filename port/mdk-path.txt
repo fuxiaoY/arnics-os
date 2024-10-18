@@ -69,6 +69,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/routine</GroupName>
+          <Files>
+            <File>
+              <FileName>arnicsTaskManager.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\routine\arnicsTaskManager.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/port</GroupName>
           <Files>
             <File>
