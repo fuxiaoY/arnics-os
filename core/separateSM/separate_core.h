@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #define SEPARATE_CORE_VERSION "1.0.0"
-#define USE_LOOP
 
 // Macro to define a function that gets the current state value
 #define SEPARATE_GET_STATE_FUNC(enum_type, func_name) \
@@ -53,10 +52,10 @@ typedef struct {
         };   
 
 // Function declaration to run the kernel
-extern void separate_kernel_loop(SEPARATE_KERNEL* kernel) ; 
+extern void separate_kernel_loop(SEPARATE_KERNEL* kernel,unsigned char autoLoop) ; 
 
 // Macro to run the kernel
-#define SEPARATE_RUN_KERNEL separate_kernel_loop(&kernel)
+#define SEPARATE_RUN_KERNEL(autoLoop) separate_kernel_loop(&kernel,autoLoop)
 
 #ifdef __cplusplus
 }

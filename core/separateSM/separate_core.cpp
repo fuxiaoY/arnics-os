@@ -1,11 +1,9 @@
 #include "separate_core.h"
 
 // Kernel execution function
-void separate_kernel_loop(SEPARATE_KERNEL *kernel)
+void separate_kernel_loop(SEPARATE_KERNEL *kernel,unsigned char autoLoop)
 {
-#ifdef USE_LOOP
-    while (1)
-#endif
+    do
     {
         void *currentState = kernel->getState(kernel->context); // Get the current state
         int found = 0;                                          // Flag to indicate if a matching state is found
@@ -24,5 +22,5 @@ void separate_kernel_loop(SEPARATE_KERNEL *kernel)
         {
             kernel->onNotFound(); // If no matching state is found, call the callback function
         }
-    }
+    }while(autoLoop);
 }

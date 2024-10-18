@@ -10,6 +10,9 @@ extern "C" {
 #include "../core/coreInclude.h"
 
 
+extern const tTaskFunc initTaskList[];
+extern const tTaskFunc preloadTaskList[]; 
+extern const tTaskFunc deviceTaskList[]; 
 
 
 

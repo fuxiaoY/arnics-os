@@ -8,6 +8,21 @@ extern "C" {
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 
+#if defined(__CC_ARM) || defined(__GNUC__) /* ARM,GCC*/ 
+    #define _SECTION(x)                  __attribute__((section(x)))
+    #define _UNUSED                      __attribute__((unused))
+    #define _USED                        __attribute__((used))
+    #define _ALIGN(n)                    __attribute__((aligned(n)))
+    #define _WEAK                        __attribute__((weak))
+#elif defined (__ICCARM__)                 /*IAR */
+    #define _SECTION(x)                  @ x
+    #define _UNUSED                      
+    #define _USED                        __root
+    #define _WEAK                        __weak
+#else
+    #error "do not supported!"
+#endif
+
 #define TASK_FUNC(func)   {func}
 /* \brief Function pointer define */
 typedef void (*funcPointer) (void);
@@ -18,62 +33,95 @@ typedef struct
 
 } tTaskFunc;
 
-
-/*匿名类型定义 -----------------------------------------------------------*/
-#define  ARNICS_ANONY_CONN(type, var, line)  type  var##line
-#define  ARNICS_ANONY_DEF(type,prefix,line)  ARNICS_ANONY_CONN(type, prefix, line)
-#define  ARNICS_ANONY_TYPE(type,prefix)      ARNICS_ANONY_DEF(type, prefix, __LINE__)
-
-#if defined(__CC_ARM) || defined(__GNUC__) /* ARM,GCC*/ 
-    #define _SECTION(x)                  __attribute__((section(x)))
-    #define _UNUSED                      __attribute__((unused))
-    #define _USED                        __attribute__((used))
-    #define _ALIGN(n)                    __attribute__((aligned(n)))
-    #define _WEAK                        __attribute__((weak))
-#elif defined (__ICCARM__)              /*IAR */
-    #define _SECTION(x)                  @ x
-    #define _UNUSED                      
-    #define _USED                        __root
-    #define _WEAK                        __weak
-#else
-    #error "Current tool chain haven't supported yet!"
-#endif
-
-/*---------------------------------------------------------------*/
-#define ARRAY_COUNT(Array) (sizeof(Array) / sizeof(Array[0]))
-
-
-#define ARNICS_REGISTER(name,func,level)           \
-    _USED ARNICS_ANONY_TYPE(const init_item_t, init_tbl_##func)\
-    _SECTION("arnics.init."level) = {name,func}
-
-#define DRIVER_INIT(name,func)  ARNICS_REGISTER(name,func,"1")
-#define SYSTEM_INIT(name,func)  ARNICS_REGISTER(name,func,"2")
-#define COMPONENT_INIT(name,func)  ARNICS_REGISTER(name,func,"3")
-#define DEPARTMENT_INIT(name,func)  ARNICS_REGISTER(name,func,"4")
-
-
 typedef struct 
 {
     const char *name;               
-    void (*init)(void);             
-}ArnicsInitItem,*pArnicsInitItem;;
+    void (*func)(void);             
+    int level;  
+} ArnicsFuncItem;
 
+/*---------------------------------------------------------------*/
+#define  STRCAT(a, b)                 #a "." #b
+#define  ARNICS_DEF(type,funcname,line)  type  funcname##line
+#define  ARNICS_TYPE(type,funcname)      ARNICS_DEF(type, funcname, __LINE__)
 
+#define ARNICS_REGISTER(name, func, department, level) \
+    _USED ARNICS_TYPE(const ArnicsFuncItem, funCb##func) \
+    _SECTION(STRCAT("arnics", STRCAT(department, level))) = {name, func, level}
+
+#define DRIVER_INIT(name,func)      ARNICS_REGISTER(name,func,"init",1)
+#define SYSTEM_INIT(name,func)      ARNICS_REGISTER(name,func,"init",2)
+#define COMPONENT_INIT(name,func)   ARNICS_REGISTER(name,func,"init",3)
+#define DEPARTMENT_INIT(name,func)  ARNICS_REGISTER(name,func,"init",4)
 
 struct ArnicsCoreData
 {
     volatile uint32_t arnics_systick;
 };
+/*---------------------------------------------------------------*/
+
+
+// 定义 nop_process 函数
+static inline void nop_process(void) {}
+#define DEFINE_ARNICS_FUNC_ITEM(name, department, level) \
+    const ArnicsFuncItem name _SECTION(STRCAT("arnics", STRCAT(department, level))) = \
+    { \
+        "", nop_process \
+    }
+
+#define DEFINE_ARNICS_FUNC_ITEM_RANGE(prefix, department, start_level, end_level) \
+    DEFINE_ARNICS_FUNC_ITEM(prefix##_start, department, start_level); \
+    DEFINE_ARNICS_FUNC_ITEM(prefix##_end, department, end_level)
+
+
+#define EXECUTE_FUNC_ALLSECTION(prefix) \
+    do { \
+        const ArnicsFuncItem* it = &prefix##_start; \
+        const ArnicsFuncItem* end = &prefix##_end; \
+        while (it < end) { \
+            if (it->func != NULL) { \
+                it->func(); \
+            } \
+            it++; \
+        } \
+    } while (0)
+// 根据名称执行函数的宏
+#define EXECUTE_FUNC_BY_NAME(prefix, name) \
+    do { \
+        const ArnicsFuncItem* it = &prefix##_start; \
+        const ArnicsFuncItem* end = &prefix##_end; \
+        while (it < end) { \
+            if (it->name != NULL && strcmp(it->name, name) == 0) { \
+                if (it->func != NULL) { \
+                    it->func(); \
+                } \
+                break; \
+            } \
+            it++; \
+        } \
+    } while (0)
+#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, name, level) \
+    do { \
+        const ArnicsFuncItem* it = &prefix##_start; \
+        const ArnicsFuncItem* end = &prefix##_end; \
+        while (it < end) { \
+            if (it->level == level && it->name != NULL && strcmp(it->name, name) == 0) { \
+                if (it->func != NULL) { \
+                    it->func(); \
+                } \
+                break; \
+            } \
+            it++; \
+        } \
+    } while (0)
+
+
 extern ArnicsCoreData arnics_core_data;
 extern void arnics_addTick(uint32_t addTime);
 extern void arnics_systick_handler();
 extern void arnics_core_init();
 
-/* public fun  -----------------------------------------------------------*/
-extern const tTaskFunc initTaskList[];
-extern const tTaskFunc preloadTaskList[]; 
-extern const tTaskFunc deviceTaskList[]; 
+
 
 #ifdef __cplusplus
 }
