@@ -26,6 +26,11 @@
               <FileType>8</FileType>
               <FilePath>..\arnics-os\core\separateSM\separate_core.cpp</FilePath>
             </File>
+            <File>
+              <FileName>arnicsCore.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\core\arnicsCore.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -170,6 +175,31 @@
               <FileName>unity.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\unity\unity.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/department/centerEvent</GroupName>
+          <Files>
+            <File>
+              <FileName>entry_event_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\entry_event_api.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>eventCore.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventCore.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>eventList.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventList.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>eventMessage.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventMessage.cpp</FilePath>
             </File>
           </Files>
         </Group>
