@@ -19,21 +19,25 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
+#include "../../Inc/projDefine.h"
+#include "../../Inc/typedef.h"
+
+#include "../../dataPlat/globalDef.h"
+#include "../rtosTask.h"
 #ifdef _USE_FREERTOS_
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "../Inc/include.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 
 /* Private typedef -----------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
+osThreadId consleTaskHandle;
 osThreadId GuardTaskHandle;
 osThreadId mainTaskHandle;
 osThreadId eventTaskHandle;
@@ -56,8 +60,21 @@ SemaphoreHandle_t eventosID_mutex;   //消息ID锁
 //sfud锁
 SemaphoreHandle_t flashDB_mutex;  
 
-/* Private macro -------------------------------------------------------------*/
 
+/* GetIdleTaskMemory prototype (linked to static allocation support) */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+
+/* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
+static StaticTask_t xIdleTaskTCBBuffer;
+static StackType_t xIdleStack[configMINIMAL_STACK_SIZE];
+
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+{
+  *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
+  *ppxIdleTaskStackBuffer = &xIdleStack[0];
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+  /* place for user code */
+}
 /* Private variables ---------------------------------------------------------*/
 
 #ifdef _USE_FREERTOS_MONITOR_
@@ -131,14 +148,6 @@ void initSemaphore()
     eventosSendQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
     eventosID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
 
-    MediaSendQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    mediaID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
-
-    MediaSendQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    mediaID_mutex = xSemaphoreCreateMutex(); // Create a mutex 
-    
-    shell_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
-
     flashDB_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
 }
 /**
@@ -147,7 +156,8 @@ void initSemaphore()
   * @retval None
   */
 
-void initQueue() {
+void initQueue() 
+{
     eventosReceiveQueue = xQueueCreate(3, sizeof(Message_t));  // 创建一个可以存储 3 个 Message_t 类型消息的队列
     eventosSendQueue = xQueueCreate(3, sizeof(Message_t));     // 创建一个可以存储 3 个 Message_t 类型消息的队列
 
@@ -166,7 +176,7 @@ void MX_FREERTOS_Init(void)
   initQueue();
   /* definition and creation of defaultTask */
   osThreadDef(ConsleTask, StartConsleTask, osPriorityNormal, 0, 1024);
-  defaultTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
+  consleTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
 
   osThreadDef(eventTask, StartEventTask, osPriorityAboveNormal, 0, 640);
   eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
@@ -183,6 +193,12 @@ void MX_FREERTOS_Init(void)
   osThreadDef(SleepTask, StartSleepTask, osPriorityRealtime, 0, 128);
   sleepTaskHandle = osThreadCreate(osThread(SleepTask), NULL);
 }
+
+void rtosThreadDelay(uint32_t ms)
+{
+  osDelay(ms);
+}
+
 
 #endif
 

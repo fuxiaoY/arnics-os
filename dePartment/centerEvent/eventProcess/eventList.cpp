@@ -1,13 +1,13 @@
 #include "eventCore.h"
 
 
-_WEAK void led_action(void)
+void led_action(void)
 {
 
 }
 ARNICS_REGISTER("led_action",led_action,EVENT_TAG,1);
 
-_WEAK void battery_check(void)
+void battery_check(void)
 {
 
 }

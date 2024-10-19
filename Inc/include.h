@@ -1,6 +1,6 @@
 #ifndef __INCLUDE_H__
 #define __INCLUDE_H__
-
+#include "../Inc/ProjDefine.h"
 #include "../Inc/typedef.h"
 
 // 内核
@@ -8,6 +8,8 @@
 #include "../common/commonInclude.h"
 // 三方组件
 #include "../thirdParty/thirdPartyInclude.h"
+// RTOS
+#include "../rtosInterface/rtosInclude.h"
 
 // 数据平台
 #include "../dataPlat/entry_dataPlat_api.h"
