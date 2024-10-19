@@ -3,6 +3,7 @@
 #undef  arnics_start
 #undef  global_cfg       
 #undef  global_state     
+#undef  eventosWantSleep
 
 #undef UnitySystemInterface
 #include "globalData.h"
@@ -19,6 +20,8 @@ const tDATAPLATEntry entry_dataplat_list =
     INIT_MEMBER(global_cfg),
     #undef usr_systick
     INIT_MEMBER(global_state),
+    #undef eventosWantSleep
+    INIT_MEMBER(eventosWantSleep),
     #undef UnitySystemInterface
     INIT_MEMBER(UnitySystemInterface),
 };

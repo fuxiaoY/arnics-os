@@ -12,7 +12,8 @@ extern "C" {
 /*------------------------------------------------------------*/
 #ifdef STM32CHIP
 #include "main.h"
-#define UARTDBG huart1
+#include "usart.h"
+#define UARTDBG husart1
 #endif
 
 

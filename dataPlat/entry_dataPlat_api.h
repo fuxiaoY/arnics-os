@@ -17,7 +17,8 @@ typedef struct
     T_STRUCT_VAR(arnics_start,bool);
     T_STRUCT_VAR(global_cfg,SytemCfg);
     T_STRUCT_VAR(global_state,SytemState);
-
+    T_STRUCT_VAR(eventosWantSleep,bool);
+    
     T_STRUCT_MEMBER(UnitySystemInterface);
 /*-----------------------------------*/
 } tDATAPLATEntry;
@@ -34,6 +35,7 @@ extern const tDATAPLATEntry entry_dataplat_list;
 #define arnics_start            DATAPLAT_MICRODEF_VAR(arnics_start, bool)
 #define global_cfg            DATAPLAT_MICRODEF_VAR(global_cfg, SytemCfg)
 #define global_state          DATAPLAT_MICRODEF_VAR(global_state, SytemState)
+#define eventosWantSleep          DATAPLAT_MICRODEF_VAR(eventosWantSleep, bool)
 #define UnitySystemInterface    MICRODEF(UnitySystemInterface)
 
 #ifdef __cplusplus

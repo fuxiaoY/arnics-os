@@ -24,7 +24,7 @@
 
 #include "../../dataPlat/globalDef.h"
 #include "../rtosTask.h"
-#ifdef _USE_FREERTOS_
+
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "task.h"
@@ -194,11 +194,5 @@ void MX_FREERTOS_Init(void)
   sleepTaskHandle = osThreadCreate(osThread(SleepTask), NULL);
 }
 
-void rtosThreadDelay(uint32_t ms)
-{
-  osDelay(ms);
-}
 
-
-#endif
 

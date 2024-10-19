@@ -10,6 +10,9 @@ extern "C" {
 // 系统参数
 extern bool arnics_start;
 extern volatile uint32_t arnics_systick;
+extern bool eventosWantSleep;
+
+
 
 // 运行与配置参数
  extern SytemCfg global_cfg;       // 全局配置参数

@@ -1,5 +1,11 @@
 #include "eventCore.h"
 #include "eventList.h"
+#include "eventMessage.h"
+
+#include "../../../rtosInterface/rtosInclude.h"
+#include "../../../thirdParty/thirdPartyInclude.h"
+ 
+
 DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 2);
 // 全局计数器
 static unsigned long global_id_counter = 0;
@@ -44,14 +50,35 @@ void Event_Process()
     SEPARATE_RUN_KERNEL(1);
 }
 
-__weak void onWaittingOutMessage()
+_WEAK void onWaittingOutMessage()
 {
+    while (1)
+    {
+        Message_t msg = {0};
+        eventosWantSleep = TRUE; // 现在提休眠申请
+        ULOG_DEBUG("eventCenter:Waiting for Message...");
+        ULOG_DEBUG("-----------------END------------------------");
+        if (BlockingQueueReceive(eventosReceiveQueue, &msg) == pdTRUE)
+        {
+            eventosWantSleep = FALSE; // 撤销休眠申请
+            ID_Ts = msg.ID_Ts; // 记录消息ID
+            // 处理接收到的消息
+            ULOG_DEBUG("-----------------START----------------------");
+            ULOG_DEBUG("ON_Waitting_OUT_Message::Got Message! ID=%d",ID_Ts);
+            event_state = ActionMsg; // 进入消息处理状态
+            break;
+        }
+        rtosThreadDelay(10);
+    }
 }
 
-__weak void eventAction()
+_WEAK void eventAction()
 {
+
+ 
+
 }
 
-__weak void onSendingMessage()
+_WEAK void onSendingMessage()
 {
 }
