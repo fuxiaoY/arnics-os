@@ -46,7 +46,6 @@ typedef struct
 #define  ARNICS_CONN(type, funcname, line)  type  funcname##_##line
 #define  ARNICS_DEF(type,funcname,line)     ARNICS_CONN(type, funcname, line)
 #define  ARNICS_TYPE(type,funcname)         ARNICS_DEF(type, funcname, __LINE__)
-#define  ARRAYCOUNT(Array) (sizeof(Array) / sizeof(Array[0]))
 
 #define ARNICS_REGISTER(name, func, department, level) \
     _USED ARNICS_TYPE(const ArnicsFuncItem, funCb_##func) \
@@ -89,12 +88,12 @@ static inline void nop_process(void) {}
         } \
     } while (0)
 // 根据名称执行函数的宏
-#define EXECUTE_FUNC_BY_NAME(prefix, name) \
+#define EXECUTE_FUNC_BY_NAME(prefix, Name) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
         const ArnicsFuncItem* end = &prefix##_end; \
         while (it < end) { \
-            if (it->name != NULL && strcmp(it->name, name) == 0) { \
+            if (it->name != NULL && strcmp(it->name, Name) == 0) { \
                 if (it->func != NULL) { \
                     it->func(); \
                 } \
@@ -103,12 +102,12 @@ static inline void nop_process(void) {}
             it++; \
         } \
     } while (0)
-#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, name, level) \
+#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, Name, level) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
         const ArnicsFuncItem* end = &prefix##_end; \
         while (it < end) { \
-            if (it->level == level && it->name != NULL && strcmp(it->name, name) == 0) { \
+            if (it->level == level && it->name != NULL && strcmp(it->name, Name) == 0) { \
                 if (it->func != NULL) { \
                     it->func(); \
                 } \

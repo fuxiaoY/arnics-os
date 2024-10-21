@@ -8,8 +8,8 @@
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(event_process))(void);
 typedef time_t (T_TYPEDEF(SendEventFlagToEventCenter))(uint32_t* eventflag,time_t wait);
-typedef BOOL (T_TYPEDEF(GetResponseMessageFromEventCenter))(time_t ID,time_t wait);
-typedef BOOL (T_TYPEDEF(set_event_flag))(uint32_t *eventflag, const char *name) ;
+typedef bool (T_TYPEDEF(GetResponseMessageFromEventCenter))(time_t ID,time_t wait);
+typedef bool (T_TYPEDEF(set_event_flag))(uint32_t *eventflag, const char *name) ;
 // 输出函数接口结构体
 typedef struct
 {

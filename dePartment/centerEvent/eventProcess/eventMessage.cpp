@@ -1,5 +1,6 @@
 
 #include "eventMessage.h"
+#include "../../../thirdParty/thirdPartyInclude.h"
 #pragma arm section code="._entry_event_api"
 // framecounter
 static unsigned long global_id_counter = 0;
@@ -22,7 +23,7 @@ BaseType_t BlockingQueueReceive(QueueHandle_t queue, Message_t *message)
  * @param  无
  * @retval 
  */
-time_t SendEventFlagToEventCenter(EVENT_BYTE_T *eventflag, time_t wait)
+time_t SendEventFlagToEventCenter(uint32_t *eventflag, time_t wait)
 {
     // 发送消息到事件队列
     // 创建消息
@@ -35,7 +36,7 @@ time_t SendEventFlagToEventCenter(EVENT_BYTE_T *eventflag, time_t wait)
         // 释放互斥信号量
         xSemaphoreGive(eventosID_mutex);
     } 
-    memcpy(msg.buf, eventflag, sizeof(EVENT_BYTE_T));
+    memcpy(msg.buf, eventflag, sizeof(uint32_t));
     // 等待时间为wait
     if (xQueueSend(eventosReceiveQueue, &msg, wait) == pdPASS)
     {
