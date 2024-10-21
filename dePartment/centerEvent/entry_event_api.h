@@ -6,17 +6,18 @@
 #include "../../Inc/include.h"
 
 // 函数指针类型的定义
-typedef void (T_TYPEDEF(Event_Process))(void);
-
-//typedef time_t (T_TYPEDEF(SendMessacgeToEventos_needSample))(messeage_need_sample_t* need_sample,time_t wait);
-//typedef BOOL (T_TYPEDEF(GetRspMessacgeToEventos_needSample))(time_t ID,time_t wait);
+typedef void (T_TYPEDEF(event_process))(void);
+typedef time_t (T_TYPEDEF(SendEventFlagToEventCenter))(uint32_t* eventflag,time_t wait);
+typedef BOOL (T_TYPEDEF(GetResponseMessageFromEventCenter))(time_t ID,time_t wait);
+typedef BOOL (T_TYPEDEF(set_event_flag))(uint32_t *eventflag, const char *name) ;
 // 输出函数接口结构体
 typedef struct
 {
 
-    T_STRUCT_MEMBER(Event_Process);
-    //T_STRUCT_MEMBER(SendMessacgeToEventos_needSample);
-    //T_STRUCT_MEMBER(GetRspMessacgeToEventos_needSample);
+    T_STRUCT_MEMBER(event_process);
+    T_STRUCT_MEMBER(SendEventFlagToEventCenter);
+    T_STRUCT_MEMBER(GetResponseMessageFromEventCenter);    
+    T_STRUCT_MEMBER(set_event_flag);
 /*-----------------------------------*/
 } tEVENTEntry;
 
@@ -27,8 +28,9 @@ extern const tEVENTEntry entry_event_list;
 #define EVENT_MICRODEF(name) (event_api->t_##name)
 /*-----------------------------------*/
 
-#define Event_Process          EVENT_MICRODEF(Event_Process)
-//#define SendMessacgeToEventos_needSample          EVENT_MICRODEF(SendMessacgeToEventos_needSample)
-//#define GetRspMessacgeToEventos_needSample      EVENT_MICRODEF(GetRspMessacgeToEventos_needSample)
+#define event_process                          EVENT_MICRODEF(event_process)
+#define SendEventFlagToEventCenter             EVENT_MICRODEF(SendEventFlagToEventCenter)
+#define GetResponseMessageFromEventCenter      EVENT_MICRODEF(GetResponseMessageFromEventCenter)
+#define set_event_flag                         EVENT_MICRODEF(set_event_flag)
 
 #endif // API_H_

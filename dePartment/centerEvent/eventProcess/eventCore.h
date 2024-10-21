@@ -9,34 +9,37 @@ extern "C" {
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
 #include "../../../core/coreInclude.h"
-#pragma arm section code="._entry_event_api"
+
 
 
 #define EVENT_TAG "event"
 
-// 宏定义，用于设置事件标志 表示事件已完成 提交报表
-#define SET_EVENT_FLAG(pEvent_, NAME_) \
-    do                                 \
-    {                                  \
-        (pEvent_)->BITS.F_##NAME_ = 1; \
-    } while (0)
-// 宏定义，用于清除事件标志 表示将处理过的事件无效化
-#define CLR_EVENT_FLAG(pEvent_, NAME_) \
-    do                                 \
-    {                                  \
-        (pEvent_)->BITS.F_##NAME_ = 0; \
-    } while (0)
 
-// 宏定义，用于判断事件标志是否被置位  
-#define IS_EVENT_FLAG_RISE(pEvent_, NAME_) \
-    ((pEvent_)->BITS.F_##NAME_ == 1 ? true : false)
 
 // 宏定义，用于清除事件标志 表示将处理过的所有事件无效化
 #define CLR_EVENT_FLAG_ALL(pEvent_) \
     do                              \
     {                               \
-        (pEvent_)->byte = 0x00;     \
+        (pEvent_)= 0x00;     \
     } while (0)
+
+typedef uint32_t EVENT_BYTE_T // event事件处理标志
+
+typedef struct {
+    const char* name;
+    void (*func)(void);
+    int event_tag;
+    int priority;
+    bool needRsp;
+} RegisterEntry;
+
+// 定义事件位映射结构体
+typedef struct {
+    const char* name;
+    EVENT_BYTE_T event_bit;
+} EventBitMapping;
+
+extern RegisterEntry registerTable[];
 
 typedef enum
 {
@@ -50,11 +53,9 @@ extern EVENT_STATE event_state;            // 状态机状态
 extern time_t ID_Ts;                       // 外部消息id
 
 
+bool set_event_flag(EVENT_BYTE_T *eventflag, const char *name) ;
+extern void event_process();
 
-extern void onWaittingOutMessage();
-extern void eventAction();
-extern void onSendingMessage();
-extern void Event_Process();
 
 #ifdef __cplusplus
 }

@@ -46,6 +46,7 @@ typedef struct
 #define  ARNICS_CONN(type, funcname, line)  type  funcname##_##line
 #define  ARNICS_DEF(type,funcname,line)     ARNICS_CONN(type, funcname, line)
 #define  ARNICS_TYPE(type,funcname)         ARNICS_DEF(type, funcname, __LINE__)
+#define  ARRAYCOUNT(Array) (sizeof(Array) / sizeof(Array[0]))
 
 #define ARNICS_REGISTER(name, func, department, level) \
     _USED ARNICS_TYPE(const ArnicsFuncItem, funCb_##func) \
