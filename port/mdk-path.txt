@@ -203,3 +203,18 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>arnics/rtosInterface</GroupName>
+          <Files>
+            <File>
+              <FileName>rtosTask.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\rtosInterface\rtosTask.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>freertos.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\rtosInterface\freertos\freertos.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
