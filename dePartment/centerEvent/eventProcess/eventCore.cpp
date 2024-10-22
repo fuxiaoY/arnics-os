@@ -44,7 +44,6 @@ void event_list_register()
     {
         eventBitMapping[i].name = registerTable[i].name;
         eventBitMapping[i].event_bit = i;
-        //ARNICS_REGISTER_FUNC(registerTable[i].name, registerTable[i].func, EVENT_TAG, registerTable[i].priority);
     }
 }
 

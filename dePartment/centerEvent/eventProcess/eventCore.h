@@ -52,7 +52,7 @@ extern time_t ID_Ts;                       // 外部消息id
 
 
 
-bool set_event_flag(uint32_t *eventflag, const char *name) ;
+extern bool set_event_flag(uint32_t *eventflag, const char *name) ;
 extern void event_process();
 
 
