@@ -149,9 +149,9 @@ void Delay_us(uint32_t nus)
 
 #include "../common/TaskTimer.h"
 void test_delay_check() {
-    uint32_t start_tick = usr_xTaskGetTickCount();
+    uint32_t start_tick = arnics_getTick();
     Delay_ms(10); // 延时10ms
-    uint32_t end_tick = usr_xTaskGetTickCount();
+    uint32_t end_tick = arnics_getTick();
     
     uint32_t elapsed_time = end_tick - start_tick;
 

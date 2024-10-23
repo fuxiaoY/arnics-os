@@ -1,12 +1,13 @@
 #ifndef  RIL_RING_H
-#define RIL_RING_H
+#define  RIL_RING_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 #include "../thirdParty/thirdPartyInclude.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 #ifdef _USE_RING_
 
 #define DEBUG_UART_RXBUF_SIZE  512 /*接收缓冲区大小 ------------*/

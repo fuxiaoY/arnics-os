@@ -116,8 +116,7 @@ static inline void nop_process(void) {}
 
 
 
-extern void arnics_addTick(uint32_t addTime);
-extern void arnics_systick_handler();
+extern void logo_print();
 extern void arnics_core_init();
 
 

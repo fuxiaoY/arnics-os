@@ -1,16 +1,17 @@
 #include "arnicsCore.h"
 
-static unsigned int arnics_systick;
 
-void arnics_systick_handler()
+void logo_print()
 {
-  arnics_systick++;
-}
-void arnics_addTick(uint32_t addTime)
-{
-  arnics_systick += addTime;
-}
+    printf("________________________________________________\n");
+    printf("    __      ____    _   _  ___   ____  ____  \n");
+    printf("   /  \\    |  _ \\  | \\ | ||_ _| / ___|/ ___| \n");
+    printf("  / /\\ \\   | |_) | |  \\| | | | | |    \\___ \\ \n");
+    printf(" / ____ \\  |  _ <  | . ` | | | | |     ___) |\n");
+    printf("/_/    \\_\\ |_| \\_\\ |_|\\__||___| \\____||____/ \n");
+    printf("________________________________________________\n");
 
+}
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
 
@@ -21,6 +22,7 @@ DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_init_item, INIT_TAG, 0, 5);
 
 void arnics_core_init()
 {
+    logo_print();
     EXECUTE_FUNC_ALLSECTION(arnics_init_item);
 }
 

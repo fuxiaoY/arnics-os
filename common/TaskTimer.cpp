@@ -1,11 +1,19 @@
 
 #include "TaskTimer.h"
 #include "../dataPlat/entry_dataPlat_api.h"
-uint32_t usr_xTaskGetTickCount()
+uint32_t arnics_getTick()
 {
   return arnics_systick;
 }
 
+void arnics_systick_handler()
+{
+  arnics_systick++;
+}
+void arnics_addTick(uint32_t addTime)
+{
+  arnics_systick += addTime;
+}
 
 /**
  * @brief  软定时器定时间隔设置
@@ -16,7 +24,7 @@ uint32_t usr_xTaskGetTickCount()
 void halTimerInterval(tSwTimer *t, uint32_t interval)
 {
   t->interval = interval;
-  t->start = usr_xTaskGetTickCount();
+  t->start = arnics_getTick();
 }
 /**
  * @brief  软定时器定时重新开始
@@ -26,7 +34,7 @@ void halTimerInterval(tSwTimer *t, uint32_t interval)
 void halTimerRestart(tSwTimer *t)
 
 {
-  t->start = usr_xTaskGetTickCount();
+  t->start = arnics_getTick();
 }
 
 /**
@@ -38,7 +46,7 @@ void halTimerRestart(tSwTimer *t)
 
 BOOL halTimerExpired(const tSwTimer *t)
 {
-    uint32_t currentTick = usr_xTaskGetTickCount();
+    uint32_t currentTick = arnics_getTick();
     uint32_t startTick = t->start;
     uint32_t interval = t->interval;
 
@@ -60,7 +68,7 @@ BOOL halTimerExpired(const tSwTimer *t)
  */
 uint32_t halTimerRemainingCorrected(const tSwTimer *t)
 {
-    uint32_t currentTick = usr_xTaskGetTickCount();
+    uint32_t currentTick = arnics_getTick();
     uint32_t startTick = t->start;
     uint32_t interval = t->interval;
 

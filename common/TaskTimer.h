@@ -1,11 +1,11 @@
 #ifndef _TASKTIMER_H_
 #define _TASKTIMER_H_
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "../Inc/projDefine.h"
+#include "../Inc/typedef.h"
 
 typedef struct
 {
@@ -13,42 +13,46 @@ typedef struct
     uint32_t interval;
 } tSwTimer;
 
-extern uint32_t usr_xTaskGetTickCount();
+extern uint32_t arnics_getTick();
+
+extern void arnics_systick_handler();
+
+extern void arnics_addTick(uint32_t addTime);
 
 /**
-  * @brief  Èí¶¨Ê±Æ÷¶¨Ê±¼ä¸ôÉèÖÃ
-  * @param  [in]  t-Èí¶¨Ê±Æ÷
-  * @param  [in]  interval-¶¨Ê±¼ä¸ô£¬µ¥Î»MS
+  * @brief  ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  * @param  [in]  t-ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+  * @param  [in]  interval-ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»MS
   * @retval None
   */
 extern void halTimerInterval(tSwTimer* t, uint32_t interval);
 
 /**
-  * @brief  Èí¶¨Ê±Æ÷¶¨Ê±ÖØÐÂ¿ªÊ¼
-  * @param  [in]  t-Èí¶¨Ê±Æ÷
+  * @brief  ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Â¿ï¿½Ê¼
+  * @param  [in]  t-ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
   * @retval None
   */
 extern void halTimerRestart(tSwTimer* t);
 
 /**
-  * @brief  ²éÑ¯Èí¶¨Ê±Æ÷ÊÇ·ñ¶¨Ê±µ½ÆÚ
-  * @param  [in]  t-Èí¶¨Ê±Æ÷
-  * @retval 0-¶¨Ê±Î´µ½ÆÚ
-  * @retval 1-¶¨Ê±ÒÑµ½ÆÚ
+  * @brief  ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ç·ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
+  * @param  [in]  t-ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+  * @retval 0-ï¿½ï¿½Ê±Î´ï¿½ï¿½ï¿½ï¿½
+  * @retval 1-ï¿½ï¿½Ê±ï¿½Ñµï¿½ï¿½ï¿½
   */
 extern BOOL halTimerExpired(const tSwTimer* t);
 
 /**
-  * @brief  Èí¶¨Ê±Æ÷Àëµ½ÆÚ»¹ÓÐ¶àÉÙMS
-  * @param  [in]  t-Èí¶¨Ê±Æ÷
-  * @retval Ê£ÓàÊ±¼ä£¬µ¥Î»MS
+  * @brief  ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ëµ½ï¿½Ú»ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½MS
+  * @param  [in]  t-ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+  * @retval Ê£ï¿½ï¿½Ê±ï¿½ä£¬ï¿½ï¿½Î»MS
   */
 extern uint32_t halTimerRemainingCorrected(const tSwTimer* t);
 
 /**
-  * @brief  Èí¶¨Ê±Æ÷ÖÐµÄ×îÐ¡Öµ
-  * @param  [in]  t-Èí¶¨Ê±Æ÷
-  * @retval Ê£ÓàÊ±¼ä£¬µ¥Î»MS
+  * @brief  ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½Ð¡Öµ
+  * @param  [in]  t-ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+  * @retval Ê£ï¿½ï¿½Ê±ï¿½ä£¬ï¿½ï¿½Î»MS
   */
 extern uint32_t findMinimum(tSwTimer* a1, tSwTimer* b1, tSwTimer* c1,uint32_t d) ;
 
