@@ -3,7 +3,7 @@
 #define ENTRY_BUSINESS_API_H_
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
-#include "../../Inc/include.h"
+
 
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(event_process))(void);

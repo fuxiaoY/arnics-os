@@ -8,4 +8,5 @@
 #include "freertos/FreeRTOSConfig.h"
 #endif
 
+#include "rtosPort.h"
 #endif

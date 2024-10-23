@@ -1,14 +1,14 @@
 #include "arnicsCore.h"
 
-ArnicsCoreData arnics_core_data;
+static unsigned int arnics_systick;
 
 void arnics_systick_handler()
 {
-    arnics_core_data.arnics_systick++;
+  arnics_systick++;
 }
 void arnics_addTick(uint32_t addTime)
 {
-  arnics_core_data.arnics_systick += addTime;
+  arnics_systick += addTime;
 }
 
 /*----------------------------------------------------------*/

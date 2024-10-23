@@ -8,11 +8,7 @@ extern "C" {
 
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
-#include "../../../core/coreInclude.h"
-
-
-
-#define EVENT_TAG "event"
+#include "../../../dataPlat/entry_dataPlat_api.h"
 
 #define EVENT_MAX_NUM 32
 
@@ -47,11 +43,11 @@ typedef enum
 }EVENT_STATE;
 
 
-extern EVENT_STATE event_state;            // 状态机状态
-extern time_t ID_Ts;                       // 外部消息id
 
+extern Message_t mesg_cache;               //事件应用消息
 
-
+extern time_t SendEventFlagToEventCenter(uint32_t *eventflag, time_t wait);
+extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait);
 extern bool set_event_flag(uint32_t *eventflag, const char *name) ;
 extern void event_process();
 

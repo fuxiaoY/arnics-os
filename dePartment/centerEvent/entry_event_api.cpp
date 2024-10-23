@@ -6,7 +6,7 @@
 #undef GetResponseMessageFromEventCenter
 #undef set_event_flag
 
-#include "eventProcess/eventMessage.h"
+#include "eventProcess/eventCore.h"
 __attribute__((section("._entry_event_api")))
 const tEVENTEntry entry_event_list =
 {

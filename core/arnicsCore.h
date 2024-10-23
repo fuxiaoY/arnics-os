@@ -56,10 +56,7 @@ typedef struct
 #define COMPONENT_INIT(name,func)   ARNICS_REGISTER(name,func,INIT_TAG,3)
 #define DEPARTMENT_INIT(name,func)  ARNICS_REGISTER(name,func,INIT_TAG,4)
 
-struct ArnicsCoreData
-{
-    volatile uint32_t arnics_systick;
-};
+
 /*---------------------------------------------------------------*/
 
 
@@ -118,7 +115,7 @@ static inline void nop_process(void) {}
     } while (0)
 
 
-extern ArnicsCoreData arnics_core_data;
+
 extern void arnics_addTick(uint32_t addTime);
 extern void arnics_systick_handler();
 extern void arnics_core_init();

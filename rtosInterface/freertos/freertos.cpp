@@ -49,14 +49,13 @@ QueueHandle_t eventosSendQueue;
 //媒体中心队列
 QueueHandle_t MediaReceiveQueue;
 QueueHandle_t MediaSendQueue;
-
-//休眠中心队列
-QueueHandle_t SleepReceiveQueue;
+//行政中心队列
+QueueHandle_t adReceiveQueue;
+QueueHandle_t adSendQueue;
 
 // 消息中心信号量
 SemaphoreHandle_t eventosSendQueue_xSemaphore; //读消息中心队列锁
 SemaphoreHandle_t eventosID_mutex;   //消息ID锁
-
 //sfud锁
 SemaphoreHandle_t flashDB_mutex;  
 
@@ -147,7 +146,6 @@ void initSemaphore()
     // Create the semaphore
     eventosSendQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
     eventosID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
-
     flashDB_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
 }
 /**
@@ -161,9 +159,11 @@ void initQueue()
     eventosReceiveQueue = xQueueCreate(3, sizeof(Message_t));  // 创建一个可以存储 3 个 Message_t 类型消息的队列
     eventosSendQueue = xQueueCreate(3, sizeof(Message_t));     // 创建一个可以存储 3 个 Message_t 类型消息的队列
 
-    SleepReceiveQueue = xQueueCreate(1, sizeof(SleepMessage_t));  // 创建一个可以存储 1 个 SleepMessage_t 类型消息的队列
+    MediaReceiveQueue = xQueueCreate(3, sizeof(MediaMessage_t));  // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列
+    MediaSendQueue = xQueueCreate(3, sizeof(MediaMessage_t));     // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列  
 
-
+    adReceiveQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
+    adReceiveQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
 }
 /**
   * @brief  FreeRTOS initialization

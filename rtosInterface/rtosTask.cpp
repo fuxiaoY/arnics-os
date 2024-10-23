@@ -2,22 +2,9 @@
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 #include "../dataPlat/globalDef.h"
+#include "../dePartment/centerEvent/entry_event_api.h"
 #include "rtosTask.h"
-
-
-#ifdef _USE_FREERTOS_
-void rtosThreadDelay(uint32_t ms)
-{
-  osDelay(ms);
-}
-#else
-void rtosThreadDelay(uint32_t ms)
-{
-
-}
-#endif // _USE_FREERTOS_
-
-
+#include "rtosPort.h"
 /* ---------------------------------休眠相关 -----------------------------------------------*/
 /**
  * @func StartConsleTask
@@ -57,7 +44,7 @@ while(1)
  * @brief eventOS事件线程
  * @param 无
  * @retval 无
- * @note 无
+ * @note 无  
  * @attention
  */
 void StartEventTask(void const *argument)
@@ -65,6 +52,7 @@ void StartEventTask(void const *argument)
 
   while (1)
   {
+    event_process();
     rtosThreadDelay(100);
   }
 

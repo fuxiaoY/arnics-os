@@ -8,7 +8,7 @@ extern "C" {
 
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
-#include "eventCore.h"
+
 // 定义 X 宏
 #define X(func, priority, needRsp) \
     {#func, func, priority, needRsp},
