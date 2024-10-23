@@ -194,3 +194,4 @@ extern void arnics_core_init();
 }
 #endif
 #endif
+/************************ (C) COPYRIGHT ARSTUDIO *****END OF FILE***************************/

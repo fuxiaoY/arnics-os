@@ -1,4 +1,29 @@
 
+
+/* information */
+/**
+  ******************************************************************************
+  * @file           : EventCore.h
+  * @brief          : 事件核心相关的头文件
+  * 
+  * 该文件定义了事件核心的相关宏定义、结构体和函数声明。
+  * 主要用于事件的管理和处理。
+  * 
+  * @version        : 1.0.0
+  * @date           : 2023-10-01
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 ARSTUDIO.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* information */
 #ifndef _EVENTCORE_H
 #define _EVENTCORE_H
 
@@ -10,6 +35,9 @@ extern "C" {
 #include "../../../Inc/typedef.h"
 #include "../../../dataPlat/entry_dataPlat_api.h"
 
+
+
+/* define ------------------------------------------------------------*/
 #define EVENT_MAX_NUM 32
 
 // 宏定义，用于清除事件标志 表示将处理过的所有事件无效化
@@ -19,7 +47,7 @@ extern "C" {
         (pEvent_)= 0x00;     \
     } while (0)
 
-
+/* typedef -----------------------------------------------------------*/
 typedef struct {
     const char* name;
     void (*func)(void);
@@ -43,10 +71,10 @@ typedef enum
 }EVENT_STATE;
 
 
-
+/* variables ---------------------------------------------------------*/
 extern Message_t mesg_cache;               //事件应用消息
-
-extern time_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait);
+/* function declaration ---------------------------------------------*/
+extern uint32_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait);
 extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait);
 extern bool set_event_flag(uint32_t *eventflag, const char *name) ;
 extern void event_process();
@@ -56,3 +84,4 @@ extern void event_process();
 }
 #endif
 #endif
+/************************ (C) COPYRIGHT ARSTUDIO *****END OF FILE***************************/

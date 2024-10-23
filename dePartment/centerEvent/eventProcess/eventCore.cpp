@@ -212,7 +212,7 @@ static unsigned long global_id_counter = 0;
  * @param  无
  * @retval 
  */
-time_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait)
+uint32_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait)
 {
     // 发送消息到事件队列
     // 创建消息
