@@ -13,7 +13,7 @@ extern "C" {
 #ifdef STM32CHIP
 #include "main.h"
 #include "usart.h"
-#define UARTDBG husart1
+#define UARTDBG huart1
 #endif
 
 

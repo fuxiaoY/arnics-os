@@ -41,7 +41,7 @@ void _sys_exit(int x) {
 int _ttywrch(int ch) {
     // 实现你的输出逻辑，例如通过 UART 发送字符
     // 假设 g_UARTDBG 已经定义并初始化
-    //HAL_UART_Transmit(&UARTDBG, (uint8_t *)&ch, 1, 10000);  // 10s 超时时间
+    HAL_UART_Transmit(&UARTDBG, (uint8_t *)&ch, 1, 10000);  // 10s 超时时间
     return ch;
 }
 

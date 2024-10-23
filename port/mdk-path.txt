@@ -84,6 +84,31 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/rtosInterface</GroupName>
+          <Files>
+            <File>
+              <FileName>rtosTask.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\rtosInterface\rtosTask.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>freertos.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\rtosInterface\freertos\freertos.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>entry_rtos_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\rtosInterface\entry_rtos_api.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>rtosPort.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\rtosInterface\rtosPort.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/port</GroupName>
           <Files>
             <File>
@@ -199,27 +224,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>arnics/rtosInterface</GroupName>
+          <GroupName>arnics/department/centerBusiness</GroupName>
           <Files>
             <File>
-              <FileName>rtosTask.cpp</FileName>
+              <FileName>business_process.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\arnics-os\rtosInterface\rtosTask.cpp</FilePath>
+              <FilePath>..\arnics-os\dePartment\centerBusiness\business_process.cpp</FilePath>
             </File>
             <File>
-              <FileName>freertos.cpp</FileName>
+              <FileName>entry_business_api.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\arnics-os\rtosInterface\freertos\freertos.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>entry_rtos_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\rtosInterface\entry_rtos_api.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>rtosPort.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\rtosInterface\rtosPort.cpp</FilePath>
+              <FilePath>..\arnics-os\dePartment\centerBusiness\entry_business_api.cpp</FilePath>
             </File>
           </Files>
         </Group>

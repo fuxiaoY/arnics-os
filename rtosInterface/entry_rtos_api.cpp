@@ -2,6 +2,7 @@
 #undef rtosEventQueueReceive
 #undef rtosEventQueueSend
 #undef rtosEventQueueTake
+#undef rtosEventQueueReq
 #undef rtosThreadDelay
 #undef TakeEventosMsgQueueMutex
 #undef ReleaseEventosMsgQueueMutex
@@ -20,6 +21,8 @@ const tRTOSEntry entry_rtos_list =
     INIT_MEMBER(rtosEventQueueSend),
     #undef rtosEventQueueTake
     INIT_MEMBER(rtosEventQueueTake),
+    #undef rtosEventQueueReq
+    INIT_MEMBER(rtosEventQueueReq),
     #undef rtosThreadDelay
     INIT_MEMBER(rtosThreadDelay),
     #undef TakeEventosMsgQueueMutex

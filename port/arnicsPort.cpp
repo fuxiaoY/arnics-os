@@ -6,7 +6,7 @@
 
 void enable_debug_uart_IT_TXE(void)
 {
-   // __HAL_UART_ENABLE_IT(&UARTDBG, UART_IT_TXE);
+   __HAL_UART_ENABLE_IT(&UARTDBG, UART_IT_TXE);
 }
 #else
 void enable_debug_uart_IT_TXE(void)

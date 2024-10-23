@@ -35,7 +35,10 @@ bool rtosEventQueueTake(void *msg,uint32_t delay)
 {
     return (xQueueReceive(eventosSendQueue, msg, delay) == pdTRUE);
 }
-
+bool rtosEventQueueReq(void *msg,uint32_t delay)
+{
+    return (xQueueSend(eventosReceiveQueue, msg, delay) == pdTRUE);
+}
 
 // 获取读消息队列互斥信号量
 bool TakeEventosMsgQueueMutex(time_t waitTime)

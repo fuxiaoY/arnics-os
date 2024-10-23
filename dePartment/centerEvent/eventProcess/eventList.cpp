@@ -8,6 +8,7 @@ extern Message_t mesg_cache;//事件应用消息
 void led_action(void) 
 {
     // 函数实现
+    printf("led_action\r\n");
 }
 
 void battery_check(void) 

@@ -2,9 +2,10 @@
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 #include "../dataPlat/globalDef.h"
-#include "../dePartment/centerEvent/entry_event_api.h"
 #include "rtosTask.h"
 #include "rtosPort.h"
+#include "../dePartment/centerEvent/entry_event_api.h"
+#include "../dePartment/centerBusiness/entry_business_api.h"
 /* ---------------------------------休眠相关 -----------------------------------------------*/
 /**
  * @func StartConsleTask
@@ -72,6 +73,7 @@ void StartMaintTask(void const *argument)
 
   while (1)
   {
+    business_process();
     rtosThreadDelay(1000);
   }
 }

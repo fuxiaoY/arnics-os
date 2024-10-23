@@ -1,13 +1,13 @@
 
-#ifndef ENTRY_BUSINESS_API_H_
-#define ENTRY_BUSINESS_API_H_
+#ifndef ENTRY_EVENT_API_H_
+#define ENTRY_EVENT_API_H_
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
 
 
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(event_process))(void);
-typedef time_t (T_TYPEDEF(SendEventFlagToEventCenter))(uint32_t* eventflag,time_t wait);
+typedef time_t (T_TYPEDEF(SendEventCallToEventCenter))(uint32_t* eventflag,time_t wait);
 typedef bool (T_TYPEDEF(GetResponseMessageFromEventCenter))(time_t ID,time_t wait);
 typedef bool (T_TYPEDEF(set_event_flag))(uint32_t *eventflag, const char *name) ;
 // 输出函数接口结构体
@@ -15,7 +15,7 @@ typedef struct
 {
 
     T_STRUCT_MEMBER(event_process);
-    T_STRUCT_MEMBER(SendEventFlagToEventCenter);
+    T_STRUCT_MEMBER(SendEventCallToEventCenter);
     T_STRUCT_MEMBER(GetResponseMessageFromEventCenter);    
     T_STRUCT_MEMBER(set_event_flag);
 /*-----------------------------------*/
@@ -29,7 +29,7 @@ extern const tEVENTEntry entry_event_list;
 /*-----------------------------------*/
 
 #define event_process                          EVENT_MICRODEF(event_process)
-#define SendEventFlagToEventCenter             EVENT_MICRODEF(SendEventFlagToEventCenter)
+#define SendEventCallToEventCenter             EVENT_MICRODEF(SendEventCallToEventCenter)
 #define GetResponseMessageFromEventCenter      EVENT_MICRODEF(GetResponseMessageFromEventCenter)
 #define set_event_flag                         EVENT_MICRODEF(set_event_flag)
 

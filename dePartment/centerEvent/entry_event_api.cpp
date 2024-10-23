@@ -2,7 +2,7 @@
 #include "entry_event_api.h"
 
 #undef event_process
-#undef SendEventFlagToEventCenter
+#undef SendEventCallToEventCenter
 #undef GetResponseMessageFromEventCenter
 #undef set_event_flag
 
@@ -12,8 +12,8 @@ const tEVENTEntry entry_event_list =
 {
     #undef event_process
     INIT_MEMBER(event_process),
-    #undef SendEventFlagToEventCenter
-    INIT_MEMBER(SendEventFlagToEventCenter),
+    #undef SendEventCallToEventCenter
+    INIT_MEMBER(SendEventCallToEventCenter),
     #undef GetResponseMessageFromEventCenter
     INIT_MEMBER(GetResponseMessageFromEventCenter),
     #undef set_event_flag

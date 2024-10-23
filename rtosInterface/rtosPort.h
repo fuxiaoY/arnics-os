@@ -38,7 +38,7 @@ extern void rtosThreadDelay(uint32_t ms);
 extern bool rtosEventQueueReceive(void *msg,uint32_t delay);
 extern bool rtosEventQueueSend(void *msg,uint32_t delay);
 extern bool rtosEventQueueTake(void *msg,uint32_t delay);
-
+extern bool rtosEventQueueReq(void *msg,uint32_t delay);
 
 // 获取读消息队列互斥信号量
 extern bool TakeEventosMsgQueueMutex(time_t waitTime);

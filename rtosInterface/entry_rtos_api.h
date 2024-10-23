@@ -10,6 +10,7 @@
 typedef bool (T_TYPEDEF(rtosEventQueueReceive))(void *msg, uint32_t delay);
 typedef bool (T_TYPEDEF(rtosEventQueueSend))(void *msg, uint32_t delay);
 typedef bool (T_TYPEDEF(rtosEventQueueTake))(void *msg, uint32_t delay);
+typedef bool (T_TYPEDEF(rtosEventQueueReq))(void *msg, uint32_t delay);
 typedef void (T_TYPEDEF(rtosThreadDelay))(uint32_t ms);
 typedef bool (T_TYPEDEF(TakeEventosMsgQueueMutex))(time_t waitTime);
 typedef void (T_TYPEDEF(ReleaseEventosMsgQueueMutex))(void);
@@ -24,6 +25,7 @@ typedef struct
     T_STRUCT_MEMBER(rtosEventQueueReceive);
     T_STRUCT_MEMBER(rtosEventQueueSend);
     T_STRUCT_MEMBER(rtosEventQueueTake);
+    T_STRUCT_MEMBER(rtosEventQueueReq);
     T_STRUCT_MEMBER(rtosThreadDelay);
     T_STRUCT_MEMBER(TakeEventosMsgQueueMutex);
     T_STRUCT_MEMBER(ReleaseEventosMsgQueueMutex);
@@ -43,6 +45,7 @@ extern const tRTOSEntry entry_rtos_list;
 #define rtosEventQueueReceive                     RTOS_MICRODEF(rtosEventQueueReceive)
 #define rtosEventQueueSend                        RTOS_MICRODEF(rtosEventQueueSend)
 #define rtosEventQueueTake                        RTOS_MICRODEF(rtosEventQueueTake)
+#define rtosEventQueueReq                         RTOS_MICRODEF(rtosEventQueueReq)
 #define rtosThreadDelay                           RTOS_MICRODEF(rtosThreadDelay)
 #define TakeEventosMsgQueueMutex                  RTOS_MICRODEF(TakeEventosMsgQueueMutex)
 #define ReleaseEventosMsgQueueMutex               RTOS_MICRODEF(ReleaseEventosMsgQueueMutex)

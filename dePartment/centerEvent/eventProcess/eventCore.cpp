@@ -212,7 +212,7 @@ static unsigned long global_id_counter = 0;
  * @param  无
  * @retval 
  */
-time_t SendEventFlagToEventCenter(uint32_t *eventflag, time_t wait)
+time_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait)
 {
     // 发送消息到事件队列
     // 创建消息
@@ -227,7 +227,7 @@ time_t SendEventFlagToEventCenter(uint32_t *eventflag, time_t wait)
     }
     memcpy(msg.buf, eventflag, sizeof(uint32_t));
     // 等待时间为wait
-    if (rtosEventQueueTake(&msg, wait) == true)
+    if (rtosEventQueueReq(&msg, wait) == true)
     {
         ULOG_DEBUG("Message:needSample sent succeed! ID=%d",msg.ID_Ts);
         return msg.ID_Ts;
