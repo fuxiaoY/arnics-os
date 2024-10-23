@@ -1,3 +1,26 @@
+/* information */
+/**
+  ******************************************************************************
+  * @file           : ARNICS_CORE_H
+  * @brief          : 核心功能头文件
+  * 
+  * 该文件定义了核心功能的宏定义、数据类型和函数声明。
+  * 主要用于初始化和注册各种功能模块。
+  * 
+  * @version        : 1.0.0
+  * @date           : 2023-10-01
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2023 ARSTUDIO.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 #ifndef _ARNICS_CORE_H_
 #define _ARNICS_CORE_H_
 
@@ -7,7 +30,7 @@ extern "C" {
 
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
-
+/* define ------------------------------------------------------------*/
 #if defined(__CC_ARM) || defined(__GNUC__) /* ARM,GCC*/ 
     #define _SECTION(x)                  __attribute__((section(x)))
     #define _UNUSED                      __attribute__((unused))
@@ -22,7 +45,7 @@ extern "C" {
 #else
     #error "do not supported!"
 #endif
-
+/* typedef -----------------------------------------------------------*/
 #define TASK_FUNC(func)   {func}
 /* \brief Function pointer define */
 typedef void (*funcPointer) (void);
@@ -40,13 +63,21 @@ typedef struct
     int level;  
 } ArnicsFuncItem;
 
-/*---------------------------------------------------------------*/
+/* define ------------------------------------------------------------*/
 #define  STRCAT(a, b ,c)                 #a "." b "."  #c
 
 #define  ARNICS_CONN(type, funcname, line)  type  funcname##_##line
 #define  ARNICS_DEF(type,funcname,line)     ARNICS_CONN(type, funcname, line)
 #define  ARNICS_TYPE(type,funcname)         ARNICS_DEF(type, funcname, __LINE__)
-
+/**
+ * @def ARNICS_REGISTER
+ * @brief 注册功能项宏
+ * 
+ * @param [in] name - 功能项名称
+ * @param [in] func - 功能项函数指针
+ * @param [in] department - 部门名称
+ * @param [in] level - 段级别
+ */
 #define ARNICS_REGISTER(name, func, department, level) \
     _USED ARNICS_TYPE(const ArnicsFuncItem, funCb_##func) \
     _SECTION(STRCAT(arnics, department, level)) = {name, func, level}
@@ -57,22 +88,33 @@ typedef struct
 #define DEPARTMENT_INIT(name,func)  ARNICS_REGISTER(name,func,INIT_TAG,4)
 
 
-/*---------------------------------------------------------------*/
+/* macro -------------------------------------------------------------*/
 
-
-// 定义 nop_process 函数
 static inline void nop_process(void) {}
 #define DEFINE_ARNICS_FUNC_ITEM(name, department, level) \
     const ArnicsFuncItem name _SECTION(STRCAT(arnics, department, level)) = \
     { \
         "", nop_process \
     }
-
+/**
+ * @def DEFINE_ARNICS_FUNC_ITEM_RANGE
+ * @brief 定义功能项段范围宏
+ * 
+ * @param [in] prefix - 前缀
+ * @param [in] department - 部门名称
+ * @param [in] start_level - 开始级别
+ * @param [in] end_level - 结束级别
+ */
 #define DEFINE_ARNICS_FUNC_ITEM_RANGE(prefix, department, start_level, end_level) \
     DEFINE_ARNICS_FUNC_ITEM(prefix##_start, department, start_level); \
     DEFINE_ARNICS_FUNC_ITEM(prefix##_end, department, end_level)
 
-
+/**
+ * @def EXECUTE_FUNC_ALLSECTION
+ * @brief 执行所有功能项宏
+ * 
+ * @param [in] prefix - 前缀
+ */
 #define EXECUTE_FUNC_ALLSECTION(prefix) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
@@ -84,7 +126,13 @@ static inline void nop_process(void) {}
             it++; \
         } \
     } while (0)
-// 根据名称执行函数的宏
+/**
+ * @def EXECUTE_FUNC_BY_NAME
+ * @brief 根据名称执行功能项宏
+ * 
+ * @param [in] prefix - 前缀
+ * @param [in] Name - 功能项名称
+ */
 #define EXECUTE_FUNC_BY_NAME(prefix, Name) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
@@ -99,6 +147,14 @@ static inline void nop_process(void) {}
             it++; \
         } \
     } while (0)
+/**
+ * @def EXECUTE_FUNC_BY_NAME_AT_LEVEL
+ * @brief 根据名称和级别执行功能项宏
+ * 
+ * @param [in] prefix - 前缀
+ * @param [in] Name - 功能项名称
+ * @param [in] level - 段级别
+ */
 #define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, Name, level) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
