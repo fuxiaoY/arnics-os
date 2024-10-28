@@ -21,7 +21,7 @@ extern void setTearDownCallback(TearDownCallback callback);
 
 extern void setUp(void) ;
 extern void tearDown(void) ;
-
+extern void testUnity() ;
 
 #ifdef __cplusplus
 }

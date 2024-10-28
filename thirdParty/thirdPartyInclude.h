@@ -1,7 +1,7 @@
 #ifndef _THIRDPARTYINCLUDE_H_
 #define _THIRDPARTYINCLUDE_H_  
-#include "ulog/ulog.h"
 
+#include "ulog/ulogDef.h"
 #include "unity/api_unity_def.h"
 #include "Assert/usr_assert.h"
 #include "ring/ringbuffer.h"

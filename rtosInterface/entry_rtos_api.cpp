@@ -1,9 +1,11 @@
 #include "entry_rtos_api.h"
+#undef rtosThreadDelay
+#undef rtosTaskSuspendAll
+#undef rtosTaskResumeAll
 #undef rtosEventQueueReceive
 #undef rtosEventQueueSend
 #undef rtosEventQueueTake
 #undef rtosEventQueueReq
-#undef rtosThreadDelay
 #undef TakeEventosMsgQueueMutex
 #undef ReleaseEventosMsgQueueMutex
 #undef TakeEventosMutex

@@ -32,3 +32,11 @@ void tearDown(void)
         globalTearDownCallback();
     }
 }
+
+
+void testUnity()
+{
+	UNITY_BEGIN();
+   //RUN_TEST(func); 
+	UNITY_END();
+}

@@ -30,9 +30,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "ulog.h"
-#define ULOG_ENABLED
+
 #ifdef ULOG_ENABLED  // whole file...
-#include "../../Inc/typedef.h"
+
 extern BOOL FREERTOS_INIT_ISDONE;
 // =============================================================================
 // types and definitions

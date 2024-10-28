@@ -3,6 +3,7 @@
 // 系统参数
 bool arnics_start = false;
 volatile uint32_t arnics_systick = 0;
+uint8_t VirtualEnvironment = 0;  // 虚拟环境标志
 bool eventosWantSleep = false;
 
 // 运行与配置参数

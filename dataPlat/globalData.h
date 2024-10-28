@@ -10,6 +10,7 @@ extern "C" {
 // 系统参数
 extern bool arnics_start;
 extern volatile uint32_t arnics_systick;
+extern uint8_t VirtualEnvironment;  // 虚拟环境标志
 extern bool eventosWantSleep;
 
 

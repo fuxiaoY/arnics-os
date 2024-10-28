@@ -1,6 +1,7 @@
 #include "entry_dataPlat_api.h"
 #undef  arnics_systick
 #undef  arnics_start
+#undef  VirtualEnvironment
 #undef  global_cfg       
 #undef  global_state     
 #undef  eventosWantSleep
@@ -18,6 +19,8 @@ const tDATAPLATEntry entry_dataplat_list =
     INIT_MEMBER(arnics_start),
     #undef global_cfg
     INIT_MEMBER(global_cfg),
+    #undef VirtualEnvironment
+    INIT_MEMBER(VirtualEnvironment),
     #undef usr_systick
     INIT_MEMBER(global_state),
     #undef eventosWantSleep

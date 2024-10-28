@@ -15,7 +15,8 @@ typedef struct
 {
     T_STRUCT_VAR(arnics_systick,volatile uint32_t);
     T_STRUCT_VAR(arnics_start,bool);
-    T_STRUCT_VAR(global_cfg,SytemCfg);
+    T_STRUCT_VAR(VirtualEnvironment,uint8_t);
+    T_STRUCT_VAR(global_cfg,SytemCfg); 
     T_STRUCT_VAR(global_state,SytemState);
     T_STRUCT_VAR(eventosWantSleep,bool);
     
@@ -33,6 +34,7 @@ extern const tDATAPLATEntry entry_dataplat_list;
 
 #define arnics_systick          DATAPLAT_MICRODEF_VAR(arnics_systick, volatile uint32_t)
 #define arnics_start            DATAPLAT_MICRODEF_VAR(arnics_start, bool)
+#define VirtualEnvironment     DATAPLAT_MICRODEF_VAR(VirtualEnvironment, uint8_t)
 #define global_cfg            DATAPLAT_MICRODEF_VAR(global_cfg, SytemCfg)
 #define global_state          DATAPLAT_MICRODEF_VAR(global_state, SytemState)
 #define eventosWantSleep          DATAPLAT_MICRODEF_VAR(eventosWantSleep, bool)

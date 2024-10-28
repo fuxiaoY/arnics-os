@@ -1,10 +1,35 @@
 #include "rtosPort.h"
 
 #ifdef _USE_FREERTOS_
+
+
+//消息中心队列  
+extern QueueHandle_t eventosReceiveQueue;
+extern QueueHandle_t eventosSendQueue;
+//媒体中心队列
+extern QueueHandle_t MediaReceiveQueue;
+extern QueueHandle_t MediaSendQueue;
+//行政中心队列
+extern QueueHandle_t adReceiveQueue;
+extern QueueHandle_t adSendQueue;
+
+// 消息中心信号量
+extern SemaphoreHandle_t eventosSendQueue_xSemaphore; //读消息中心队列锁
+extern SemaphoreHandle_t eventosID_mutex;   //消息ID锁
+
 /*---------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------*/
-// 延时函数
+// 系统函数
+void rtosTaskSuspendAll(void)
+{
+    vTaskSuspendAll();
+}
+void rtosTaskResumeAll(void)
+{
+    xTaskResumeAll();
+}
+
 void rtosThreadDelay(uint32_t ms)
 {
     osDelay(ms);
