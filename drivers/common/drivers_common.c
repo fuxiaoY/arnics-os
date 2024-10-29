@@ -84,13 +84,13 @@ void configure_devices()
     param_value_t uart_params[] = {
         {"baudrate", &new_baudrate},
     };
-    dev_params_set("uart1", uart_params, sizeof(uart_params) / sizeof(param_value_t));
+    dev_params_set(&debug_ds, uart_params, sizeof(uart_params) / sizeof(param_value_t));
 
     GPIO_PinState new_pin_state = GPIO_PIN_SET;
     param_value_t io_params[] = {
         {"PinState", &new_pin_state},
     };
-    dev_params_set("led", io_params, sizeof(io_params) / sizeof(param_value_t));
+    dev_params_set(&led0_ds, io_params, sizeof(io_params) / sizeof(param_value_t));
 }
 
  * demo */

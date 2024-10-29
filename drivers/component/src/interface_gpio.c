@@ -10,6 +10,14 @@ void gpio_init(device_t *self)
     }
     bsp_gpio_init(self->device);
 }
+void gpio_close(device_t *self,unsigned int statue)
+{
+    if(self->ds == 0)
+    {
+        return;
+    }
+    bsp_gpio_close(self->device,statue);
+}
 void gpio_set(device_t *self,unsigned int statue)
 {
     if(self->ds == 0)
