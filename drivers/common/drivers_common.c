@@ -78,8 +78,19 @@ int dev_params_set(device_t *dev, const param_value_t *params, size_t param_coun
 
 
 /* demo *
-void configure_devices()
-{
+    // 使用宏
+    GPIO_PinState new_pin_state = GPIO_PIN_SET;
+    uint32_t new_pin_mode = GPIO_MODE_OUTPUT_OD;
+
+
+    DEV_PARAMS_SET(&led1_ds,
+        {"PinState", &new_pin_state},
+        {"GPIO_Mode", &new_pin_mode}
+    );
+ * demo */
+ 
+/* demo *
+    // 使用原函数
     int new_baudrate = 9600;
     param_value_t uart_params[] = {
         {"baudrate", &new_baudrate},
@@ -91,7 +102,6 @@ void configure_devices()
         {"PinState", &new_pin_state},
     };
     dev_params_set(&led0_ds, io_params, sizeof(io_params) / sizeof(param_value_t));
-}
-
  * demo */
+ 
  
