@@ -238,3 +238,43 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>arnics/drivers/common</GroupName>
+          <Files>
+            <File>
+              <FileName>drivers_common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\common\drivers_common.c</FilePath>
+            </File>
+            <File>
+              <FileName>drivers_list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\common\drivers_list.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/drivers/component</GroupName>
+          <Files>
+            <File>
+              <FileName>interface_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_uart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/drivers/bsp</GroupName>
+          <Files>
+            <File>
+              <FileName>drivers_var.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\bsp\drivers_var.c</FilePath>
+            </File>
+          </Files>
+        </Group>

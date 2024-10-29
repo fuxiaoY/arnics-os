@@ -1,0 +1,32 @@
+
+
+// .h file
+extern void bsp_gpio_init(io_t *io);
+extern void bsp_gpio_set(io_t *io,unsigned int statue);
+extern void bsp_gpio_toggle(io_t *io);
+
+
+// .c file
+
+void bsp_gpio_init(io_t *io)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  GPIO_InitStruct.Pin = io->GPIO_Pin;
+  GPIO_InitStruct.Mode = io->GPIO_Mode;
+  GPIO_InitStruct.Pull = io->GPIO_Pull;
+  GPIO_InitStruct.Speed = io->GPIO_Speed;
+  HAL_GPIO_Init(io->GPIOx, &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Mode, io->PinState);
+
+}
+void bsp_gpio_set(io_t *io,unsigned int statue)
+{
+  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Pin, statue);
+}
+
+void bsp_gpio_toggle(io_t *io)
+{
+  HAL_GPIO_TogglePin(io->GPIOx, io->GPIO_Pin);
+}

@@ -10,8 +10,8 @@ extern "C" {
 /* function prototypes -----------------------------------------------*/
 extern void gpio_init(device_t *self);
 extern void gpio_close(device_t *self);
-extern bool gpio_set(device_t *self, int statue);
-
+extern void gpio_set(device_t *self,unsigned int statue);
+extern void gpio_toggle(device_t *self);
 
 
 
