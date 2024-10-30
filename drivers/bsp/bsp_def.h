@@ -80,6 +80,8 @@ typedef struct
     ring_buf_t *ring_tx;
     unsigned char *rx_buf;
     unsigned char *tx_buf;
+    unsigned int rx_buf_size;
+    unsigned int tx_buf_size;
     /* data */
 }uart_t;
 // UART 参数映射表的 X-macro
@@ -94,7 +96,9 @@ typedef struct
     X("ring_rx", uart_t, ring_rx, ring_buf_t*) \
     X("ring_tx", uart_t, ring_tx, ring_buf_t*) \
     X("rx_buf", uart_t, rx_buf, unsigned char*) \
-    X("tx_buf", uart_t, tx_buf, unsigned char*)
+    X("tx_buf", uart_t, tx_buf, unsigned char*) \
+    X("rx_buf_size", uart_t, rx_buf_size, unsigned int) \
+    X("tx_buf_size", uart_t, tx_buf_size, unsigned int)
 #else
 
 
