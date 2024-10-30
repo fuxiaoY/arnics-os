@@ -6,6 +6,7 @@ extern void bsp_gpio_close(io_t *io);
 extern void bsp_gpio_set(io_t *io,unsigned int statue);
 extern GPIO_PinState bsp_gpio_get(io_t *io);
 extern void bsp_gpio_toggle(io_t *io);
+extern void bsp_gpio_irq(io_t *io);
 
 
 // .c file
@@ -47,4 +48,7 @@ void bsp_gpio_toggle(io_t *io)
 {
   HAL_GPIO_TogglePin(io->GPIOx, io->GPIO_Pin);
 }
-
+void bsp_gpio_irq(io_t *io)
+{
+  HAL_GPIO_EXTI_IRQHandler(io->GPIO_Pin);
+}
