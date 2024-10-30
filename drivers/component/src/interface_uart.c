@@ -15,7 +15,7 @@ int uart_open(device_t *self)
     bsp_usart_init(self->device);
  #ifdef _USE_RING_
     uart_t *uart = (uart_t *)self->device;
-    ring_init(uart->ring_tx,uart->tx_buf,uart->ring_rx,uart->rx_buf);
+    ring_init(uart->ring_tx,uart->tx_buf,uart->tx_buf_size,uart->ring_rx,uart->rx_buf,uart->rx_buf_size);
  #endif   
     return 0;
 }

@@ -20,11 +20,11 @@ void ring_txclear(ring_buf_t *rbsend)
     ring_buf_clr(rbsend);
 }
 
-void ring_init(ring_buf_t *rbsend,unsigned char *bufsend,ring_buf_t *rbrev,unsigned char *bufrev)
+void ring_init(ring_buf_t *rbsend,unsigned char *bufsend,unsigned int buf_send_size, ring_buf_t *rbrev,unsigned char *bufrev,unsigned int buf_rev_size)
 {
-    /*初始化环形缓冲区 */
-    ring_buf_init(rbsend, bufsend, sizeof(bufsend)); 
-    ring_buf_init(rbrev, bufrev, sizeof(bufrev));
+    /* 初始化环形缓冲区 */
+    ring_buf_init(rbsend, bufsend, buf_send_size); 
+    ring_buf_init(rbrev, bufrev, buf_rev_size);
 }
 
 

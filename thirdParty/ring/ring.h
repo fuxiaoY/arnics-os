@@ -54,7 +54,7 @@ extern void ring_txclear(ring_buf_t *rbsend);
  * 
  * 初始化发送和接收的环形缓冲区。
  */
-extern void ring_init(ring_buf_t *rbsend,unsigned char *bufsend,ring_buf_t *rbrev,unsigned char *bufrev);
+extern void ring_init(ring_buf_t *rbsend,unsigned char *bufsend,unsigned int buf_send_size, ring_buf_t *rbrev,unsigned char *bufrev,unsigned int buf_rev_size);
 
 
 

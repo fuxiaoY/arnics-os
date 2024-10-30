@@ -31,7 +31,9 @@ uart_t uart1 =
     .ring_rx = &debug_rbsend,
     .ring_tx = &debug_rbrecv,
     .rx_buf = debug_rxbuf,
-    .tx_buf = debug_txbuf
+    .tx_buf = debug_txbuf,
+    .rx_buf_size = DEBUG_UART_RXBUF_SIZE,
+    .tx_buf_size = DEBUG_UART_TXBUF_SIZE
 };
 io_t led0 = 
 {
