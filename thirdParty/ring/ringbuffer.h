@@ -22,10 +22,10 @@ extern "C" {
 
 /*环形缓冲区管理器*/
 typedef struct {
-     unsigned char *buf;    /*环形缓冲区        */
-     unsigned int size;     /*环形缓冲区        */
-     unsigned int front;    /*头指针            */
-     unsigned int rear;     /*尾指针            */
+     volatile unsigned char *buf;    /*环形缓冲区        */
+     volatile unsigned int size;     /*环形缓冲区        */
+     volatile unsigned int front;    /*头指针            */
+     volatile unsigned int rear;     /*尾指针            */
 }ring_buf_t;
 
 bool ring_buf_init(ring_buf_t *r,unsigned char *buf,unsigned int size);

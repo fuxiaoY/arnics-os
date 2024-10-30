@@ -35,13 +35,11 @@ extern "C" {
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
 #include "../common/drivers_common.h"
-
+#include "../thirdParty/thirdPartyInclude.h"
 
 #ifdef STM32CHIP
 /* include -----------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
-#include "usart.h"
-
 /* typedef -----------------------------------------------------------*/
 // I/O 结构体
 typedef struct
@@ -62,24 +60,41 @@ typedef struct
     X("PinState", io_t, PinState, GPIO_PinState)
 
 
+typedef enum 
+{
+  UART_DEBUG = 0,
+  UART_WAN,
+  UART_LC,
+}UART_FUNCTION;
+
 typedef struct 
 {
-    UART_HandleTypeDef *huart;
+    UART_HandleTypeDef huart;
     int baudrate; 
     int data_bits; 
     int stop_bits;
     int parity; 
     bool dma_mode;
+    UART_FUNCTION function;
+    ring_buf_t *ring_rx;
+    ring_buf_t *ring_tx;
+    unsigned char *rx_buf;
+    unsigned char *tx_buf;
     /* data */
 }uart_t;
 // UART 参数映射表的 X-macro
 #define UART_PARAM_MAP_X \
-    X("huart", uart_t, huart, UART_HandleTypeDef *) \
+    X("huart", uart_t, huart, UART_HandleTypeDef) \
     X("baudrate", uart_t, baudrate, int) \
     X("data_bits", uart_t, data_bits, int) \
     X("stop_bits", uart_t, stop_bits, int) \
     X("parity", uart_t, parity, int) \
-    X("dma_mode", uart_t, dma_mode, bool)
+    X("dma_mode", uart_t, dma_mode, bool) \
+    X("function", uart_t, function, UART_FUNCTION) \
+    X("ring_rx", uart_t, ring_rx, ring_buf_t*) \
+    X("ring_tx", uart_t, ring_tx, ring_buf_t*) \
+    X("rx_buf", uart_t, rx_buf, unsigned char*) \
+    X("tx_buf", uart_t, tx_buf, unsigned char*)
 #else
 
 

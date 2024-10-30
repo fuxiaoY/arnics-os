@@ -6,8 +6,8 @@ extern "C" {
 #include "ulog.h"
 
 extern void usr_ulog_level_change(ulog_level_t level);
-extern void usr_ulog_init();
-extern void usr_ulog_deinit();
+extern void usr_ulog_init(void);
+extern void usr_ulog_deinit(void);
 #ifdef __cplusplus
 }
 #endif

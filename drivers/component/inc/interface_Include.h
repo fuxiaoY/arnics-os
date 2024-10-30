@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 #include "interface_gpio.h"
-
+#include "interface_uart.h"
 #ifdef __cplusplus
 }
 #endif

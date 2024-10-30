@@ -1,18 +1,20 @@
 #include "arnicsTaskManager.h"
 #include "../drivers/driversInclude.h"
 
-void ledinit(void)
+void init(void)
 {
     dev_reg("led0",&led0_ds);
     dev_reg("led1",&led1_ds);
+    dev_reg("uart1",&debug_ds);
     dev_open(&led0_ds);
     dev_open(&led1_ds);
+    dev_open(&debug_ds);
 }
 
 /* 外设初始化任务清单 */
 const tTaskFunc initTaskList[] =
 {
-    TASK_FUNC(ledinit),
+    TASK_FUNC(init),
 };
 
 /*运行时配置参数、运行时状态记录预加载*/

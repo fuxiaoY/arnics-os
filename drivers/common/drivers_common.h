@@ -38,6 +38,7 @@ typedef struct
     int (*ds_read)(void *dev, void *buf, size_t count);
     int (*ds_write)(void *dev, void *buf, size_t count);
     int (*ds_ctl)(void *dev, int cmd, void *args);
+    void (*ds_irq)(void *dev);
 }dev_operations;
 
 typedef struct 
@@ -154,7 +155,13 @@ extern int dev_write(device_t *dev, void *buf, size_t count);
  * @return 返回操作结果，0表示成功，负值表示错误
  */
 extern int dev_ctl(device_t *dev, int cmd, void *args);
-
+/**
+ * @fn dev_irq
+ * @brief 设备中断
+ * 
+ * @param dev 设备结构体指针
+ */
+extern void dev_irq(device_t *dev);
 
 #ifdef __cplusplus
 }

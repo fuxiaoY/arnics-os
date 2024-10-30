@@ -34,7 +34,7 @@ void tearDown(void)
 }
 
 
-void testUnity()
+void testUnity(void)
 {
 	UNITY_BEGIN();
    //RUN_TEST(func); 

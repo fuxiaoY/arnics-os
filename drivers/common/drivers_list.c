@@ -10,7 +10,14 @@ const param_map_t uart_param_map[] = {
     #undef X
 };
 const size_t uart_param_map_size = sizeof(uart_param_map) / sizeof(param_map_t);
-
+const dev_operations uart_ops = {
+                        uart_open,
+                        uart_close,
+                        uart_read,
+                        uart_write,
+                        uart_ctl,
+                        uart_irq};
+               
 /* Lists--- -----------------------------------------------------------*/
 // 使用 X-macro 生成 IO 参数映射表
 const param_map_t io_param_map[] = {
@@ -26,12 +33,13 @@ const dev_operations io_ops = {
                         gpio_close,
                         NULL,
                         NULL,
-                        gpio_ctl};
+                        gpio_ctl,
+                        gpio_irq};
 
 /* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
-    {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),NULL},
+    {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),&uart_ops},
     {"io_t", io_param_map, sizeof(io_param_map) / sizeof(param_map_t),&io_ops},
     // 可以添加更多设备类型
 };

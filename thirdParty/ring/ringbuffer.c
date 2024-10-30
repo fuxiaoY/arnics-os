@@ -15,7 +15,6 @@
 #include <stddef.h>
 
 #define min(a,b) ( (a) < (b) )? (a):(b)     
-     
 /*
  *@brief      构造一个空环形缓冲区
  *@param[in]  r    - 环形缓冲区管理器

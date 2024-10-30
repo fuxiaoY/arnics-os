@@ -113,6 +113,9 @@ bool dev_reg(const char *name, device_t *device)
  */
 int dev_open(device_t *dev)
 {
+    if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_open == NULL) {
+        return -1;
+    }
     return dev->dev_ops->ds_open(dev);
 }
 
@@ -125,6 +128,9 @@ int dev_open(device_t *dev)
  */
 int dev_close(device_t *dev)
 {
+    if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_close == NULL) {
+        return -1;
+    }
     return dev->dev_ops->ds_close(dev);
 }
 
@@ -139,6 +145,9 @@ int dev_close(device_t *dev)
  */
 int dev_read(device_t *dev, void *buf, size_t count)
 {
+    if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_read == NULL) {
+        return -1;
+    }
     return dev->dev_ops->ds_read(dev, buf, count);
 }
 
@@ -153,6 +162,9 @@ int dev_read(device_t *dev, void *buf, size_t count)
  */
 int dev_write(device_t *dev, void *buf, size_t count)
 {
+    if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_write == NULL) {
+        return -1;
+    }
     return dev->dev_ops->ds_write(dev, buf, count);
 }
 
@@ -167,5 +179,16 @@ int dev_write(device_t *dev, void *buf, size_t count)
  */
 int dev_ctl(device_t *dev, int cmd, void *args)
 {
+    if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_ctl == NULL) {
+        return -1;
+    }
     return dev->dev_ops->ds_ctl(dev, cmd, args);
+}
+
+void dev_irq(device_t *dev)
+{
+    if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_irq == NULL) {
+        return;
+    }
+    dev->dev_ops->ds_irq(dev);
 }

@@ -2,11 +2,6 @@
           <GroupName>arnics/common</GroupName>
           <Files>
             <File>
-              <FileName>ril_ring.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\common\ril_ring.cpp</FilePath>
-            </File>
-            <File>
               <FileName>TaskTimer.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\arnics-os\common\TaskTimer.cpp</FilePath>
@@ -161,6 +156,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\ring\ringbuffer.c</FilePath>
             </File>
+            <File>
+              <FileName>ring.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\ring\ring.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -185,6 +185,11 @@
               <FileName>ulog.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\ulog\ulog.c</FilePath>
+            </File>
+            <File>
+              <FileName>ulogDef.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\thirdParty\ulog\ulogDef.cpp</FilePath>
             </File>
           </Files>
         </Group>

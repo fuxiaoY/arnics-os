@@ -8,24 +8,14 @@ extern "C" {
 #include "../../common/drivers_common.h"
 
 /* function prototypes -----------------------------------------------*/
-extern void uart_init(device_t *self);
-extern void uart_close(device_t *self);
-extern unsigned int uart_write(device_t *self, const void *buf, unsigned int len);
-extern unsigned int uart_read(device_t *self, void *buf, unsigned int len);
-
-extern unsigned int uart_para_change(device_t *self, void *buf, unsigned int len);
-
-
+extern int uart_open(device_t *self);
+extern int uart_close(device_t *self);
+extern int uart_read(device_t *self,void *buf, size_t count);
+extern int uart_write(device_t *self, void *buf, size_t count);
+extern int uart_ctl(device_t *self, int cmd, void *args);
+extern void uart_irq(device_t *self);
 
 
-/* demo *
-char send_buf[] = "Hello, UART!";
-device_t my_uart;
-int main(){
-    uart_init("uart1",&my_uart, 115200, 8, 1, 0, false);
-    uart_write(&my_uart, send_buf, sizeof(send_buf) - 1);
-}
- * demo */
 
 #ifdef __cplusplus
 }

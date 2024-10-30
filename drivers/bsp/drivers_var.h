@@ -16,6 +16,14 @@ extern const size_t device_map_size;
 
 /* declaration --------------------------------------------------------*/
 
+// 环形缓冲值
+#define DEBUG_UART_RXBUF_SIZE  512
+#define DEBUG_UART_TXBUF_SIZE  512
+extern unsigned char debug_rxbuf[DEBUG_UART_RXBUF_SIZE];
+extern unsigned char debug_txbuf[DEBUG_UART_TXBUF_SIZE];
+extern ring_buf_t debug_rbsend;
+extern ring_buf_t debug_rbrecv;
+
 // 驱动映射
 extern device_t led0_ds; // led0
 extern device_t led1_ds; // led1

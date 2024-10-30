@@ -57,3 +57,11 @@ int gpio_ctl(device_t *self, int cmd, void *args)
     }
     return 0;
 }
+void gpio_irq(device_t *self)
+{
+    if(self->ds == 0)
+    {
+        return;
+    }
+    bsp_gpio_irq(self->device);
+}

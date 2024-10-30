@@ -26,12 +26,12 @@ static void DEBUG_logger(ulog_level_t severity, char *msg)
   }
 }
 
-void usr_ulog_init()
+void usr_ulog_init(void)
 {
   ULOG_INIT();
   ULOG_SUBSCRIBE(DEBUG_logger, ULOG_INFO_LEVEL);
 }
-void usr_ulog_deinit()
+void usr_ulog_deinit(void)
 {
   ULOG_UNSUBSCRIBE(DEBUG_logger);
 }

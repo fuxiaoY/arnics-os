@@ -4,7 +4,7 @@
 #include "ulog/ulogDef.h"
 #include "unity/api_unity_def.h"
 #include "Assert/usr_assert.h"
-#include "ring/ringbuffer.h"
+#include "ring/ring.h"
 #include "struct2json/inc/s2j.h"
 
 

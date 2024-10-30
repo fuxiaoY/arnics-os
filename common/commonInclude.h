@@ -3,8 +3,6 @@
 
 //软件定时器
 #include "TaskTimer.h"
-//环形缓冲
-#include "ril_ring.h"
 //malloc
 #include "usrMalloc.h"
 

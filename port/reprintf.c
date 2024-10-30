@@ -2,7 +2,7 @@
 #include "../Inc/typedef.h"
 #include "arnicsPort.h"
 #ifdef STM32CHIP
-#include "usart.h"
+#include "../drivers/driversInclude.h"
 /*
 今天我用到RTX里面使用printf ，发现程序死掉了
 
@@ -21,8 +21,8 @@
    但是传入的参数mutex并未进行初始化，所有内存访问地址出错。造成hardfault
 */
 
-//加入以下代码,支持printf函数,而不需要选择use MicroLIB	         
-//标准库需要的支持函数                 
+// 加入以下代码,支持printf函数,而不需要选择use MicroLIB	         
+// 标准库需要的支持函数                 
 // 定义无半主机模式
 #pragma import(__use_no_semihosting)
 struct __FILE 
@@ -40,8 +40,7 @@ void _sys_exit(int x) {
 // 重定义 _ttywrch 函数
 int _ttywrch(int ch) {
     // 实现你的输出逻辑，例如通过 UART 发送字符
-    // 假设 g_UARTDBG 已经定义并初始化
-    HAL_UART_Transmit(&UARTDBG, (uint8_t *)&ch, 1, 10000);  // 10s 超时时间
+    dev_write(&debug_ds, &ch, 1);
     return ch;
 }
 
