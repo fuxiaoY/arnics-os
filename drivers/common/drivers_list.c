@@ -1,6 +1,6 @@
 
 #include "drivers_list.h"
-
+#include "../component/inc/interface_Include.h"
 /* Lists--- -----------------------------------------------------------*/
 // 使用 X-macro 生成 UART 参数映射表
 const param_map_t uart_param_map[] = {
@@ -20,13 +20,19 @@ const param_map_t io_param_map[] = {
     #undef X
 };
 const size_t io_param_map_size = sizeof(io_param_map) / sizeof(param_map_t);
+
+const dev_operations io_ops = {
+                        gpio_open,
+                        gpio_close,
+                        NULL,
+                        NULL,
+                        gpio_ctl};
+
 /* Lists--- -----------------------------------------------------------*/
-
-
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
-    {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t)},
-    {"io_t", io_param_map, sizeof(io_param_map) / sizeof(param_map_t)},
+    {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),NULL},
+    {"io_t", io_param_map, sizeof(io_param_map) / sizeof(param_map_t),&io_ops},
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);

@@ -2,8 +2,9 @@
 
 // .h file
 extern void bsp_gpio_init(io_t *io);
-extern void bsp_gpio_close(io_t *io,unsigned int statue);
+extern void bsp_gpio_close(io_t *io);
 extern void bsp_gpio_set(io_t *io,unsigned int statue);
+extern GPIO_PinState bsp_gpio_get(io_t *io);
 extern void bsp_gpio_toggle(io_t *io);
 
 
@@ -22,7 +23,7 @@ void bsp_gpio_init(io_t *io)
   HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Pin, io->PinState);
 
 }
-void bsp_gpio_close(io_t *io,unsigned int statue)
+void bsp_gpio_close(io_t *io)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -32,14 +33,18 @@ void bsp_gpio_close(io_t *io,unsigned int statue)
   GPIO_InitStruct.Speed = io->GPIO_Speed;
   HAL_GPIO_Init(io->GPIOx, &GPIO_InitStruct);
 
-  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Pin, (GPIO_PinState)statue);
 }
 void bsp_gpio_set(io_t *io,unsigned int statue)
 {
   HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Pin, (GPIO_PinState)statue);
+}
+GPIO_PinState bsp_gpio_get(io_t *io)
+{
+  return HAL_GPIO_ReadPin(io->GPIOx, io->GPIO_Pin);
 }
 
 void bsp_gpio_toggle(io_t *io)
 {
   HAL_GPIO_TogglePin(io->GPIOx, io->GPIO_Pin);
 }
+

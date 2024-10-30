@@ -37,6 +37,9 @@ extern "C" {
 #include "../../Inc/typedef.h"
 #include "../bsp/drivers_var.h"
 
+
+/* define -------------------------------------------------------------*/
+
 /* declaration --------------------------------------------------------*/
 // 声明设备参数表
 extern const param_map_t uart_param_map[];
@@ -44,7 +47,8 @@ extern const size_t uart_param_map_size ;
 
 extern const param_map_t io_param_map[];
 extern const size_t io_param_map_size ;
-
+extern const dev_operations io_ops;
+/* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];
 extern const size_t device_type_maps_size;

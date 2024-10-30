@@ -9,9 +9,7 @@ extern "C" {
 #include "../Inc/typedef.h"
 #include "common/drivers_common.h"
 /* define --------------------------------------------------------*/
-#include "component/inc/interface_uart.h"
-#include "component/inc/interface_gpio.h"
-
+#include "component/inc/interface_Include.h"
 #include "bsp/drivers_var.h"
 #ifdef __cplusplus
 }
