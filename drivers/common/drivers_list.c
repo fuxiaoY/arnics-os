@@ -51,7 +51,7 @@ const dev_operations spi_ops = {
                         spi_close,
                         spi_read,
                         spi_write,
-                        NULL,
+                        spi_ctl,
                         NULL};
 
 /* Lists--- -----------------------------------------------------------*/

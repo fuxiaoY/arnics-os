@@ -16,8 +16,8 @@ extern const tTaskFunc deviceTaskList[];
 
 
 
-
-
+extern void driver_init(void);
+extern void device_init(void);
 
 #ifdef __cplusplus
 }

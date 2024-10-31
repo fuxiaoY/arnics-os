@@ -6,7 +6,7 @@
 #include "Assert/usr_assert.h"
 #include "ring/ring.h"
 #include "struct2json/inc/s2j.h"
-
+#include "sfud/inc/sfud.h"
 
 //需适配接口：
 //#include "../thirdPartyPort/fal/inc/fal.h"

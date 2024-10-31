@@ -8,11 +8,17 @@ extern "C" {
 #include "../../common/drivers_common.h"
 
 /* function prototypes -----------------------------------------------*/
+enum SPI_CTL
+{
+  SPI_GETSATATE = 0,
+};
+
+
 extern int spi_open(device_t *self);
 extern int spi_close(device_t *self);
 extern int spi_read(device_t *self,void *buf, size_t count);
 extern int spi_write(device_t *self, void *buf, size_t count);
-
+extern int spi_ctl(device_t *self, int cmd, void *args);
 
 
 #ifdef __cplusplus

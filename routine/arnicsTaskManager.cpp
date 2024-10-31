@@ -1,27 +1,16 @@
 #include "arnicsTaskManager.h"
-#include "../drivers/driversInclude.h"
-
-void init(void)
-{
-    dev_reg("led0",&led0_ds);
-    dev_reg("led1",&led1_ds);
-    dev_reg("uart1",&debug_ds);
-    dev_open(&led0_ds);
-    dev_open(&led1_ds);
-    dev_open(&debug_ds);
-}
+#include "include.h"
 
 /* 外设初始化任务清单 */
 const tTaskFunc initTaskList[] =
 {
-    TASK_FUNC(init),
+    TASK_FUNC(driver_init),
 };
 
-/*运行时配置参数、运行时状态记录预加载*/
+/*预加载*/
 const tTaskFunc preloadTaskList[] =
 {
-
-
+    TASK_FUNC(device_init),
 };
 
 /*外挂设备初始化*/
@@ -44,7 +33,7 @@ void peripheralInit(void)
 }
 DRIVER_INIT("driver", peripheralInit);
 
-// 配置参数、运行时状态记录预载函数
+// 预载函数
 void preLoadInit(void)
 {
     uint8 i;
@@ -72,3 +61,19 @@ void deviceInit(void)
     }
 }
 COMPONENT_INIT("component", deviceInit);
+
+
+void driver_init(void)
+{
+    dev_reg("led0",&led0_ds);
+    dev_open(&led0_ds);
+    dev_reg("led1",&led1_ds);
+    dev_open(&led1_ds);
+    dev_reg("uart1",&debug_ds);
+    dev_open(&debug_ds);
+    test_delay_check();
+}
+void device_init(void)
+{
+    sfud_init();
+}

@@ -15,5 +15,7 @@
 #include "../dataPlat/entry_dataPlat_api.h"
 // 驱动层
 #include "../drivers/driversInclude.h"
+// 接口
+#include "../port/portInclude.h"
 
 #endif

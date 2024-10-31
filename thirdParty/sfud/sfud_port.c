@@ -28,68 +28,50 @@
 #include <stdarg.h>
 #include "../../Inc/projDefine.h"
 #include "inc/sfud.h"
+#include "../../drivers/driversInclude.h"
+#include "../../port/portInclude.h"
 
-#ifndef STM32CHIP
-static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, size_t write_size, uint8_t *read_buf,
-                               size_t read_size) {
-    sfud_err result = SFUD_SUCCESS;
 
-    /**
-     * add your qspi read flash data code
-     */
+typedef struct 
+{
+    device_t* cs_ds;
+    device_t* spi_ds;
+    /* data */
+}w25q_device_t;
 
-    return result;                   
-}
-#else
-#include "stm32l4xx_hal.h"
-#include "gpio.h"
-#include "spi.h"
-#include "iwdg.h"
-
+w25q_device_t w25q_dev = 
+{
+    .cs_ds = &w25q_cs_ds,
+    .spi_ds = &w25q_spi_ds
+};
 
 /* about 100 microsecond delay */
 static void retry_delay_100us(void)
 {
-    uint32_t delay = 2400;
-    while (delay--);
+    Delay_us(100);
 }
 
-/*---接口定义------------------------------------------------------------------------------------*/
-typedef struct
-{
-    SPI_HandleTypeDef *spix;
-    GPIO_TypeDef *cs_gpiox;
-    uint16_t cs_gpio_pin;
-} spi_user_data, *spi_user_data_t;
-/*---------------------------------------------------------------------------------------------*/
 /**
  * SPI write data then read data using STM32L4 HAL Library.
  */
-static spi_user_data spi_user = { .spix = &hspi1, .cs_gpiox = GPIOB, .cs_gpio_pin = GPIO_PIN_0 };
-static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, size_t write_size, uint8_t *read_buf,
-                               size_t read_size) {
+
+static sfud_err spi_write_read(const sfud_spi *spi, 
+                                const uint8_t *write_buf, 
+                                size_t write_size, 
+                                uint8_t *read_buf,
+                                size_t read_size) 
+{
     sfud_err result = SFUD_SUCCESS;
-    spi_user_data_t spi_dev = (spi_user_data_t) spi->user_data;
-    HAL_StatusTypeDef state = HAL_OK;
+    int state = 0;
     int timeout = 0;
-    IWDG_ReloadCounter(); // 喂狗，防止看门狗复位
-    // Check for valid pointers and sizes
-    if (write_size) {
-        SFUD_ASSERT(write_buf);
-    }
-    if (read_size) {
-        SFUD_ASSERT(read_buf);
-    }
 
-    // 选择 SPI 设备
+    w25q_device_t *w25q =  (w25q_device_t *)spi->user_data;
     /* reset cs pin */
-    if (spi_dev->cs_gpiox != NULL)
-        HAL_GPIO_WritePin(spi_dev->cs_gpiox, spi_dev->cs_gpio_pin, GPIO_PIN_RESET);
-
+    dev_ctl(w25q->cs_ds,IO_RESET,NULL);
     if (write_size) {
-        state = HAL_SPI_Transmit(spi_dev->spix, (uint8_t *)write_buf, write_size, 1000);
+        dev_write(w25q->spi_ds,(uint8_t *)write_buf, write_size);
         timeout = 0;
-        while (HAL_SPI_GetState(spi_dev->spix) != HAL_SPI_STATE_READY)
+        while (dev_ctl(w25q->spi_ds,SPI_GETSATATE,NULL) != HAL_SPI_STATE_READY)
         {
             Delay_ms(100);
             if(timeout > 20)
@@ -99,16 +81,14 @@ static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, si
             timeout++;
         }
     }
-
-    if (state != HAL_OK) {
+    if (state != 0) {
         goto __exit;
     }
-
     if (read_size) {
         memset((uint8_t *)read_buf, 0xFF, read_size);
-        state = HAL_SPI_Receive(spi_dev->spix, read_buf, read_size, 1000);
+        state = dev_read(w25q->spi_ds,read_buf,read_size);
         timeout = 0;
-        while (HAL_SPI_GetState(spi_dev->spix) != HAL_SPI_STATE_READY)
+        while (dev_ctl(w25q->spi_ds,SPI_GETSATATE,NULL)!= HAL_SPI_STATE_READY)
         {
             Delay_ms(100);
             if(timeout > 20)
@@ -118,22 +98,20 @@ static sfud_err spi_write_read(const sfud_spi *spi, const uint8_t *write_buf, si
             timeout++;
         }
     }
-
-
     // Check for errors
-    if (state != HAL_OK) {
+    if (state != 0) {
         goto __exit;
     }
 
 __exit:
     // 取消选择 SPI 设备
     /* set cs pin */
-    if (spi_dev->cs_gpiox != NULL)
-        HAL_GPIO_WritePin(spi_dev->cs_gpiox, spi_dev->cs_gpio_pin, GPIO_PIN_SET);
-
+    dev_ctl(w25q->cs_ds,IO_SET,NULL);
     return result;
+
 }
-#endif
+
+
 #ifdef SFUD_USING_QSPI
 /**
  * read flash data by QSPI
@@ -179,15 +157,20 @@ sfud_err sfud_spi_port_init(sfud_flash *flash) {
      *    flash->retry.delay = null;
      *    flash->retry.times = 10000; //Required
      */
+    dev_reg("w25q_cs",w25q_dev.cs_ds);
+    dev_open(w25q_dev.cs_ds);
+    dev_reg("w25q_spi",w25q_dev.spi_ds);
+    dev_open(w25q_dev.spi_ds);
+
     switch (flash->index)
     {
-        case SFUD_W25Q128_DEVICE_INDEX:
+        case SFUD_W25Q64_DEVICE_INDEX:
         {
             /* set the interfaces and data */
             flash->spi.wr = spi_write_read;
             flash->spi.lock = spi_lock;
             flash->spi.unlock = spi_unlock;
-            flash->spi.user_data = &spi_user;
+            flash->spi.user_data = &w25q_dev;
             /* about 100 microsecond delay */
             flash->retry.delay = retry_delay_100us;
             /* adout 60 seconds timeout */

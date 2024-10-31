@@ -28,7 +28,7 @@
 
 #ifndef _SFUD_CFG_H_
 #define _SFUD_CFG_H_
-#include "../../../Inc/projDefine.h"
+#include "../../Inc/projDefine.h"
 #ifdef _USE_DB_DEBUG_MODE
 #define SFUD_DEBUG_MODE
 #endif
@@ -39,12 +39,12 @@
 #define SFUD_USING_FLASH_INFO_TABLE
 
 enum {
-    SFUD_W25Q128_DEVICE_INDEX = 0,
+    SFUD_W25Q64_DEVICE_INDEX = 0,
 };
 
 #define SFUD_FLASH_DEVICE_TABLE                                                      \
 {                                                                                    \
-    [SFUD_W25Q128_DEVICE_INDEX] = {.name = "W25Q128JV", .spi.name = "SPI2"},          \
+    [SFUD_W25Q64_DEVICE_INDEX] = {.name = "W25Q64CV", .spi.name = "SPI1"},          \
 }
 
 //#define SFUD_USING_QSPI

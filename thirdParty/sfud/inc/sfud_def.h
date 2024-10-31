@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <sfud_cfg.h>
+#include "../sfud_cfg.h"
 #include "sfud_flash_def.h"
 
 #ifdef __cplusplus

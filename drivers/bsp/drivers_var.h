@@ -46,7 +46,7 @@ extern spi_t w25q_spi;
     X("led0", &led0, "io_t") \
     X("led1", &led1, "io_t") \
     X("w25q_cs", &w25q_cs, "io_t") \
-    X("w25q_spi", &led1, "spi_t")
+    X("w25q_spi", &w25q_spi, "spi_t")
 
 
 

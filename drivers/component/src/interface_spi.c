@@ -44,3 +44,17 @@ int spi_write(device_t *self, void *buf, size_t count)
     return bsp_spi_write(self->device, buf, count);
 
 }
+int spi_ctl(device_t *self, int cmd, void *args)
+{
+    if(self->ds == 0)
+    {
+        return -1;
+    }
+
+    switch(cmd)
+    {
+        case SPI_GETSATATE:
+        return bsp_spi_state_get(self->device);
+        default: return -1; 
+    }
+}

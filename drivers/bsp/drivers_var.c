@@ -65,7 +65,7 @@ io_t w25q_cs =
     .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
     .GPIO_InitStruct.Pull  = GPIO_NOPULL,
     .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
-    .PinState = GPIO_PIN_RESET
+    .PinState = GPIO_PIN_SET
 };
 spi_t w25q_spi = 
 {
@@ -80,5 +80,5 @@ spi_t w25q_spi =
     .hspi.Init.FirstBit = SPI_FIRSTBIT_MSB,
     .hspi.Init.TIMode = SPI_TIMODE_DISABLE,
     .hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
-    .hspi.Init.CRCPolynomial = 10,
+    .hspi.Init.CRCPolynomial = 7,
 };
