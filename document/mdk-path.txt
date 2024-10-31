@@ -107,11 +107,6 @@
           <GroupName>arnics/port</GroupName>
           <Files>
             <File>
-              <FileName>arnicsPort.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\port\arnicsPort.cpp</FilePath>
-            </File>
-            <File>
               <FileName>delay.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\arnics-os\port\delay.cpp</FilePath>
@@ -270,6 +265,11 @@
               <FileName>interface_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_spi.c</FilePath>
             </File>
           </Files>
         </Group>
