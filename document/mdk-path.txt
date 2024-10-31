@@ -204,6 +204,26 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thiedParty/sfud</GroupName>
+          <Files>
+            <File>
+              <FileName>sfud_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\sfud\sfud_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>sfud.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\sfud\src\sfud.c</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_sfdp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\sfud\src\sfud_sfdp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/department/centerEvent</GroupName>
           <Files>
             <File>
