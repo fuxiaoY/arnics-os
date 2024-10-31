@@ -11,7 +11,7 @@
 #include <fal.h>
 #include <string.h>
 #include <stdlib.h>
-#include "fal_cfg.h"
+#include "../fal_cfg.h"
 
 /* partition magic word */
 #define FAL_PART_MAGIC_WORD         0x45503130

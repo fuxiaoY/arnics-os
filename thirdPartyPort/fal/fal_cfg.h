@@ -10,9 +10,9 @@
 
 #ifndef _FAL_CFG_H_
 #define _FAL_CFG_H_
-#include "ProjDefine.h"
-#include "upgradeManagerDef.h"
-#include "fal_def.h"
+#include "../../../Inc/typedef.h"
+#include "../../../Inc/ProjDefine.h"
+#include "inc/fal_def.h"
 //定义使用SFUD
 #define FAL_USING_SFUD_PORT
 //定义TABLE分区
