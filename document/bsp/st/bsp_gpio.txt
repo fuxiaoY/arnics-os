@@ -1,6 +1,7 @@
 
 
 // .h file
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
 extern void bsp_gpio_init(io_t *io);
 extern void bsp_gpio_close(io_t *io);
 extern void bsp_gpio_set(io_t *io,unsigned int statue);
@@ -8,11 +9,29 @@ extern GPIO_PinState bsp_gpio_get(io_t *io);
 extern void bsp_gpio_toggle(io_t *io);
 extern void bsp_gpio_irq(io_t *io);
 
-
 // .c file
-
 void bsp_gpio_init(io_t *io)
 {
+  if (io->GPIOx == GPIOA) 
+  {
+      __HAL_RCC_GPIOA_CLK_ENABLE();
+  } 
+  else if (io->GPIOx == GPIOB) 
+  {
+      __HAL_RCC_GPIOB_CLK_ENABLE();
+  } 
+  else if (io->GPIOx == GPIOC) 
+  {
+      __HAL_RCC_GPIOC_CLK_ENABLE();
+  } 
+  else if (io->GPIOx == GPIOD) 
+  {
+      __HAL_RCC_GPIOD_CLK_ENABLE();
+  } 
+  else 
+  {
+      // 处理未知的 GPIO 端口
+  }
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   GPIO_InitStruct.Pin = io->GPIO_Pin;

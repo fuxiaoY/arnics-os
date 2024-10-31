@@ -1,4 +1,5 @@
 // .h file
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
 extern void bsp_usart_init(uart_t *dev);
 extern void bsp_usart_close(uart_t *dev);
 extern void bsp_uart_IT_enable(uart_t *dev);
@@ -10,20 +11,6 @@ extern void bsp_uart_irq_ring(uart_t *dev);
 // .c file
 void bsp_usart_init(uart_t *dev)
 {
-  switch(dev->function)
-  {
-    case UART_DEBUG:
-      dev->huart.Instance = USART1;
-      break;
-  }
-
-  dev->huart.Init.BaudRate = dev->baudrate;
-  dev->huart.Init.WordLength = dev->data_bits;
-  dev->huart.Init.StopBits = dev->stop_bits;
-  dev->huart.Init.Parity = dev->parity;
-  dev->huart.Init.Mode = UART_MODE_TX_RX;
-  dev->huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  dev->huart.Init.OverSampling = UART_OVERSAMPLING_16;
   if (HAL_UART_Init(&dev->huart) != HAL_OK)
   {
     Error_Handler();

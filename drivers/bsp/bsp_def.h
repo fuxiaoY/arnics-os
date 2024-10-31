@@ -61,22 +61,11 @@ typedef struct
     X("PinState", io_t, PinState, GPIO_PinState)
 
 
-typedef enum 
-{
-  UART_DEBUG = 0,
-  UART_WAN,
-  UART_LC,
-}UART_FUNCTION;
 
 typedef struct 
 {
     UART_HandleTypeDef huart;
-    int baudrate; 
-    int data_bits; 
-    int stop_bits;
-    int parity; 
     bool dma_mode;
-    UART_FUNCTION function;
     ring_buf_t *ring_rx;
     ring_buf_t *ring_tx;
     unsigned char *rx_buf;
@@ -88,21 +77,28 @@ typedef struct
 // UART 参数映射表的 X-macro
 #define UART_PARAM_MAP_X \
     X("huart", uart_t, huart, UART_HandleTypeDef) \
-    X("baudrate", uart_t, baudrate, int) \
-    X("data_bits", uart_t, data_bits, int) \
-    X("stop_bits", uart_t, stop_bits, int) \
-    X("parity", uart_t, parity, int) \
     X("dma_mode", uart_t, dma_mode, bool) \
-    X("function", uart_t, function, UART_FUNCTION) \
     X("ring_rx", uart_t, ring_rx, ring_buf_t*) \
     X("ring_tx", uart_t, ring_tx, ring_buf_t*) \
     X("rx_buf", uart_t, rx_buf, unsigned char*) \
     X("tx_buf", uart_t, tx_buf, unsigned char*) \
     X("rx_buf_size", uart_t, rx_buf_size, unsigned int) \
     X("tx_buf_size", uart_t, tx_buf_size, unsigned int)
+
+
+typedef struct
+{
+  SPI_HandleTypeDef hspi;
+
+  /* data */
+}spi_t;
+// SPI 参数映射表的 X-macro
+#define SPI_PARAM_MAP_X \
+    X("hspi", spi_t, hspi, SPI_HandleTypeDef) 
+
+
+
 #else
-
-
 #endif
 
 #ifdef __cplusplus

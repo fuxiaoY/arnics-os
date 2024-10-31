@@ -37,10 +37,32 @@ const dev_operations io_ops = {
                         gpio_irq};
 
 /* Lists--- -----------------------------------------------------------*/
+// 使用 X-macro 生成 SPI 参数映射表
+const param_map_t spi_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    SPI_PARAM_MAP_X
+    #undef X
+};
+const size_t spi_param_map_size = sizeof(spi_param_map) / sizeof(param_map_t);
+
+const dev_operations spi_ops = {
+                        spi_open,
+                        spi_close,
+                        spi_read,
+                        spi_write,
+                        NULL,
+                        NULL};
+
+/* Lists--- -----------------------------------------------------------*/
+
+
+
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
     {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),&uart_ops},
     {"io_t", io_param_map, sizeof(io_param_map) / sizeof(param_map_t),&io_ops},
+    {"spi_t", spi_param_map, sizeof(spi_param_map) / sizeof(param_map_t),&spi_ops},
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);

@@ -18,16 +18,20 @@ ring_buf_t debug_rbsend, debug_rbrecv;            /*收发缓冲区管理 ------
 device_t led0_ds; // led0
 device_t led1_ds; // led1
 device_t debug_ds; // debug串口
+device_t w25q_spi_ds; // w25q
 
 // 驱动实例默认值
 uart_t uart1 = 
 {
-    .baudrate = 115200,
-    .data_bits = UART_WORDLENGTH_8B,
-    .stop_bits = UART_STOPBITS_1,
-    .parity = UART_PARITY_NONE,
+    .huart.Instance = USART1,
+    .huart.Init.BaudRate = 115200,
+    .huart.Init.WordLength = UART_WORDLENGTH_8B,
+    .huart.Init.StopBits = UART_STOPBITS_1,
+    .huart.Init.Parity = UART_PARITY_NONE,
+    .huart.Init.Mode = UART_MODE_TX_RX,
+    .huart.Init.HwFlowCtl = UART_HWCONTROL_NONE,
+    .huart.Init.OverSampling = UART_OVERSAMPLING_16,
     .dma_mode = 0,
-    .function = UART_DEBUG,
     .ring_rx = &debug_rbsend,
     .ring_tx = &debug_rbrecv,
     .rx_buf = debug_rxbuf,
@@ -54,5 +58,18 @@ io_t led1 =
     .PinState = GPIO_PIN_RESET
 };
 
-
-
+spi_t w25q_spi = 
+{
+    .hspi.Instance = SPI1,
+    .hspi.Init.Mode = SPI_MODE_MASTER,
+    .hspi.Init.Direction = SPI_DIRECTION_2LINES,
+    .hspi.Init.DataSize = SPI_DATASIZE_8BIT,
+    .hspi.Init.CLKPolarity = SPI_POLARITY_LOW,
+    .hspi.Init.CLKPhase = SPI_PHASE_1EDGE,
+    .hspi.Init.NSS = SPI_NSS_SOFT,
+    .hspi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2,
+    .hspi.Init.FirstBit = SPI_FIRSTBIT_MSB,
+    .hspi.Init.TIMode = SPI_TIMODE_DISABLE,
+    .hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
+    .hspi.Init.CRCPolynomial = 10,
+};
