@@ -9,9 +9,9 @@ extern "C" {
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 
-/*------------------------------------------------------------*/
+
 #ifdef STM32CHIP
-#include "main.h"
+#include "stm32f1xx_hal.h"
 #endif
 
 

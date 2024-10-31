@@ -32,42 +32,31 @@ void bsp_gpio_init(io_t *io)
   {
       // 处理未知的 GPIO 端口
   }
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  GPIO_InitStruct.Pin = io->GPIO_Pin;
-  GPIO_InitStruct.Mode = io->GPIO_Mode;
-  GPIO_InitStruct.Pull = io->GPIO_Pull;
-  GPIO_InitStruct.Speed = io->GPIO_Speed;
-  HAL_GPIO_Init(io->GPIOx, &GPIO_InitStruct);
+  HAL_GPIO_Init(io->GPIOx, &io->GPIO_InitStruct);
 
-  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Pin, io->PinState);
+  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_InitStruct.Pin, io->PinState);
 
 }
 void bsp_gpio_close(io_t *io)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  GPIO_InitStruct.Pin = io->GPIO_Pin;
-  GPIO_InitStruct.Mode = io->GPIO_Mode;
-  GPIO_InitStruct.Pull = io->GPIO_Pull;
-  GPIO_InitStruct.Speed = io->GPIO_Speed;
-  HAL_GPIO_Init(io->GPIOx, &GPIO_InitStruct);
+  HAL_GPIO_Init(io->GPIOx, &io->GPIO_InitStruct);
 
 }
 void bsp_gpio_set(io_t *io,unsigned int statue)
 {
-  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_Pin, (GPIO_PinState)statue);
+  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_InitStruct.Pin, (GPIO_PinState)statue);
 }
 GPIO_PinState bsp_gpio_get(io_t *io)
 {
-  return HAL_GPIO_ReadPin(io->GPIOx, io->GPIO_Pin);
+  return HAL_GPIO_ReadPin(io->GPIOx, io->GPIO_InitStruct.Pin);
 }
 
 void bsp_gpio_toggle(io_t *io)
 {
-  HAL_GPIO_TogglePin(io->GPIOx, io->GPIO_Pin);
+  HAL_GPIO_TogglePin(io->GPIOx, io->GPIO_InitStruct.Pin);
 }
 void bsp_gpio_irq(io_t *io)
 {
-  HAL_GPIO_EXTI_IRQHandler(io->GPIO_Pin);
+  HAL_GPIO_EXTI_IRQHandler(io->GPIO_InitStruct.Pin);
 }

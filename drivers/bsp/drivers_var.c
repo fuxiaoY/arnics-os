@@ -18,6 +18,7 @@ ring_buf_t debug_rbsend, debug_rbrecv;            /*收发缓冲区管理 ------
 device_t led0_ds; // led0
 device_t led1_ds; // led1
 device_t debug_ds; // debug串口
+device_t w25q_cs_ds; // w25q cs
 device_t w25q_spi_ds; // w25q
 
 // 驱动实例默认值
@@ -42,22 +43,30 @@ uart_t uart1 =
 io_t led0 = 
 {
     .GPIOx = GPIOA,
-    .GPIO_Pin = GPIO_PIN_8,
-    .GPIO_Mode = GPIO_MODE_OUTPUT_PP,
-    .GPIO_Pull = GPIO_NOPULL,
-    .GPIO_Speed = GPIO_SPEED_FREQ_HIGH,
+    .GPIO_InitStruct.Pin = GPIO_PIN_8,
+    .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .GPIO_InitStruct.Pull = GPIO_NOPULL,
+    .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
     .PinState = GPIO_PIN_RESET
 };
 io_t led1 = 
 {
     .GPIOx = GPIOD,
-    .GPIO_Pin = GPIO_PIN_2,
-    .GPIO_Mode = GPIO_MODE_OUTPUT_PP,
-    .GPIO_Pull = GPIO_NOPULL,
-    .GPIO_Speed = GPIO_SPEED_FREQ_HIGH,
+    .GPIO_InitStruct.Pin = GPIO_PIN_2,
+    .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .GPIO_InitStruct.Pull = GPIO_NOPULL,
+    .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
     .PinState = GPIO_PIN_RESET
 };
-
+io_t w25q_cs = 
+{
+    .GPIOx = GPIOA,
+    .GPIO_InitStruct.Pin = GPIO_PIN_2,
+    .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+    .PinState = GPIO_PIN_RESET
+};
 spi_t w25q_spi = 
 {
     .hspi.Instance = SPI1,
