@@ -7,6 +7,7 @@ extern "C" {
 #include "interface_gpio.h"
 #include "interface_uart.h"
 #include "interface_spi.h"
+#include "interface_flash.h"
 #ifdef __cplusplus
 }
 #endif

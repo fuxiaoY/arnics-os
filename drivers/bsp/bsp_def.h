@@ -108,6 +108,17 @@ typedef struct
     X("CRCCalculation", spi_t, hspi.Init.CRCCalculation, uint32_t) \
     X("CRCPolynomial", spi_t, hspi.Init.CRCPolynomial, uint32_t)
 
+typedef struct 
+{
+    FLASH_EraseInitTypeDef EraseInitStruct;
+}flash_t;
+// 内部flash 参数映射表的 X-macro
+#define FLASH_PARAM_MAP_X \
+    X("EraseInitStruct", flash_t, EraseInitStruct, FLASH_EraseInitTypeDef) \
+    X("TypeErase", flash_t, EraseInitStruct.TypeErase, uint32_t) \
+    X("Banks", flash_t, EraseInitStruct.Banks, uint32_t) \
+    X("PageAddress", flash_t, EraseInitStruct.PageAddress, uint32_t) \
+    X("NbPages", flash_t, EraseInitStruct.NbPages, uint32_t) 
 
 #ifdef __cplusplus
 }

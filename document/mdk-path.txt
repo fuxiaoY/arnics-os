@@ -291,6 +291,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_spi.c</FilePath>
             </File>
+            <File>
+              <FileName>interface_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
