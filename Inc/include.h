@@ -13,6 +13,7 @@
 
 // 数据平台
 #include "../dataPlat/entry_dataPlat_api.h"
-
+// 驱动层
+#include "../drivers/driversInclude.h"
 
 #endif

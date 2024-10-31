@@ -1,39 +1,10 @@
 #include "delay.h"
 #ifdef STM32CHIP
-static void DelayDisableSysTick(void)
-{
-  // 禁用 SysTick 中断
-  SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
-  // 关闭 SysTick
-  SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
-}
-
-static void DelayEnableSysTick(void)
-{
-  // 配置 SysTick 为 1 kHz，即每毫秒产生一次中断
-  if (HAL_SYSTICK_Config(SystemCoreClock / 1000) != HAL_OK)
-  {
-
-  }
-  // 使能 SysTick 中断
-  SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-  // 使能 SysTick
-  SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;
-}
-
 void Delay_us(uint32_t nus)
 {
     uint32_t ticks;
     uint32_t told, tnow, reload, tcnt = 0;
 
-    // 检查 SysTick 是否已经启用
-    bool systick_enabled = (0x0001 & (SysTick->CTRL)) != 0;
-
-    // 如果 SysTick 没有启用，则启动 SysTick 定时器
-    if (!systick_enabled)
-    {
-        DelayEnableSysTick();
-    }
 
     reload = SysTick->LOAD; // 获取重装载寄存器值
     ticks = nus * (SystemCoreClock / 1000000); // 计算需要的计数值
@@ -55,26 +26,11 @@ void Delay_us(uint32_t nus)
             if (tcnt >= ticks) break; // 时间超过/等于要延迟的时间,则退出.
         }
     }
-
-    // 如果 SysTick 在进入函数之前是禁用的，则禁用 SysTick
-    if (!systick_enabled)
-    {
-        DelayDisableSysTick();
-    }
 }
 void Delay_ms(uint32_t ms)
 {
     uint32_t ticks;
     uint32_t told, tnow, reload, tcnt = 0;
-
-    // 检查 SysTick 是否已经启用
-    bool systick_enabled = (0x0001 & (SysTick->CTRL)) != 0;
-
-    // 如果 SysTick 没有启用，则启动 SysTick 定时器
-    if (!systick_enabled)
-    {
-        DelayEnableSysTick();
-    }
 
     reload = SysTick->LOAD; // 获取重装载寄存器值
     ticks = ms * (SystemCoreClock / 1000); // 计算需要的计数值
@@ -97,11 +53,6 @@ void Delay_ms(uint32_t ms)
         }
     }
 
-    // 如果 SysTick 在进入函数之前是禁用的，则禁用 SysTick
-    if (!systick_enabled)
-    {
-        DelayDisableSysTick();
-    }
 }
 #else
 void Delay1us()     //@80MHz
@@ -148,7 +99,7 @@ void Delay_us(uint32_t nus)
 
 
 #include "../common/TaskTimer.h"
-void test_delay_check() {
+void test_delay_check(void) {
     uint32_t start_tick = arnics_getTick();
     Delay_ms(10); // 延时10ms
     uint32_t end_tick = arnics_getTick();
