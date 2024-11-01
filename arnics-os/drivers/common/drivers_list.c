@@ -67,8 +67,8 @@ const param_map_t flash_param_map[] = {
 const size_t flash_param_map_size = sizeof(flash_param_map) / sizeof(param_map_t);
 
 const dev_operations flash_ops = {
-                        flash_open,
-                        flash_close,
+                        NULL,
+                        NULL,
                         flash_read,
                         flash_write,
                         flash_ctl,

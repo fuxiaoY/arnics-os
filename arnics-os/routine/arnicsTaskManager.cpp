@@ -10,7 +10,7 @@ const tTaskFunc initTaskList[] =
 /*预加载*/
 const tTaskFunc preloadTaskList[] =
 {
-    TASK_FUNC(device_init),
+    TASK_FUNC(third_init),
 };
 
 /*外挂设备初始化*/
@@ -67,13 +67,14 @@ void driver_init(void)
 {
     dev_reg("led0",&led0_ds);
     dev_open(&led0_ds);
+    
     dev_reg("led1",&led1_ds);
     dev_open(&led1_ds);
     dev_reg("uart1",&debug_ds);
     dev_open(&debug_ds);
     test_delay_check();
 }
-void device_init(void)
+void third_init(void)
 {
-    sfud_init();
+    thirdPartyInit();
 }

@@ -18,5 +18,6 @@ void unity_test(void)
 
 void thirdPartyInit(void)
 {
-    unity_test();
+   unity_test();
+   fal_init();
 }

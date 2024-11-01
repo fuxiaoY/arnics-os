@@ -110,7 +110,14 @@ typedef struct
 
 typedef struct 
 {
+    uint32_t offset;
+    size_t size;
+}flash_ctl_t;
+
+typedef struct 
+{
     FLASH_EraseInitTypeDef EraseInitStruct;
+    uint32_t offset;
 }flash_t;
 // 内部flash 参数映射表的 X-macro
 #define FLASH_PARAM_MAP_X \
@@ -118,7 +125,8 @@ typedef struct
     X("TypeErase", flash_t, EraseInitStruct.TypeErase, uint32_t) \
     X("Banks", flash_t, EraseInitStruct.Banks, uint32_t) \
     X("PageAddress", flash_t, EraseInitStruct.PageAddress, uint32_t) \
-    X("NbPages", flash_t, EraseInitStruct.NbPages, uint32_t) 
+    X("NbPages", flash_t, EraseInitStruct.NbPages, uint32_t) \
+    X("offset", flash_t, offset, uint32_t) 
 
 #ifdef __cplusplus
 }

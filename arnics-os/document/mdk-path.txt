@@ -224,6 +224,36 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thirdParty/fal</GroupName>
+          <Files>
+            <File>
+              <FileName>fal_flash_mcu_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\fal\fal_flash_mcu_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash_sfud_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\fal\fal_flash_sfud_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\fal\src\fal.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\fal\src\fal_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>fal_partition.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\fal\src\fal_partition.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/department/centerEvent</GroupName>
           <Files>
             <File>
@@ -305,6 +335,16 @@
               <FileName>drivers_var.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\bsp\drivers_var.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/thirdParty</GroupName>
+          <Files>
+            <File>
+              <FileName>thirdPartyInit.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\thirdParty\thirdPartyInit.cpp</FilePath>
             </File>
           </Files>
         </Group>

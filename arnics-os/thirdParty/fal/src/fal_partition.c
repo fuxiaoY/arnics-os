@@ -8,7 +8,7 @@
  * 2018-05-17     armink       the first version
  */
 
-#include <fal.h>
+#include "../inc/fal.h"
 #include <string.h>
 #include <stdlib.h>
 #include "../fal_cfg.h"
@@ -47,7 +47,7 @@ struct part_flash_info
     #error not supported tool chain
 #endif /* __CC_ARM */
 //USED static const struct fal_partition partition_table_def[] SECTION("FalPartTable") = FAL_PART_TABLE;
-static const struct fal_partition partition_table_def[] = FAL_PART_TABLE;
+ static const struct fal_partition partition_table_def[] = FAL_PART_TABLE;
 static const struct fal_partition *partition_table = NULL;
 /* partition and flash object information cache table */
 static struct part_flash_info part_flash_cache[sizeof(partition_table_def) / sizeof(partition_table_def[0])] = { 0 };

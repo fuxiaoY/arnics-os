@@ -21,8 +21,19 @@
 // +-------------------------------------------------+
 // | 平台             | STM32CHIP      | STM32系列 |
 // +-------------------------------------------------+
-#define STM32CHIP
 
+// +-------------------------------------------------+
+//  编程粒度
+//  nor flash:   1 bit
+//  stm32f2/f4:  8 bit
+//  stm32f1:     32 bit
+//  stm32l4:     64 bit
+#define MCU_GRAN 32
+// 芯片容量 （KB）
+#define _TOTAL_FLASH_SIZE_ 256
+
+#define STM32CHIP
+#define MCU_START_ADDR 0x08000000
 // +-------------------------------------------------+
 // | 外部数据存储     | _EXT_DATAFLASH_W25Q64_ | 启用外部 DataFlash 存储 |
 // +-------------------------------------------------+
@@ -89,15 +100,29 @@
 #endif
 
 
-// 定义片外 Flash 地址的宏
-#define DATAFLASH_SIZE_IDENTIFY             0x1000   // 4 KB
-#define DATAFLASH_SIZE_BOOTLOAD             0xA000   // 40 KB
-#define DATAFLASH_SIZE_APP                  0x33000  // 204 KB
 
-#define DATAFLASH_SIZE_DB                   0xA000  // 40KB
-#define DATAFLASH_SIZE_LOG                  0x64000  // 400KB
+// 定义片内 Flash 地址的宏
+#define CODEFLASH_SIZE_BOOTLOAD             0xA000   // 40 KB
+#define CODEFLASH_SIZE_APP                  0x33000  // 204 KB
+#define PARTITION_SIZE_TEST                 0X1000 //4KB
+#define PARTITION_SIZE_RFCFG                0X1800 //6KB
+#define PARTITION_SIZE_RTSTAT               0X800 //2KB
 
 
+
+#define CODEFLASH_IMAGE_ADDR_BOOTLOAD_OFFSET               0x00
+// APP固件地址, 起始地址: 0x15000, 大小: 204 KB
+#define CODEFLASH_IMAGE_ADDR_APP_OFFSET                    (CODEFLASH_SIZE_BOOTLOAD)
+// 测试分区, 起始地址: 0x48000, 大小: 4 KB
+#define CODEFLASH_IMAGE_ADDR_TEST_OFFSET                   (CODEFLASH_IMAGE_ADDR_APP_OFFSET  + CODEFLASH_SIZE_APP)
+// RF配置分区, 起始地址: 0x49000, 大小: 6 KB
+#define CODEFLASH_IMAGE_ADDR_RFCFG_OFFSET                  (CODEFLASH_IMAGE_ADDR_TEST_OFFSET  + PARTITION_SIZE_TEST)
+// 实时状态分区, 起始地址: 0x4A800, 大小: 2 KB
+#define CODEFLASH_IMAGE_ADDR_RTSTAT                        (CODEFLASH_IMAGE_ADDR_RFCFG_OFFSET  + PARTITION_SIZE_RFCFG)
+
+
+
+//定义片外 Flash 地址名称的宏
 #define PARTITION_NAME_ONCHIP_BOOTLOADER   "bootloader"
 #define PARTITION_NAME_ONCHIP_APP          "app"
 #define PARTITION_NAME_ONCHIP_TEST         "test"
@@ -113,34 +138,26 @@
 #define PARTITION_NAME_FW_APP_A               "fw_app_a"
 #define PARTITION_NAME_FW_IDENTIFER_APP_B     "fw_identifer_app_b"
 #define PARTITION_NAME_FW_APP_B               "fw_app_b"
-/*
-BootLoader A Identify Address: 0x000000
-BootLoader A Address: 0x001000
-BootLoader B Identify Address: 0x00B000
-BootLoader B Address: 0x00C000
-APP A Identify Address: 0x016000
-APP A Address: 0x017000
-APP B Identify Address: 0x04A000
-APP B Address: 0x04B000
-DB Address: 0x07E000
-Log Address: 0x088000
-Max DataFlash Address: 0x7FFFFF
-*/
 
+// 定义片外 Flash 地址的宏
+#define DATAFLASH_SIZE_DB                   0xA000  // 40KB
+#define DATAFLASH_SIZE_LOG                  0x64000  // 400KB
+
+#define DATAFLASH_SIZE_IDENTIFY             0x1000   // 4 KB
 // BootLoader固件地址A, 起始地址(含IDENTIFY): , 数据部分起始地址: , 大小: 40 KB
 #define DATAFLASH_IMAGE_ADDR_BOOTLOAD_A_IDENTIFY    0x00000
 #define DATAFLASH_IMAGE_ADDR_BOOTLOAD_A             (DATAFLASH_IMAGE_ADDR_BOOTLOAD_A_IDENTIFY + DATAFLASH_SIZE_IDENTIFY)
 
 // BootLoader固件地址B, 起始地址(含IDENTIFY): , 数据部分起始地址: , 大小: 40 KB
-#define DATAFLASH_IMAGE_ADDR_BOOTLOAD_B_IDENTIFY    (DATAFLASH_IMAGE_ADDR_BOOTLOAD_A + DATAFLASH_SIZE_BOOTLOAD)
+#define DATAFLASH_IMAGE_ADDR_BOOTLOAD_B_IDENTIFY    (DATAFLASH_IMAGE_ADDR_BOOTLOAD_A + CODEFLASH_SIZE_BOOTLOAD)
 #define DATAFLASH_IMAGE_ADDR_BOOTLOAD_B             (DATAFLASH_IMAGE_ADDR_BOOTLOAD_B_IDENTIFY + DATAFLASH_SIZE_IDENTIFY)
 
 // APP固件地址A, 起始地址(含IDENTIFY): , 数据部分起始地址: , 大小: 120 KB
-#define DATAFLASH_IMAGE_ADDR_APP_A_IDENTIFY         (DATAFLASH_IMAGE_ADDR_BOOTLOAD_B + DATAFLASH_SIZE_BOOTLOAD)
+#define DATAFLASH_IMAGE_ADDR_APP_A_IDENTIFY         (DATAFLASH_IMAGE_ADDR_BOOTLOAD_B + CODEFLASH_SIZE_BOOTLOAD)
 #define DATAFLASH_IMAGE_ADDR_APP_A                  (DATAFLASH_IMAGE_ADDR_APP_A_IDENTIFY + DATAFLASH_SIZE_IDENTIFY)
 
 // APP固件地址B, 起始地址(含IDENTIFY): , 数据部分起始地址: , 大小: 120 KB
-#define DATAFLASH_IMAGE_ADDR_APP_B_IDENTIFY         (DATAFLASH_IMAGE_ADDR_APP_A + DATAFLASH_SIZE_APP)
+#define DATAFLASH_IMAGE_ADDR_APP_B_IDENTIFY         (DATAFLASH_IMAGE_ADDR_APP_A + CODEFLASH_SIZE_APP)
 #define DATAFLASH_IMAGE_ADDR_APP_B                  (DATAFLASH_IMAGE_ADDR_APP_B_IDENTIFY + DATAFLASH_SIZE_IDENTIFY)
 
 // 日志存储地址, 起始地址(含IDENTIFY, 此处假设无单独IDENTIFY部分): , 大小: 50 KB

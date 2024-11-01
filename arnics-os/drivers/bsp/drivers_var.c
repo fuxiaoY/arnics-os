@@ -20,7 +20,7 @@ device_t led1_ds; // led1
 device_t debug_ds; // debug串口
 device_t w25q_cs_ds; // w25q cs
 device_t w25q_spi_ds; // w25q
-
+device_t mcuflash_ds; // mcuflash
 // 驱动实例默认值
 uart_t uart1 = 
 {
@@ -80,5 +80,13 @@ spi_t w25q_spi =
     .hspi.Init.FirstBit = SPI_FIRSTBIT_MSB,
     .hspi.Init.TIMode = SPI_TIMODE_DISABLE,
     .hspi.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
-    .hspi.Init.CRCPolynomial = 7,
+    .hspi.Init.CRCPolynomial = 7
 };
+
+flash_t mcu_flash = 
+{
+    .EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES,
+    .EraseInitStruct.Banks = FLASH_BANK_1,
+    .EraseInitStruct.NbPages = 1
+};
+

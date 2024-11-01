@@ -8,7 +8,7 @@
  * 2018-05-17     armink       the first version
  */
 
-#include <fal.h>
+#include "../inc/fal.h"
 #include <string.h>
 
 /* flash device table, must defined by user */

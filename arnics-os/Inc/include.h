@@ -6,8 +6,6 @@
 // 内核
 #include "../core/coreInclude.h"
 #include "../common/commonInclude.h"
-// 三方组件
-#include "../thirdParty/thirdPartyInclude.h"
 // RTOS
 #include "../rtosInterface/rtosInclude.h"
 
@@ -17,5 +15,6 @@
 #include "../drivers/driversInclude.h"
 // 接口
 #include "../port/portInclude.h"
-
+// 三方组件
+#include "../thirdParty/thirdPartyInclude.h"
 #endif

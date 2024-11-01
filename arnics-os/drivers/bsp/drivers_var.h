@@ -30,6 +30,7 @@ extern device_t led1_ds; // led1
 extern device_t w25q_cs_ds;
 extern device_t w25q_spi_ds; // w25q
 extern device_t debug_ds; // debug串口
+extern device_t mcuflash_ds; // mcu flash
 
 // 驱动实例
 extern uart_t uart1;
@@ -37,6 +38,7 @@ extern io_t led0;
 extern io_t led1;
 extern io_t w25q_cs;
 extern spi_t w25q_spi;
+extern flash_t mcu_flash;
 /* Lists--- -----------------------------------------------------------*/
 // 设备总表的 X-macro
 // {设备名称（可任意），设备实例，设备类型结构体名称}
@@ -46,7 +48,8 @@ extern spi_t w25q_spi;
     X("led0", &led0, "io_t") \
     X("led1", &led1, "io_t") \
     X("w25q_cs", &w25q_cs, "io_t") \
-    X("w25q_spi", &w25q_spi, "spi_t")
+    X("w25q_spi", &w25q_spi, "spi_t") \
+    X("mcu_flash", &mcu_flash, "flash_t")
 
 
 
