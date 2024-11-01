@@ -42,11 +42,11 @@
 
 // +-------------------------------------------------+
 // | 组件             | _USE_USERASSERT_    | 启用断言机制 |
-// |                  | ULOG_ENABLED        | 启用日志 |
+// |                  | _ULOG_ENABLED_        | 启用日志 |
 // |                  | _USE_RING_          | 启用环形缓冲区 |
 // +-------------------------------------------------+
 #define _USE_USERASSERT_
-#define ULOG_ENABLED
+#define _ULOG_ENABLED_
 #define _USE_RING_
 // +-------------------------------------------------+
 // | 业务功能           | _USE_CONSOLE_       | 启用控制台功能 |

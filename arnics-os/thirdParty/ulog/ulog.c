@@ -31,7 +31,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ulog.h"
 
-#ifdef ULOG_ENABLED  // whole file...
+#ifdef _ULOG_ENABLED_  // whole file...
 
 extern BOOL FREERTOS_INIT_ISDONE;
 // =============================================================================
@@ -126,4 +126,4 @@ void ulog_message(ulog_level_t severity, const char *fmt, ...) {
 // =============================================================================
 // private code
 
-#endif  // #ifdef ULOG_ENABLED
+#endif  // #ifdef _ULOG_ENABLED_
