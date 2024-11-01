@@ -1,4 +1,4 @@
-        <Group>
+       <Group>
           <GroupName>arnics/common</GroupName>
           <Files>
             <File>
@@ -254,41 +254,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>arnics/department/centerEvent</GroupName>
-          <Files>
-            <File>
-              <FileName>entry_event_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerEvent\entry_event_api.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>eventCore.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventCore.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>eventList.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventList.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>arnics/department/centerBusiness</GroupName>
-          <Files>
-            <File>
-              <FileName>business_process.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerBusiness\business_process.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>entry_business_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerBusiness\entry_business_api.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>arnics/drivers/common</GroupName>
           <Files>
             <File>
@@ -345,6 +310,56 @@
               <FileName>thirdPartyInit.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\arnics-os\thirdParty\thirdPartyInit.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/department/centerEvent</GroupName>
+          <Files>
+            <File>
+              <FileName>entry_event_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\entry_event_api.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>eventCore.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventCore.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>eventList.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventList.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/department/centerBusiness</GroupName>
+          <Files>
+            <File>
+              <FileName>business_process.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerBusiness\business_process.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>entry_business_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerBusiness\entry_business_api.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/department/centerConsole</GroupName>
+          <Files>
+            <File>
+              <FileName>console_process.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerConsole\console_process.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>entry_console_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerConsole\entry_console_api.cpp</FilePath>
             </File>
           </Files>
         </Group>

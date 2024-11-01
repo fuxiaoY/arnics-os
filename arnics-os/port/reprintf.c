@@ -1,8 +1,9 @@
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
 #include "arnicsPort.h"
-#ifdef STM32CHIP
 #include "../drivers/driversInclude.h"
+#ifdef STM32CHIP
+
 /*
 今天我用到RTX里面使用printf ，发现程序死掉了
 

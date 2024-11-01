@@ -6,6 +6,7 @@
 #include "rtosPort.h"
 #include "../dePartment/centerEvent/entry_event_api.h"
 #include "../dePartment/centerBusiness/entry_business_api.h"
+#include "../dePartment/centerConsole/entry_console_api.h"
 /* ---------------------------------休眠相关 -----------------------------------------------*/
 /**
  * @func StartConsleTask
@@ -36,7 +37,8 @@ void StartConsleTask(void const *argument)
 
 while(1)
 {
-    rtosThreadDelay(100);
+  console_process();
+  rtosThreadDelay(100);
 }
 }
 
