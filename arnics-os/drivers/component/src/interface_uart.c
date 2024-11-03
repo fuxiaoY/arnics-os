@@ -66,6 +66,17 @@ int uart_write(device_t *self, void *buf, size_t count)
 
 int uart_ctl(device_t *self, int cmd, void *args)
 {
+    if(self->ds == 0)
+    {
+        return -1;
+    }  
+    switch(cmd)
+    {
+        case UART_DSEND:
+        return bsp_uart_dirct_send(self->device,args);
+        default: return -1; 
+    }
+
     return 0;
 }
 void uart_irq(device_t *self)

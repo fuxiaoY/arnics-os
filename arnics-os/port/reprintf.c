@@ -41,7 +41,10 @@ void _sys_exit(int x) {
 // 重定义 _ttywrch 函数
 int _ttywrch(int ch) {
     // 实现你的输出逻辑，例如通过 UART 发送字符
-    dev_write(&debug_ds, &ch, 1);
+    uart_dirct_t bufcache = {0};
+    bufcache.buf = &ch;
+    bufcache.size = 1;
+    dev_ctl(&debug_ds, UART_DSEND, &bufcache);
     return ch;
 }
 

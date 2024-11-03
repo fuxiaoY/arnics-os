@@ -8,6 +8,13 @@ extern "C" {
 #include "../../common/drivers_common.h"
 
 /* function prototypes -----------------------------------------------*/
+
+enum UART_CTL
+{
+  UART_DSEND = 0,
+};
+
+
 extern int uart_open(device_t *self);
 extern int uart_close(device_t *self);
 extern int uart_read(device_t *self,void *buf, size_t count);

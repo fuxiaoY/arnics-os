@@ -59,6 +59,11 @@ typedef struct
 
 typedef struct 
 {
+    uint8_t *buf;
+    size_t size;
+}uart_dirct_t;
+typedef struct 
+{
     UART_HandleTypeDef huart;
     bool dma_mode;
     ring_buf_t *ring_rx;
