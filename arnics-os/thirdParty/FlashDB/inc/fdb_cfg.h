@@ -11,7 +11,7 @@
 
 #ifndef _FDB_CFG_H_
 #define _FDB_CFG_H_
-#include "../../Inc/projDefine.h"
+#include "../../../Inc/projDefine.h"
 
 /* using KVDB feature */
 #define FDB_USING_KVDB
