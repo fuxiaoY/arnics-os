@@ -52,7 +52,7 @@ static void retry_delay_1ms(void)
 }
 
 /**
- * SPI write data then read data using STM32L4 HAL Library.
+ * SPI write data then read data using HAL Library.
  */
 
 static sfud_err spi_write_read(const sfud_spi *spi, 
