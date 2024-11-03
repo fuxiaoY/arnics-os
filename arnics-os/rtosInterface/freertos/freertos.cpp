@@ -44,17 +44,17 @@ osThreadId eventTaskHandle;
 osThreadId sleepTaskHandle;
 
 //消息中心队列
-QueueHandle_t eventosReceiveQueue;
-QueueHandle_t eventosSendQueue;
+QueueHandle_t eventosReqQueue;
+QueueHandle_t eventosRspQueue;
 //媒体中心队列
-QueueHandle_t MediaReceiveQueue;
-QueueHandle_t MediaSendQueue;
+QueueHandle_t MediaReqQueue;
+QueueHandle_t MediaRspQueue;
 //行政中心队列
-QueueHandle_t adReceiveQueue;
-QueueHandle_t adSendQueue;
+QueueHandle_t adReqQueue;
+QueueHandle_t adRspQueue;
 
 // 消息中心信号量
-SemaphoreHandle_t eventosSendQueue_xSemaphore; //读消息中心队列锁
+SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
 SemaphoreHandle_t eventosID_mutex;   //消息ID锁
 //sfud锁
 SemaphoreHandle_t flashDB_mutex;  
@@ -144,7 +144,7 @@ void CPU_Task(void const *argument)
 void initSemaphore() 
 {
     // Create the semaphore
-    eventosSendQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
+    eventosRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
     eventosID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
     flashDB_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
 }
@@ -156,14 +156,14 @@ void initSemaphore()
 
 void initQueue() 
 {
-    eventosReceiveQueue = xQueueCreate(3, sizeof(Message_t));  // 创建一个可以存储 3 个 Message_t 类型消息的队列
-    eventosSendQueue = xQueueCreate(3, sizeof(Message_t));     // 创建一个可以存储 3 个 Message_t 类型消息的队列
+    eventosReqQueue = xQueueCreate(3, sizeof(Message_t));  // 创建一个可以存储 3 个 Message_t 类型消息的队列
+    eventosRspQueue = xQueueCreate(3, sizeof(Message_t));     // 创建一个可以存储 3 个 Message_t 类型消息的队列
 
-    MediaReceiveQueue = xQueueCreate(3, sizeof(MediaMessage_t));  // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列
-    MediaSendQueue = xQueueCreate(3, sizeof(MediaMessage_t));     // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列  
+    MediaReqQueue = xQueueCreate(3, sizeof(MediaMessage_t));  // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列
+    MediaRspQueue = xQueueCreate(3, sizeof(MediaMessage_t));     // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列  
 
-    adReceiveQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
-    adReceiveQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
+    adReqQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
+    adReqQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
 }
 /**
   * @brief  FreeRTOS initialization

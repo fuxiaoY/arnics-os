@@ -122,7 +122,7 @@ _WEAK void onWaittingOutMessage()
         eventosWantSleep = TRUE; // 现在提休眠申请
         ULOG_DEBUG("eventCenter:Waiting for Message...");
         ULOG_DEBUG("-----------------END------------------------");
-        if (true == rtosEventQueueReceive(&msg,BLOCK_DELAY))
+        if (true == rtosEventosGetMsg(&msg,BLOCK_DELAY))
         {
             eventosWantSleep = FALSE; // 撤销休眠申请
             ID_Ts = msg.ID_Ts;        // 记录消息ID
@@ -172,10 +172,10 @@ _WEAK void onResetState()
         if (needRsp)
         {
             mesg_cache.ID_Ts = ID_Ts;
-            if (rtosEventQueueSend(&msg, 500)) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
+            if (rtosEventosSendMsg(&msg, 500)) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
             {
                 // 发送成功 一个状态结束
-                ULOG_DEBUG("Message sent eventosSendQueue succeed! ID=%d", msg.ID_Ts);
+                ULOG_DEBUG("Message sent eventosRspQueue succeed! ID=%d", msg.ID_Ts);
                 ID_Ts = 0; // 清除消息ID，代表消息已发送
                 memset(&mesg_cache, 0, sizeof(Message_t));
                 CLR_EVENT_FLAG_ALL(EVENT_FLAG);
@@ -227,7 +227,7 @@ uint32_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait)
     }
     memcpy(msg.buf, eventflag, sizeof(uint32_t));
     // 等待时间为wait
-    if (rtosEventQueueReq(&msg, wait) == true)
+    if (rtosDeliverMsgToEventos(&msg, wait) == true)
     {
         ULOG_DEBUG("Message:needSample sent succeed! ID=%d",msg.ID_Ts);
         return msg.ID_Ts;
@@ -286,7 +286,7 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait)
         // 查找并取出属于自己的消息
         for (uint32_t i = 0; i < numMessages; i++)
         {
-            receiveStatus = rtosEventQueueTake( &receivedMsg, BLOCK_DELAY);
+            receiveStatus = rtosTakeMsgFromEventos( &receivedMsg, BLOCK_DELAY);
             if (receiveStatus == true)
             {
                 if (receivedMsg.ID_Ts == ID)
@@ -298,7 +298,7 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait)
                 else
                 {
                     // 如果不是自己的消息，重新放回队列
-                    rtosEventQueueSend( &receivedMsg, BLOCK_DELAY);
+                    rtosEventosSendMsg( &receivedMsg, BLOCK_DELAY);
                 }
             }
             else

@@ -2,10 +2,10 @@
 #undef rtosThreadDelay
 #undef rtosTaskSuspendAll
 #undef rtosTaskResumeAll
-#undef rtosEventQueueReceive
-#undef rtosEventQueueSend
-#undef rtosEventQueueTake
-#undef rtosEventQueueReq
+#undef rtosEventosGetMsg
+#undef rtosEventosSendMsg
+#undef rtosTakeMsgFromEventos
+#undef rtosDeliverMsgToEventos
 #undef TakeEventosMsgQueueMutex
 #undef ReleaseEventosMsgQueueMutex
 #undef TakeEventosMutex
@@ -17,14 +17,14 @@
 __attribute__((section("._entry_rtos_api")))
 const tRTOSEntry entry_rtos_list =
 {
-    #undef rtosEventQueueReceive
-    INIT_MEMBER(rtosEventQueueReceive),
-    #undef rtosEventQueueSend
-    INIT_MEMBER(rtosEventQueueSend),
-    #undef rtosEventQueueTake
-    INIT_MEMBER(rtosEventQueueTake),
-    #undef rtosEventQueueReq
-    INIT_MEMBER(rtosEventQueueReq),
+    #undef rtosEventosGetMsg
+    INIT_MEMBER(rtosEventosGetMsg),
+    #undef rtosEventosSendMsg
+    INIT_MEMBER(rtosEventosSendMsg),
+    #undef rtosTakeMsgFromEventos
+    INIT_MEMBER(rtosTakeMsgFromEventos),
+    #undef rtosDeliverMsgToEventos
+    INIT_MEMBER(rtosDeliverMsgToEventos),
     #undef rtosThreadDelay
     INIT_MEMBER(rtosThreadDelay),
     #undef TakeEventosMsgQueueMutex

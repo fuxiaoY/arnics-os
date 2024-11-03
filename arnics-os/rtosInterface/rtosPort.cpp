@@ -4,17 +4,17 @@
 
 
 //消息中心队列  
-extern QueueHandle_t eventosReceiveQueue;
-extern QueueHandle_t eventosSendQueue;
+extern QueueHandle_t eventosReqQueue;
+extern QueueHandle_t eventosRspQueue;
 //媒体中心队列
-extern QueueHandle_t MediaReceiveQueue;
-extern QueueHandle_t MediaSendQueue;
+extern QueueHandle_t MediaReqQueue;
+extern QueueHandle_t MediaRspQueue;
 //行政中心队列
-extern QueueHandle_t adReceiveQueue;
-extern QueueHandle_t adSendQueue;
+extern QueueHandle_t adReqQueue;
+extern QueueHandle_t adRspQueue;
 
 // 消息中心信号量
-extern SemaphoreHandle_t eventosSendQueue_xSemaphore; //读消息中心队列锁
+extern SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
 extern SemaphoreHandle_t eventosID_mutex;   //消息ID锁
 
 /*---------------------------------------------------------------------------------------*/
@@ -46,35 +46,35 @@ void rtosThreadDelay(uint32_t ms)
 // 消息中心队列 媒体中心队列 休眠中心队列
 // 指针数组映射
 
-bool rtosEventQueueReceive(void *msg,uint32_t delay)
+bool rtosEventosGetMsg(void *msg,uint32_t delay)
 {
-    return (xQueueReceive(eventosReceiveQueue, msg, delay) == pdTRUE);
+    return (xQueueReceive(eventosReqQueue, msg, delay) == pdTRUE);
 }
 
-bool rtosEventQueueSend(void *msg,uint32_t delay)
+bool rtosEventosSendMsg(void *msg,uint32_t delay)
 {
-    return (xQueueSend(eventosSendQueue, msg, delay) == pdPASS);
+    return (xQueueSend(eventosRspQueue, msg, delay) == pdPASS);
 }
 
-bool rtosEventQueueTake(void *msg,uint32_t delay)
+bool rtosTakeMsgFromEventos(void *msg,uint32_t delay)
 {
-    return (xQueueReceive(eventosSendQueue, msg, delay) == pdTRUE);
+    return (xQueueReceive(eventosRspQueue, msg, delay) == pdTRUE);
 }
-bool rtosEventQueueReq(void *msg,uint32_t delay)
+bool rtosDeliverMsgToEventos(void *msg,uint32_t delay)
 {
-    return (xQueueSend(eventosReceiveQueue, msg, delay) == pdTRUE);
+    return (xQueueSend(eventosReqQueue, msg, delay) == pdTRUE);
 }
 
 // 获取读消息队列互斥信号量
 bool TakeEventosMsgQueueMutex(time_t waitTime)
 {
-    return (xSemaphoreTake(eventosSendQueue_xSemaphore, waitTime) == pdTRUE);
+    return (xSemaphoreTake(eventosRspQueue_xSemaphore, waitTime) == pdTRUE);
 }
 
 // 释放读消息队列互斥信号量
 void ReleaseEventosMsgQueueMutex(void)
 {
-    xSemaphoreGive(eventosSendQueue_xSemaphore);
+    xSemaphoreGive(eventosRspQueue_xSemaphore);
 }
 
 
@@ -92,13 +92,13 @@ void ReleaseEventosMutex(void)
 
 uint32_t  CheckEventRspMesgNum(void)
 {
-    return (uint32_t)uxQueueMessagesWaiting(eventosSendQueue);
+    return (uint32_t)uxQueueMessagesWaiting(eventosRspQueue);
 }
 
 bool  PeekEventRspMesg(void *receivedMsg)
 {
     // 使用队列的Peek功能查看消息而不取出
-    return  (uint32_t)xQueuePeek(eventosSendQueue, receivedMsg, 0)== pdTRUE;
+    return  (uint32_t)xQueuePeek(eventosRspQueue, receivedMsg, 0)== pdTRUE;
 }
 
 
