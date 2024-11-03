@@ -45,10 +45,10 @@ w25q_device_t w25q_dev =
     .spi_ds = &w25q_spi_ds
 };
 
-/* about 100 microsecond delay */
-static void retry_delay_100us(void)
+/* about 1 microsecond delay */
+static void retry_delay_1ms(void)
 {
-    Delay_us(100);
+    Delay_ms(1);
 }
 
 /**
@@ -73,8 +73,8 @@ static sfud_err spi_write_read(const sfud_spi *spi,
         timeout = 0;
         while (dev_ctl(w25q->spi_ds,SPI_GETSATATE,NULL) != HAL_SPI_STATE_READY)
         {
-            Delay_ms(100);
-            if(timeout > 20)
+            Delay_ms(10);
+            if(timeout > 10)
             {
                 break;
             }
@@ -90,8 +90,8 @@ static sfud_err spi_write_read(const sfud_spi *spi,
         timeout = 0;
         while (dev_ctl(w25q->spi_ds,SPI_GETSATATE,NULL)!= HAL_SPI_STATE_READY)
         {
-            Delay_ms(100);
-            if(timeout > 20)
+            Delay_ms(10);
+            if(timeout > 10)
             {
                 break;
             }
@@ -171,10 +171,8 @@ sfud_err sfud_spi_port_init(sfud_flash *flash) {
             flash->spi.lock = spi_lock;
             flash->spi.unlock = spi_unlock;
             flash->spi.user_data = &w25q_dev;
-            /* about 100 microsecond delay */
-            flash->retry.delay = retry_delay_100us;
-            /* adout 60 seconds timeout */
-            flash->retry.times = 60 * 10000;
+            flash->retry.delay = retry_delay_1ms;
+            flash->retry.times =  1000;
 
             break;
         }
