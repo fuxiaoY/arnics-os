@@ -10,37 +10,26 @@ extern void bsp_iwdg_refresh(iwdg_t *dev);
 
 // .c file
 
-int iwdg_open(device_t *self)
+void bsp_iwdg_init(iwdg_t *dev)
 {
-    if(self->ds == 0)
-    {
-        return -1;
-    }
-    bsp_iwdg_init(self->device);
-    return 0;
+  if (HAL_IWDG_Init(&dev->hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
-int iwdg_close(device_t *self)
-{
-    if(self->ds == 0)
-    {
-        return -1;
-    }
-    bsp_iwdg_deinit(self->device);
-    return 0;
-}
-int iwdg_ctl(device_t *self, int cmd, void *args)
-{
-    if(self->ds == 0)
-    {
-        return -1;
-    }
-    switch(cmd)
-    {
-        case IWDG_RELOAD:
-            bsp_iwdg_refresh(self->device);
-            return 0;
 
-        default:
-            return -1;
+void bsp_iwdg_deinit(iwdg_t *dev)
+{
+    if (dev != NULL) {
+        // 关闭独立看门狗
+        IWDG_DISABLE_WRITE_ACCESS(&dev->hiwdg);
+    }
+}
+
+void bsp_iwdg_refresh(iwdg_t *dev)
+{
+    if (dev != NULL) {
+        // 喂狗操作
+        __HAL_IWDG_RELOAD_COUNTER(&dev->hiwdg);
     }
 }
