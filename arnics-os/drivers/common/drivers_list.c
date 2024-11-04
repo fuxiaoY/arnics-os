@@ -94,7 +94,25 @@ const dev_operations iwdg_ops = {
                         NULL};
 
 /* Lists--- -----------------------------------------------------------*/
+/* Lists--- -----------------------------------------------------------*/
+// 使用 X-macro 生成 rtc 参数映射表
+const param_map_t rtc_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    RTC_PARAM_MAP_X
+    #undef X
+};
+const size_t rtc_param_map_size = sizeof(rtc_param_map) / sizeof(param_map_t);
 
+const dev_operations rtc_ops = {
+                        rtc_open,
+                        rtc_close,
+                        NULL,
+                        NULL,
+                        rtc_ctl,
+                        NULL};
+
+/* Lists--- -----------------------------------------------------------*/
 
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
@@ -102,6 +120,8 @@ const device_type_map_t device_type_maps[] = {
     {"io_t", io_param_map, sizeof(io_param_map) / sizeof(param_map_t),&io_ops},
     {"spi_t", spi_param_map, sizeof(spi_param_map) / sizeof(param_map_t),&spi_ops},
     {"flash_t", flash_param_map, sizeof(flash_param_map) / sizeof(param_map_t),&flash_ops},
+    {"iwdg_t", iwdg_param_map, sizeof(iwdg_param_map) / sizeof(param_map_t),&iwdg_ops},
+    {"rtc_t", rtc_param_map, sizeof(rtc_param_map) / sizeof(param_map_t),&rtc_ops},
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);

@@ -9,6 +9,7 @@ extern "C" {
 #include "interface_spi.h"
 #include "interface_flash.h"
 #include "interface_iwdg.h"
+#include "interface_rtc.h"
 #ifdef __cplusplus
 }
 #endif

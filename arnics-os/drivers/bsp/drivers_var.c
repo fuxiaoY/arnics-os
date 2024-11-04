@@ -22,6 +22,8 @@ device_t w25q_cs_ds; // w25q cs
 device_t w25q_spi_ds; // w25q
 device_t mcuflash_ds; // mcuflash
 device_t iwdg_ds; // 独立看门狗
+device_t rtc_ds; // rtc
+
 // 驱动实例默认值
 uart_t uart1 = 
 {
@@ -95,4 +97,12 @@ iwdg_t iwdg =
   .hiwdg.Instance = IWDG,
   .hiwdg.Init.Prescaler = IWDG_PRESCALER_256,
   .hiwdg.Init.Reload = 4095
+};
+
+
+rtc_t rtc = 
+{
+    .hrtc.Instance = RTC,
+    .hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND,
+    .hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE
 };

@@ -143,6 +143,38 @@ typedef struct
 #define IWDG_PARAM_MAP_X \
     X("hiwdg", iwdg_t, hiwdg, IWDG_HandleTypeDef) 
 
+
+typedef struct
+{       
+  uint8_t Year;		  /*!<RTC 年*/
+  uint8_t Month;		/*!<RTC 月*/
+  uint8_t Date;		  /*!<RTC 日*/	
+  uint8_t Hour;		  /*!<RTC 时*/
+  uint8_t Minute;		/*!<RTC 分*/	
+  uint8_t Second;		/*!<RTC 秒*/			
+  uint8_t Week;		  /*!<RTC 周*/	
+} rtcTimeDateTypeDef_t;
+
+typedef struct
+{
+    RTC_HandleTypeDef hrtc;
+    rtcTimeDateTypeDef_t rtcTimeDate;
+  /* data */
+}rtc_t;
+// rtc 参数映射表的 X-macro
+#define RTC_PARAM_MAP_X \
+    X("hrtc", rtc_t, hrtc, RTC_HandleTypeDef) \
+    X("rtcTimeDate", rtc_t, rtcTimeDate, rtcTimeDateTypeDef_t) \
+    X("Year", rtc_t, rtcTimeDate.Year, uint8_t) \
+    X("Month", rtc_t, rtcTimeDate.Month, uint8_t) \
+    X("Date", rtc_t, rtcTimeDate.Date, uint8_t) \
+    X("Hour", rtc_t, rtcTimeDate.Hour, uint8_t) \
+    X("Minute", rtc_t, rtcTimeDate.Minute, uint8_t) \
+    X("Second", rtc_t, rtcTimeDate.Second, uint8_t) \
+    X("Week", rtc_t, rtcTimeDate.Week, uint8_t)
+
+
+
 #ifdef __cplusplus
 }
 #endif

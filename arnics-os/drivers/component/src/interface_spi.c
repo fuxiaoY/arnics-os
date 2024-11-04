@@ -1,5 +1,4 @@
 #include "../inc/interface_spi.h"
-#include "../../common/drivers_common.h"
 #include "../../bsp/bsp_def.h"
 #include "spi.h"
 

@@ -1,6 +1,6 @@
 #include "ulogDef.h"
 #include "../../dataPlat/entry_dataPlat_api.h"
-
+#include "../../drivers/bsp/bsp_def.h"
 static void CurrentTimeToString(rtcTimeDateTypeDef_t* DT, char* buffer, size_t bufferSize)
 {
   snprintf(buffer, bufferSize, "%02d-%02d-%02d %02d:%02d:%02d", DT->Year, DT->Month, DT->Date,DT->Hour, DT->Minute, DT->Second);

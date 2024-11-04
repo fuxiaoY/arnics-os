@@ -27,7 +27,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -41,7 +41,10 @@ extern RTC_HandleTypeDef hrtc;
 void MX_RTC_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+extern void bsp_rtc_init(rtc_t *dev);
+extern void bsp_rtc_deinit(rtc_t *dev);
+extern int bsp_rtc_get_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt);
+extern int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -42,7 +42,7 @@ void MX_RTC_Init(void)
   */
   hrtc.Instance = RTC;
   hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND;
-  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_ALARM;
+  hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE;
   if (HAL_RTC_Init(&hrtc) != HAL_OK)
   {
     Error_Handler();
@@ -89,5 +89,70 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void bsp_rtc_init(rtc_t *dev)
+{
+  if (HAL_RTC_Init(&dev->hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+void bsp_rtc_deinit(rtc_t *dev)
+{
+  HAL_RTC_MspDeInit(&dev->hrtc);
+}
 
+int bsp_rtc_get_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
+{
+    RTC_TimeTypeDef sTime;
+    RTC_DateTypeDef sDate;
+
+    // Get the current time and date from the RTC
+    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+    // Convert BCD values to binary
+    dt->Year = sDate.Year;
+    dt->Month = sDate.Month;
+    dt->Date = sDate.Date;
+    dt->Week = sDate.WeekDay; // Assuming WeekDay is also in BIN format
+
+    dt->Hour = sTime.Hours;
+    dt->Minute = sTime.Minutes;
+    dt->Second = sTime.Seconds;
+
+
+    // Return a success code
+    return 0; // Assuming 0 represents success
+}
+int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
+{
+  // Set the time and date on the RTC
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+
+  sTime.Hours = dt->Hour;
+  sTime.Minutes = dt->Minute;
+  sTime.Seconds = dt->Second;
+
+  
+  sDate.Year = dt->Year;
+  sDate.Month = dt->Month;
+  sDate.Date = dt->Date;
+  sDate.WeekDay = dt->Week;
+
+  // Set the time and date on the RTC
+
+    // 设置 RTC 时间
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  // 设置 RTC 日期
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  return 0;
+}
 /* USER CODE END 1 */

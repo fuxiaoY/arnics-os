@@ -1,5 +1,4 @@
 #include "../inc/interface_uart.h"
-#include "../../common/drivers_common.h"
 #include "../../bsp/bsp_def.h"
 #include "usart.h"
 
