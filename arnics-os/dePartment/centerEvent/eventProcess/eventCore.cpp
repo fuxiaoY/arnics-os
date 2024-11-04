@@ -81,24 +81,7 @@ static int getRegisterEntryIndex(const char *name)
     return -1; // 未找到
 }
 
-// 用于设置事件标志 
-/*
-bool get_event_flag(Message_t *msg, const char *name) 
-{
-    memset(msg, 0, sizeof(Message_t));
-    uint32_t event_flag = 0;
-    int index = getRegisterEntryIndex(name);
-    if (index == -1) 
-    {
-        return false; // 未找到对应的 name
-    }
-    event_flag = index;
-    // 设置 eventflag 中对应位置的位
-    memcpy(msg->buf, &event_flag, sizeof(uint32_t));
-    msg->length = sizeof(uint32_t);
-    return true;
-}
-*/
+
 // 用于设置事件标志 
 bool set_event_flag(uint32_t *eventflag, const char *name) 
 {

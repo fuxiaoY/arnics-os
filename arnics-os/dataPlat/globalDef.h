@@ -73,16 +73,16 @@ struct SytemCfg
   uint16_t crc;    
   //保存到片上Flash
   //返回值：TRUE=写入成功，FALSE=写入失败
-  BOOL Save(void);
+  bool Save(void);
 
   //从片上Flash读出
   //返回值：TRUE=读出成功，FALSE=读取失败
-  BOOL Load(void);
+  bool Load(void);
 
   //全部恢复缺省设置
   //参数1：是否需要将Flash上保存的记录也同步恢复成缺省值
   //返回值：TRUE=恢复成功，FLASE=恢复失败（内存常驻配置已恢复，但写入Flash失败导致记录不同步），若SyncSave为FLASE，则永远不会失败
-  BOOL Reset(BOOL SyncSave = FALSE);
+  bool Reset(bool SyncSave = FALSE);
 
 
   uint16_t CalculateCRC(void);
@@ -105,20 +105,20 @@ struct SytemState
 
   //保存到片上Flash（仅当重要字段发生变更时才保存）
   //返回值：TRUE=写入成功，FALSE=写入失败
-  BOOL Save(void);
+  bool Save(void);
 
   //保存到片上Flash（强制保存，即使要字段未发生变更）
   //返回值：TRUE=写入成功，FALSE=写入失败
-  BOOL ForceSave(void);
+  bool ForceSave(void);
 
   //从片上Flash读出
   //返回值：TRUE=读出成功，FALSE=读取失败
-  BOOL Load(void);
+  bool Load(void);
 
   //全部恢复缺省设置
   //参数1：是否需要将Flash上保存的记录也同步恢复成缺省值
   //返回值：TRUE=恢复成功，FLASE=恢复失败（内存常驻配置已恢复，但写入Flash失败导致记录不同步），若SyncSave为FLASE，则永远不会失败
-  BOOL Reset(BOOL SyncSave = FALSE);
+  bool Reset(bool SyncSave = FALSE);
 
 
 

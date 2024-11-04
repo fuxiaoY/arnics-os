@@ -8,6 +8,7 @@ extern "C" {
 #include "interface_uart.h"
 #include "interface_spi.h"
 #include "interface_flash.h"
+#include "interface_iwdg.h"
 #ifdef __cplusplus
 }
 #endif

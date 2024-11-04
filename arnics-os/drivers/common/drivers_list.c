@@ -75,6 +75,25 @@ const dev_operations flash_ops = {
                         NULL};
 
 /* Lists--- -----------------------------------------------------------*/
+/* Lists--- -----------------------------------------------------------*/
+// 使用 X-macro 生成 独立看门狗 参数映射表
+const param_map_t iwdg_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    IWDG_PARAM_MAP_X
+    #undef X
+};
+const size_t iwdg_param_map_size = sizeof(iwdg_param_map) / sizeof(param_map_t);
+
+const dev_operations iwdg_ops = {
+                        iwdg_open,
+                        iwdg_close,
+                        NULL,
+                        NULL,
+                        iwdg_ctl,
+                        NULL};
+
+/* Lists--- -----------------------------------------------------------*/
 
 
 // 设备类型映射表

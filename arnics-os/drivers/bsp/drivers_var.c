@@ -21,6 +21,7 @@ device_t debug_ds; // debug串口
 device_t w25q_cs_ds; // w25q cs
 device_t w25q_spi_ds; // w25q
 device_t mcuflash_ds; // mcuflash
+device_t iwdg_ds; // 独立看门狗
 // 驱动实例默认值
 uart_t uart1 = 
 {
@@ -89,4 +90,9 @@ flash_t mcu_flash =
     .EraseInitStruct.Banks = FLASH_BANK_1,
     .EraseInitStruct.NbPages = 1
 };
-
+iwdg_t iwdg = 
+{
+  .hiwdg.Instance = IWDG,
+  .hiwdg.Init.Prescaler = IWDG_PRESCALER_256,
+  .hiwdg.Init.Reload = 4095
+};

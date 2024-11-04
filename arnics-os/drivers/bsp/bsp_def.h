@@ -133,6 +133,16 @@ typedef struct
     X("NbPages", flash_t, EraseInitStruct.NbPages, uint32_t) \
     X("offset", flash_t, offset, uint32_t) 
 
+
+typedef struct
+{
+    IWDG_HandleTypeDef hiwdg;
+  /* data */
+}iwdg_t;
+// 独立看门狗 参数映射表的 X-macro
+#define IWDG_PARAM_MAP_X \
+    X("hiwdg", iwdg_t, hiwdg, IWDG_HandleTypeDef) 
+
 #ifdef __cplusplus
 }
 #endif

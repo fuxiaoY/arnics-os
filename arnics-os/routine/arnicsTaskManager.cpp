@@ -72,6 +72,7 @@ void driver_init(void)
     dev_open(&led1_ds);
     dev_reg("uart1",&debug_ds);
     dev_open(&debug_ds);
+    dev_reg("iwdg",&iwdg_ds);
     test_delay_check();
 }
 void third_init(void)

@@ -57,6 +57,10 @@ extern const dev_operations spi_ops;
 extern const param_map_t flash_param_map[];
 extern const size_t flash_param_map_size ;
 extern const dev_operations flash_ops;
+
+extern const param_map_t iwdg_param_map[];
+extern const size_t iwdg_param_map_size ;
+extern const dev_operations iwdg_ops;
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];
