@@ -15,14 +15,13 @@ extern "C" {
 
 
 
-extern void led_action(void) ;
-extern void battery_check(void) ;
+extern void led_action(void* argv) ;
+extern void battery_check(void* argv) ;
 
 // X-Macro 表
 #define REGISTER_ENTRIES \
-    X(led_action, 1, false) \
-    X(battery_check, 1, true)
-
+    X(battery_check, 1, true) \
+    X(led_action, 1, false) 
 
 #ifdef __cplusplus
 }

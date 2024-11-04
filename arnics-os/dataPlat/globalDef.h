@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct {
     time_t ID_Ts;    //消息ID，可用于检查区分消息传送 
+    uint32_t eventflag; //事件
     char buf[20];  // 可以根据需要添加更多的字段
     int length;     // 数据长度
 } Message_t;

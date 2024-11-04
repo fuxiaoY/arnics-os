@@ -22,7 +22,7 @@ DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_init_item, INIT_TAG, 0, 5);
 
 void arnics_core_init()
 {
-    EXECUTE_FUNC_ALLSECTION(arnics_init_item);
+    EXECUTE_FUNC_ALLSECTION(arnics_init_item,NULL);
     logo_print();
 }
 

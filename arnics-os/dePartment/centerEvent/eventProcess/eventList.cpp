@@ -8,7 +8,7 @@ extern Message_t mesg_cache;//事件应用消息
 
 
 // 定义函数
-void led_action(void) 
+void led_action(void* argv) 
 {
     static int a = 0;
     a++;
@@ -33,7 +33,7 @@ void led_action(void)
 
 }
 
-void battery_check(void) 
+void battery_check(void* argv) 
 {
     // 函数实现
 }

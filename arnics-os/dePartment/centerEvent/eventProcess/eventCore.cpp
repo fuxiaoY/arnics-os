@@ -7,8 +7,7 @@
 #pragma arm section code = "._entry_event_api"
 DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 2);
 
-// 外部消息id
-static time_t ID_Ts;
+
 EVENT_STATE event_state = OnWattingOutMsg;
 uint32_t EVENT_FLAG = 0; // 外部事件标志
 Message_t mesg_cache = {0};//事件应用消息
@@ -54,7 +53,7 @@ void event_init(void)
     event_list_register();
 }
 
-void event_exec(uint32_t event_flag)
+void event_exec(uint32_t event_flag,void *argv)
 {
 
     // 遍历查找匹配的 event_bit
@@ -63,7 +62,7 @@ void event_exec(uint32_t event_flag)
         if (event_flag ==  eventBitMapping[i].event_bit)
         {
             // 找到匹配的 event_bit，执行对应的函数
-            EXECUTE_FUNC_BY_NAME(arnics_event_item, eventBitMapping[i].name);
+            EXECUTE_FUNC_BY_NAME(arnics_event_item, eventBitMapping[i].name,argv);
         }
     }
 }
@@ -101,20 +100,19 @@ _WEAK void onWaittingOutMessage()
 {
     while (1)
     {
-        Message_t msg = {0};
+        memset(&mesg_cache,0,sizeof(Message_t));
         eventosWantSleep = TRUE; // 现在提休眠申请
         ULOG_DEBUG("eventCenter:Waiting for Message...");
         ULOG_DEBUG("-----------------END------------------------");
-        if (true == rtosEventosGetMsg(&msg,BLOCK_DELAY))
+        if (true == rtosEventosGetMsg(&mesg_cache,BLOCK_DELAY))
         {
             eventosWantSleep = FALSE; // 撤销休眠申请
-            ID_Ts = msg.ID_Ts;        // 记录消息ID
             // 清除分析缓存，并存入外部消息
             CLR_EVENT_FLAG_ALL(EVENT_FLAG);
-            memcpy(&EVENT_FLAG, msg.buf, msg.length);
+            EVENT_FLAG = mesg_cache.eventflag;
             // 处理接收到的消息
             ULOG_DEBUG("-----------------START----------------------");
-            ULOG_DEBUG("ON_Waitting_OUT_Message::Got Message! ID=%d", ID_Ts);
+            ULOG_DEBUG("ON_Waitting_OUT_Message::Got Message! ID=%d", mesg_cache.ID_Ts);
             event_state = ActionMsg; // 进入消息处理状态
             break;
         }
@@ -126,7 +124,7 @@ _WEAK void eventAction()
 {
     while (1)
     {
-        event_exec(EVENT_FLAG); // 此处将里面的每一项需求分析出来，并分发任务
+        event_exec(EVENT_FLAG,mesg_cache.buf); // 此处将里面的每一项需求分析出来，并分发任务
         ULOG_DEBUG("eventCenter: analyzeSampleNeed Done!");
         rtosThreadDelay(10);
         event_state = SendingRspMsg; // 进入发送响应消息状态
@@ -154,12 +152,10 @@ _WEAK void onResetState()
     {
         if (needRsp)
         {
-            mesg_cache.ID_Ts = ID_Ts;
             if (rtosEventosSendMsg(&msg, 500)) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
             {
                 // 发送成功 一个状态结束
-                ULOG_DEBUG("Message sent eventosRspQueue succeed! ID=%d", msg.ID_Ts);
-                ID_Ts = 0; // 清除消息ID，代表消息已发送
+                ULOG_DEBUG("Message sent eventosRspQueue succeed! ID=%d", mesg_cache.ID_Ts);
                 memset(&mesg_cache, 0, sizeof(Message_t));
                 CLR_EVENT_FLAG_ALL(EVENT_FLAG);
                 event_state = OnWattingOutMsg; // 进入等待消息状态
@@ -174,7 +170,6 @@ _WEAK void onResetState()
         }
         else
         {
-            ID_Ts = 0; // 清除消息ID，代表消息已发送
             CLR_EVENT_FLAG_ALL(EVENT_FLAG);
             event_state = OnWattingOutMsg; // 进入等待消息状态
             break;
@@ -195,7 +190,7 @@ static unsigned long global_id_counter = 0;
  * @param  无
  * @retval 
  */
-uint32_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait)
+uint32_t SendEventCallToEventCenter(uint32_t eventflag,void *argv,size_t len, time_t wait)
 {
     // 发送消息到事件队列
     // 创建消息
@@ -208,7 +203,9 @@ uint32_t SendEventCallToEventCenter(uint32_t *eventflag, time_t wait)
         // 释放互斥信号量
         ReleaseEventosMutex();
     }
-    memcpy(msg.buf, eventflag, sizeof(uint32_t));
+    msg.eventflag = eventflag;
+    msg.length = len;
+    memcpy(msg.buf, argv, len);
     // 等待时间为wait
     if (rtosDeliverMsgToEventos(&msg, wait) == true)
     {

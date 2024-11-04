@@ -20,7 +20,7 @@ const tTaskFunc deviceTaskList[] =
 
 };
 // 外设初始化函数
-void peripheralInit(void)
+void peripheralInit(void* argv)
 {
     uint8 i;
     for (i = 0; i < eleof(initTaskList); i++)
@@ -34,7 +34,7 @@ void peripheralInit(void)
 DRIVER_INIT("driver", peripheralInit);
 
 // 预载函数
-void preLoadInit(void)
+void preLoadInit(void* argv)
 {
     uint8 i;
 
@@ -49,7 +49,7 @@ void preLoadInit(void)
 SYSTEM_INIT("system", preLoadInit);
 
 // 外挂设备初始化函数
-void deviceInit(void)
+void deviceInit(void* argv)
 {
     uint8 i;
     for (i = 0; i < eleof(deviceTaskList); i++)

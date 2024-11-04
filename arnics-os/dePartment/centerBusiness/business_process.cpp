@@ -35,11 +35,11 @@ void business_process(void)
 
 void business_init()
 {
-    uint32_t eventcall = 0;
-    set_event_flag(&eventcall,"led_action");
+    uint32_t eventflag = 0;
+    set_event_flag(&eventflag,"led_action");
     while(1)
     {
-        SendEventCallToEventCenter(&eventcall,BLOCK_DELAY);
+        SendEventCallToEventCenter(eventflag,NULL,3,BLOCK_DELAY);
         rtosThreadDelay(1000);
     }
 

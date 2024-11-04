@@ -59,7 +59,7 @@ typedef struct
 typedef struct 
 {
     const char *name;               
-    void (*func)(void);             
+    void (*func)(void* argv);             
     int level;  
 } ArnicsFuncItem;
 
@@ -90,7 +90,7 @@ typedef struct
 
 /* macro -------------------------------------------------------------*/
 
-static inline void nop_process(void) {}
+static inline void nop_process(void* argv) {}
 #define DEFINE_ARNICS_FUNC_ITEM(name, department, level) \
     const ArnicsFuncItem name _SECTION(STRCAT(arnics, department, level)) = \
     { \
@@ -115,13 +115,13 @@ static inline void nop_process(void) {}
  * 
  * @param [in] prefix - 前缀
  */
-#define EXECUTE_FUNC_ALLSECTION(prefix) \
+#define EXECUTE_FUNC_ALLSECTION(prefix,argv) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
         const ArnicsFuncItem* end = &prefix##_end; \
         while (it < end) { \
             if (it->func != NULL) { \
-                it->func(); \
+                it->func(argv); \
             } \
             it++; \
         } \
@@ -133,14 +133,14 @@ static inline void nop_process(void) {}
  * @param [in] prefix - 前缀
  * @param [in] Name - 功能项名称
  */
-#define EXECUTE_FUNC_BY_NAME(prefix, Name) \
+#define EXECUTE_FUNC_BY_NAME(prefix, Name, argv) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
         const ArnicsFuncItem* end = &prefix##_end; \
         while (it < end) { \
             if (it->name != NULL && strcmp(it->name, Name) == 0) { \
                 if (it->func != NULL) { \
-                    it->func(); \
+                    it->func(argv); \
                 } \
                 break; \
             } \
@@ -155,14 +155,14 @@ static inline void nop_process(void) {}
  * @param [in] Name - 功能项名称
  * @param [in] level - 段级别
  */
-#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, Name, level) \
+#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, Name, level,argv) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
         const ArnicsFuncItem* end = &prefix##_end; \
         while (it < end) { \
             if (it->level == level && it->name != NULL && strcmp(it->name, Name) == 0) { \
                 if (it->func != NULL) { \
-                    it->func(); \
+                    it->func(argv); \
                 } \
                 break; \
             } \
