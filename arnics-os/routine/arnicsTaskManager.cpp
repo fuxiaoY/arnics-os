@@ -74,6 +74,12 @@ void driver_init(void)
     dev_open(&debug_ds);
     dev_reg("iwdg",&iwdg_ds);
     test_delay_check();
+
+    dev_reg("rtc",&rtc_ds);
+    dev_open(&rtc_ds);
+    rtcTimeDateTypeDef_t rtc_time;
+    dev_ctl(&rtc_ds,RTC_GETDATETIME,&rtc_time);
+    
 }
 void third_init(void)
 {

@@ -1,6 +1,6 @@
 #include "ulogDef.h"
 #include "../../dataPlat/entry_dataPlat_api.h"
-#include "../../drivers/bsp/bsp_def.h"
+#include "../../drivers/driversInclude.h"
 static void CurrentTimeToString(rtcTimeDateTypeDef_t* DT, char* buffer, size_t bufferSize)
 {
   snprintf(buffer, bufferSize, "%02d-%02d-%02d %02d:%02d:%02d", DT->Year, DT->Month, DT->Date,DT->Hour, DT->Minute, DT->Second);
@@ -8,6 +8,7 @@ static void CurrentTimeToString(rtcTimeDateTypeDef_t* DT, char* buffer, size_t b
 static void DEBUG_logger(ulog_level_t severity, char *msg)
 {
   rtcTimeDateTypeDef_t DT;
+  dev_ctl(&rtc_ds,RTC_GETDATETIME,&DT);
   char timeStr[32] ={0};
   CurrentTimeToString(&DT, timeStr, sizeof(timeStr));
   if(VirtualEnvironment)

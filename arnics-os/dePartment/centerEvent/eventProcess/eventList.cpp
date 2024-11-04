@@ -1,6 +1,7 @@
 #include "eventList.h"
 #include "eventCore.h"
 #include "../../../drivers/driversInclude.h"
+#include "../../../thirdParty/thirdPartyInclude.h"
 #pragma arm section code="._entry_event_api"
 
 extern Message_t mesg_cache;//事件应用消息
@@ -13,7 +14,7 @@ void led_action(void* argv)
     static int a = 0;
     a++;
     // 函数实现
-    printf("led_action\r\n");
+    ULOG_INFO("led_action\r\n");
     dev_ctl(&led0_ds,IO_TOGGLE,NULL);
     dev_ctl(&led1_ds,IO_TOGGLE,NULL);
     if(a == 4)
@@ -29,7 +30,6 @@ void led_action(void* argv)
 
         dev_open(&led1_ds);
     }
-
 
 }
 

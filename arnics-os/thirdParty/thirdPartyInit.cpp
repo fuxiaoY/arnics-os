@@ -18,6 +18,8 @@ void unity_test(void)
 
 void thirdPartyInit(void)
 {
+   usr_ulog_init();
    unity_test();
    fal_init();
+   
 }
