@@ -139,14 +139,14 @@ static inline void nop_process(void* argv) {}
  * 
  * @param [in] prefix - 前缀
  * @param [in] Name - 功能项名称
- * @param [in] level - 段级别
+ * @param [in] Level - 段级别
  */
-#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, Name, level,argv) \
+#define EXECUTE_FUNC_BY_NAME_AT_LEVEL(prefix, Name, Level,argv) \
     do { \
         const ArnicsFuncItem* it = &prefix##_start; \
         const ArnicsFuncItem* end = &prefix##_end; \
         while (it < end) { \
-            if (it->level == level && it->name != NULL && strcmp(it->name, Name) == 0) { \
+            if (it->level == Level && it->name != NULL && strcmp(it->name, Name) == 0) { \
                 if (it->func != NULL) { \
                     it->func(argv); \
                 } \
