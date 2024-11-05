@@ -99,11 +99,10 @@ int flash_erase(flash_t *dev,flash_ctl_t *ctl)
         erase_pages++;
 
     }
-    
-    //FLASH_EraseInitTypeDef EraseInitStruct;
-    //EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
-    //EraseInitStruct.Banks = FLASH_BANK_1; 
-    //EraseInitStruct.NbPages     = 1;  //Wipe out one sector at a time to perform one feeding of the dog to prevent timeout
+
+    dev->EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
+    dev->EraseInitStruct.Banks = FLASH_BANK_1; 
+    dev->EraseInitStruct.NbPages = 1;//Wipe out one sector at a time to perform one feeding of the dog to prevent timeout
     HAL_FLASH_Unlock();
    /* Erase the user Flash area
     (area defined by FLASH_USER_START_ADDR and FLASH_USER_END_ADDR) ***********/
@@ -118,7 +117,7 @@ int flash_erase(flash_t *dev,flash_ctl_t *ctl)
   }
    
     for (i = 0; i < erase_pages; i++) {
-        dev->EraseInitStruct.PageAddress = (ctl->offset/FLASH_PAGE_SIZE) + i;
+        dev->EraseInitStruct.PageAddress = START_ADDRESS + ctl->offset + i * FLASH_PAGE_SIZE;
         flash_status = HAL_FLASHEx_Erase(&dev->EraseInitStruct, &PAGEError);
         if (flash_status != HAL_OK) {
             HAL_FLASH_Lock(); 
