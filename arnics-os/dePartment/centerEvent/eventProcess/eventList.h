@@ -24,6 +24,7 @@ extern void battery_check(void* argv) ;
 
 // X-Macro 表
 #define REGISTER_ENTRIES \
+    X(NULL, EVENT_EXTERNAL_EMPLOY, false) \
     X(battery_check, EVENT_EXTERNAL_EMPLOY, true) \
     X(led_action, EVENT_EXTERNAL_EMPLOY, false) 
 
