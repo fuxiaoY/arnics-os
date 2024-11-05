@@ -185,6 +185,7 @@ _WEAK void onResetState()
             else
             {
                 ULOG_DEBUG("Retry sendding!!");
+                event_internal_exec(EVENT_FLAG,NULL);
                 rtosThreadDelay(10);
             }
             rtosThreadDelay(10);
