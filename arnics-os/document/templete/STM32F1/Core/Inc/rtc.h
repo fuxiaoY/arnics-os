@@ -45,6 +45,7 @@ extern void bsp_rtc_init(rtc_t *dev);
 extern void bsp_rtc_deinit(rtc_t *dev);
 extern int bsp_rtc_get_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt);
 extern int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt);
+extern bool bsp_rtc_check_second_update(rtc_t *dev);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -36,7 +36,8 @@ extern int rtc_ctl(device_t *self, int cmd, void *args)
         return bsp_rtc_get_datetime(self->device,args);
         case RTC_SETDATETIME:
         return bsp_rtc_set_datetime(self->device,args);
-        
+        case RTC_SECONDUPDATE:
+        return bsp_rtc_check_second_update(self->device);
         default: return -1; 
         
     }

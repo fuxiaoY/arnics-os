@@ -155,4 +155,32 @@ int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
   }
   return 0;
 }
+
+
+
+
+static uint32_t last_call_time = 0; // 上一次调用函数的时间，单位为秒
+
+bool bsp_rtc_check_second_update(rtc_t *dev) 
+{
+    rtcTimeDateTypeDef_t current_time;
+
+    // 获取当前日期和时间
+    bsp_rtc_get_datetime(dev, &current_time);
+    
+    // 计算当前时间的总秒数
+    uint32_t current_time_in_sec = current_time.Hour * 3600 + 
+                                    current_time.Minute * 60 + 
+                                    current_time.Second;
+
+    // 检查和上一次调用值是否不相等
+    if (current_time_in_sec != last_call_time) 
+    {
+        last_call_time = current_time_in_sec; // 更新上一次调用时间
+        return true; // 表示已经过去了一秒
+    }
+    
+    return false; // 表示没有过去一秒
+}
+
 /* USER CODE END 1 */

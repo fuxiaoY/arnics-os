@@ -11,7 +11,8 @@ extern "C" {
 enum RTC_CTL
 {
   RTC_GETDATETIME = 0,
-  RTC_SETDATETIME = 1,
+  RTC_SETDATETIME,
+  RTC_SECONDUPDATE,
 };
 
 
