@@ -72,7 +72,14 @@ void event_internal_exec(uint32_t event_flag,void *argv)
     // 遍历查找匹配的 event_bit
     for (size_t i = 0; i < getRegisterTableNum(); i++)
     {
-        EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,argv);
+        if (event_flag ==  eventBitMapping[i].event_bit)
+        {
+            EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,argv);
+        }
+        else
+        {
+            EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,NULL);
+        }
     }
 }
 
