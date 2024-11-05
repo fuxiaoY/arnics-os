@@ -1,5 +1,5 @@
 #include "globalData.h"
-#pragma arm section code = "._entry_dataPlat_api"
+_SECTION( "._entry_dataPlat_api")
 // 系统参数
 bool arnics_start = false;
 volatile uint32_t arnics_systick = 0;

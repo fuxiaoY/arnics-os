@@ -30,21 +30,7 @@ extern "C" {
 
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
-/* define ------------------------------------------------------------*/
-#if defined(__CC_ARM) || defined(__GNUC__) /* ARM,GCC*/ 
-    #define _SECTION(x)                  __attribute__((section(x)))
-    #define _UNUSED                      __attribute__((unused))
-    #define _USED                        __attribute__((used))
-    #define _ALIGN(n)                    __attribute__((aligned(n)))
-    #define _WEAK                        __attribute__((weak))
-#elif defined (__ICCARM__)                 /*IAR */
-    #define _SECTION(x)                  @ x
-    #define _UNUSED                      
-    #define _USED                        __root
-    #define _WEAK                        __weak
-#else
-    #error "do not supported!"
-#endif
+
 /* typedef -----------------------------------------------------------*/
 #define TASK_FUNC(func)   {func}
 /* \brief Function pointer define */

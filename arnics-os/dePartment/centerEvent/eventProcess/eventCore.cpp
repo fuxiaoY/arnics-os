@@ -4,9 +4,9 @@
 #include "../../../thirdParty/thirdPartyInclude.h"
 #include "../../../rtosInterface/entry_rtos_api.h"
 
-#pragma arm section code = "._entry_event_api"
-DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 2);
 
+DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 2);
+_SECTION("._entry_event_api1")
 
 EVENT_STATE event_state = OnWattingOutMsg;
 uint32_t EVENT_FLAG = 0; // 外部事件标志

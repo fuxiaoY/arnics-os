@@ -3,7 +3,7 @@
 #include "globalData.h"
 #include "../thirdParty/thirdPartyInclude.h"
 #include "../common/commonInclude.h"
-#pragma arm section code = "._entry_dataPlat_api"
+_SECTION( "._entry_dataPlat_api")
 // 静态缓冲区
 SytemCfg *unityGlobalCfgPara = &global_cfg;
 SytemState *unityGlobalStatPara = &global_state;

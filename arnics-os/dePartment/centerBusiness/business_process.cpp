@@ -5,7 +5,7 @@
 #include "../../dataPlat/entry_dataPlat_api.h"
 
 #include "../centerEvent/entry_event_api.h"
-#pragma arm section code = "._entry_business_api"
+_SECTION( "._entry_business_api")
 ENUM_WORKSTATE business_state = WORKSTAT_INIT;
 
 

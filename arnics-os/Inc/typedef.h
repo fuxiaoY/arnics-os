@@ -210,13 +210,23 @@ enum Enum_BOOLValue
 //#define ULONG_MAX  ((uint32)(~0L)) /* 0xFFFFFFFF*/
 //#define LONG_MAX   ((int32)(ULONG_MAX >> 1))/* 0x7FFFFFFF*/
 
+/* define ------------------------------------------------------------*/
+#if defined(__CC_ARM) || defined(__GNUC__) /* ARM,GCC*/ 
+    #define _SECTION(x)                  __attribute__((section(x)))
+    #define _UNUSED                      __attribute__((unused))
+    #define _USED                        __attribute__((used))
+    #define _ALIGN(n)                    __attribute__((aligned(n)))
+    #define _WEAK                        __attribute__((weak))
+#elif defined (__ICCARM__)                 /*IAR */
+    #define _SECTION(x)                  @ x
+    #define _UNUSED                      
+    #define _USED                        __root
+    #define _WEAK                        __weak
+#else
+    #error "do not supported!"
+#endif
+
 /*---------------------函数接口---------------------------*/
-//#pragma arm section code="._entry_app_api"
-//#pragma arm section
-
-// 段定义宏
-#define PLACE_IN_SECTION(section_name) __attribute__((section(section_name)))
-
 // 定义结构体函数
 #define T_TYPEDEF(name) (*p##name)
 #define T_STRUCT_MEMBER(name) p##name t_##name
