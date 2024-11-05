@@ -5,7 +5,7 @@
 #include "../../../rtosInterface/entry_rtos_api.h"
 
 
-DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 2);
+DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 3);
 _SECTION("._entry_event_api1")
 
 EVENT_STATE event_state = OnWattingOutMsg;
@@ -62,8 +62,17 @@ void event_exec(uint32_t event_flag,void *argv)
         if (event_flag ==  eventBitMapping[i].event_bit)
         {
             // 找到匹配的 event_bit，执行对应的函数
-            EXECUTE_FUNC_BY_NAME(arnics_event_item, eventBitMapping[i].name,argv);
+            EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_EXTERNAL_EMPLOY,argv);
         }
+    }
+}
+
+void event_internal_exec(uint32_t event_flag,void *argv)
+{
+    // 遍历查找匹配的 event_bit
+    for (size_t i = 0; i < getRegisterTableNum(); i++)
+    {
+        EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,argv);
     }
 }
 
@@ -104,7 +113,7 @@ _WEAK void onWaittingOutMessage()
         eventosWantSleep = TRUE; // 现在提休眠申请
         ULOG_DEBUG("eventCenter:Waiting for Message...");
         ULOG_DEBUG("-----------------END------------------------");
-        if (true == rtosEventosGetMsg(&mesg_cache,BLOCK_DELAY))
+        if (true == rtosEventosGetMsg(&mesg_cache,100))
         {
             eventosWantSleep = FALSE; // 撤销休眠申请
             // 清除分析缓存，并存入外部消息
@@ -116,6 +125,10 @@ _WEAK void onWaittingOutMessage()
             event_state = ActionMsg; // 进入消息处理状态
             break;
         }
+        else
+        {
+            event_internal_exec(EVENT_FLAG,NULL);
+        }
         rtosThreadDelay(10);
     }
 }
@@ -124,7 +137,8 @@ _WEAK void eventAction()
 {
     while (1)
     {
-        event_exec(EVENT_FLAG,mesg_cache.buf); // 此处将里面的每一项需求分析出来，并分发任务
+        event_internal_exec(EVENT_FLAG,mesg_cache.buf); // 此处将里面的每一项需求分析出来，并分发任务
+        event_exec(EVENT_FLAG,mesg_cache.buf);          // 此处将里面的每一项需求分析出来，并分发任务
         ULOG_DEBUG("eventCenter: analyzeSampleNeed Done!");
         rtosThreadDelay(10);
         event_state = SendingRspMsg; // 进入发送响应消息状态

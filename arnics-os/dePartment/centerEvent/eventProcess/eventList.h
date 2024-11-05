@@ -9,6 +9,10 @@ extern "C" {
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
 
+#define EVENT_INTERNAL_EMPLOY 1
+#define EVENT_EXTERNAL_EMPLOY 2
+
+
 // 定义 X 宏
 #define X(func, priority, needRsp) \
     {#func, func, priority, needRsp},
@@ -20,8 +24,8 @@ extern void battery_check(void* argv) ;
 
 // X-Macro 表
 #define REGISTER_ENTRIES \
-    X(battery_check, 1, true) \
-    X(led_action, 1, false) 
+    X(battery_check, EVENT_EXTERNAL_EMPLOY, true) \
+    X(led_action, EVENT_EXTERNAL_EMPLOY, false) 
 
 #ifdef __cplusplus
 }
