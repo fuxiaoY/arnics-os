@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#define SEPARATE_CORE_VERSION "1.0.0"
+#define SEPARATE_CORE_VERSION "1.0.1"
 
 // Macro to define a function that gets the current state value
 #define SEPARATE_GET_STATE_FUNC(enum_type, func_name) \
