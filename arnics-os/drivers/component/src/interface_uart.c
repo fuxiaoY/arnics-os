@@ -36,8 +36,7 @@ int uart_read(device_t *self,void *buf, size_t count)
     }
 #ifdef _USE_RING_
     uart_t *uart = (uart_t *)self->device;
-    ring_read(uart->ring_rx,buf,count);
-    return 0;
+    return ring_read(uart->ring_rx,buf,count);
 #else
     return bsp_usart_read(self->device, buf, count);
     return 0;
@@ -58,7 +57,6 @@ int uart_write(device_t *self, void *buf, size_t count)
     return 0;
 #else
     return bsp_usart_write(self->device, buf, count);
-    return 0;
 #endif
 
 }
