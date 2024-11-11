@@ -52,29 +52,7 @@ int mct_write(void *file, uint16_t len)
 
 #define TIMEOUT_MS 100
 
-uint32_t mct_read2(uint8_t *buf, uint16_t maxlen) 
-{
-    uint32_t cnt = 0;
-    uint32_t totalBytesRead = 0;
-    bool data_received = false;
 
-    do
-    {
-        // 尝试读取数据
-        uint32_t bytesRead = mct_read_continue(buf + totalBytesRead, maxlen - totalBytesRead);
-        if (bytesRead > 0)
-        {
-            data_received = true;
-            totalBytesRead += bytesRead; // 累加总共读到的字节数
-            cnt = 0; // 刷新超时计数器
-        }
-
-        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
-        cnt++;
-    } while (cnt < (TIMEOUT_MS / WAIT_SCHEDULE_TIME_MS) && !data_received);
-
-    return totalBytesRead;
-}
 uint32_t mct_read(uint8_t *buf, uint16_t maxlen) 
 {
     uint32_t totalBytesRead = 0;

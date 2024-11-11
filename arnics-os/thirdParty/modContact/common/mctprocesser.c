@@ -106,6 +106,7 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
     uint32_t cnt = 0;
     uint16_t remain_len = 0;
     bool result = false;
+    bool found = false;
     do
     {
         uint16_t single_len = 0;
@@ -123,7 +124,13 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
                 if (expected_tcmd_id == cmdList[i].id)
                 {
                     result = frame_mache(inst,&cmdList[i],true,expected_tcmd_id,payloadlist,&remain_len);
+                     found = true;
+                     break;
                 }
+            }
+            if (found)
+            {
+                break; // 找到匹配的命令项，退出外层循环
             }
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -279,25 +286,38 @@ void frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cm
 
 
 
-bool expectframeDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum,void *para)
+bool expectframeDeal(MctInstance *inst, StaticFrameList *payloadlist, tCmd const *cmdList, uint16_t cmdListNum, void *para)
 {
-    if(true == payloadlist->have_expected)
+    // 如果没有预期帧，直接返回 false
+    if (!payloadlist->have_expected)
     {
-        if(cmdList[payloadlist->frames_expected.tcmd_id].analyze(inst, para))
+        return false;
+    }
+
+    // 遍历命令列表
+    for (uint8_t i = 0; i < cmdListNum; i++)
+    {
+        // 检查当前命令项是否与目标ID匹配
+        if (payloadlist->frames_expected.tcmd_id == cmdList[i].id)
         {
-            payloadlist->frames_expected.status =     FRAME_SUCCEED;
-            return true;
-        } 
-        else 
-        {
-            payloadlist->frames_expected.status =     FRAME_FAILED;
-            return false;
+            // 调用 analyze 函数
+            if (cmdList[i].analyze(inst, para))
+            {
+                // 分析成功，设置状态为成功并返回 true
+                payloadlist->frames_expected.status = FRAME_SUCCEED;
+                return true;
+            }
+            else
+            {
+                // 分析失败，设置状态为失败并返回 false
+                payloadlist->frames_expected.status = FRAME_FAILED;
+                return false;
+            }
         }
     }
-		else
-		{
-			return false;
-		}
+
+    // 没有找到匹配的命令项，返回 false
+    return false;
 }
 
 
