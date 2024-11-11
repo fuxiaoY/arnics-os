@@ -33,6 +33,7 @@ extern device_t debug_ds; // debug串口
 extern device_t mcuflash_ds; // mcu flash
 extern device_t iwdg_ds; // 独立看门狗
 extern device_t rtc_ds; // rtc
+extern device_t mct_ds;
 // 驱动实例
 extern uart_t uart1;
 extern io_t led0;

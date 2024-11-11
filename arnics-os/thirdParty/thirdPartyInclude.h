@@ -11,7 +11,7 @@ extern "C" {
 #include "sfud/inc/sfud.h"
 #include "fal/inc/fal.h"
 #include "FlashDB/inc/flashdb.h"
-
+#include "modContact/mctInclude.h"
 
 extern void thirdPartyInit(void);
 #ifdef __cplusplus

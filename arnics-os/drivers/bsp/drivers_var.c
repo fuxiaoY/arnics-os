@@ -23,7 +23,7 @@ device_t w25q_spi_ds; // w25q
 device_t mcuflash_ds; // mcuflash
 device_t iwdg_ds; // 独立看门狗
 device_t rtc_ds; // rtc
-
+device_t mct_ds;
 // 驱动实例默认值
 uart_t uart1 = 
 {
