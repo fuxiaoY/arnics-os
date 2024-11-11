@@ -16,6 +16,7 @@
 // | 框架             | _USE_FREERTOS_      | 使用 FreeRTOS 操作系统 |
 // +-------------------------------------------------+
 #define _USE_FREERTOS_
+#define NOT_ALLOWED_SLEEP
 //#define _USE_FREERTOS_MONITOR_        // 监测 FreeRTOS CPU利用率情况
 //#define _USE_FREERTOS_SYSTEM_MONITOR_ // 监测 FreeRTOS 系统溢出及处理
 // +-------------------------------------------------+

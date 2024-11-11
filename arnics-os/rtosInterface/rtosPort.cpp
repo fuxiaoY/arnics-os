@@ -29,6 +29,15 @@ void rtosTaskResumeAll(void)
 {
     xTaskResumeAll();
 }
+void rtosThreadDelayUntil(uint32_t time)
+{
+    TickType_t xLastWakeTime;
+    TickType_t xFrequency = pdMS_TO_TICKS(time); // 时间
+
+    // 初始化时刻
+    xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, xFrequency); // 唤醒
+}
 
 void rtosThreadDelay(uint32_t ms)
 {

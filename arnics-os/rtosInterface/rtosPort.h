@@ -17,7 +17,7 @@ extern "C" {
 
 extern void rtosTaskSuspendAll(void);
 extern void rtosTaskResumeAll(void);
-
+extern void rtosThreadDelayUntil(uint32_t time);
 extern void rtosThreadDelay(uint32_t ms);
 
 extern bool rtosEventosGetMsg(void *msg,uint32_t delay);
