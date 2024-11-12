@@ -178,7 +178,7 @@ void MX_FREERTOS_Init(void)
   osThreadDef(ConsleTask, StartConsleTask, osPriorityNormal, 0, 1024);
   consleTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
 
-  osThreadDef(eventTask, StartEventTask, osPriorityAboveNormal, 0, 640);
+  osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
   eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
 
   osThreadDef(mainTask, StartMaintTask, osPriorityNormal, 0, 640);
