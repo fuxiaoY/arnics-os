@@ -6,7 +6,7 @@
 
 
 DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 3);
-_SECTION("._entry_event_api1")
+_SECTION("._entry_event_api")
 
 EVENT_STATE event_state = OnWattingOutMsg;
 uint32_t EVENT_FLAG = 0; // 外部事件标志
@@ -136,7 +136,7 @@ _WEAK void onWaittingOutMessage()
         {
             event_internal_exec(EVENT_FLAG,NULL);
         }
-        rtosThreadDelay(10);
+        rtosThreadDelay(100);
     }
 }
 
@@ -147,7 +147,7 @@ _WEAK void eventAction()
         event_internal_exec(EVENT_FLAG,mesg_cache.buf); // 此处将里面的每一项需求分析出来，并分发任务
         event_exec(EVENT_FLAG,mesg_cache.buf);          // 此处将里面的每一项需求分析出来，并分发任务
         ULOG_DEBUG("eventCenter: analyzeSampleNeed Done!");
-        rtosThreadDelay(10);
+        rtosThreadDelay(100);
         event_state = SendingRspMsg; // 进入发送响应消息状态
         break;
     }
@@ -185,9 +185,9 @@ _WEAK void onResetState()
             {
                 ULOG_DEBUG("Retry sendding!!");
                 event_internal_exec(EVENT_FLAG,NULL);
-                rtosThreadDelay(10);
+                rtosThreadDelay(100);
             }
-            rtosThreadDelay(10);
+            rtosThreadDelay(100);
         }
         else
         {
