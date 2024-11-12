@@ -155,7 +155,6 @@ _WEAK void eventAction()
 
 _WEAK void onResetState()
 {
-    Message_t msg = {0};
     bool needRsp = false;
 
     for (size_t i = 0; i < getRegisterTableNum(); i++)
@@ -173,7 +172,7 @@ _WEAK void onResetState()
     {
         if (needRsp)
         {
-            if (rtosEventosSendMsg(&msg, 500)) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
+            if (rtosEventosSendMsg(&mesg_cache, 500)) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
             {
                 // 发送成功 一个状态结束
                 ULOG_DEBUG("Message sent eventosRspQueue succeed! ID=%d", mesg_cache.ID_Ts);
@@ -247,7 +246,7 @@ uint32_t SendEventCallToEventCenter(uint32_t eventflag,void *argv,size_t len, ti
  * @retval 
  * @attention 采用信号量保证只有一个任务可以访问该函数，会自动回填消息
  */
-bool GetResponseMessageFromEventCenter(time_t ID, time_t wait)
+bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
 {
     Message_t receivedMsg;
     uint32_t numMessages;
@@ -295,6 +294,8 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait)
                 {
                     // 找到消息，释放信号量并返回 TRUE
                     ReleaseEventosMsgQueueMutex();
+                    //消息拷贝
+                    memcpy(argv,receivedMsg.buf,receivedMsg.length);
                     return TRUE;
                 }
                 else

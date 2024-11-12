@@ -75,7 +75,7 @@ typedef enum
 extern Message_t mesg_cache;               //事件应用消息
 /* function declaration ---------------------------------------------*/
 extern uint32_t SendEventCallToEventCenter(uint32_t eventflag,void *argv,size_t len, time_t wait);
-extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait);
+extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv);
 extern bool set_event_flag(uint32_t *eventflag, const char *name) ;
 extern void event_process();
 
