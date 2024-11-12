@@ -50,7 +50,7 @@ extern void battery_check(void* argv) ;
 #define REGISTER_ENTRIES \
     X(NULL, EVENT_EXTERNAL_EMPLOY, false) \
     X(battery_check, EVENT_EXTERNAL_EMPLOY, true) \
-    X(led_action, EVENT_EXTERNAL_EMPLOY, false) 
+    X(led_action, EVENT_EXTERNAL_EMPLOY, true) 
 
 #ifdef __cplusplus
 }

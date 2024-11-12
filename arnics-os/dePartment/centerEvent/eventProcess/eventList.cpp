@@ -7,7 +7,6 @@ _SECTION("._entry_event_api")
 extern Message_t mesg_cache;//事件应用消息
 
 
-
 // 定义函数
 void led_action(void* argv) 
 {
@@ -30,7 +29,12 @@ void led_action(void* argv)
 
         dev_open(&led1_ds);
     }
+    MessageUnion messageReq = {0};
+    memcpy(&messageReq,argv,sizeof(MessageUnion));
+    MessageUnion* rsp = (MessageUnion*)argv;
 
+    rsp->message_deliver.test_rsp.a = messageReq.message_deliver.test_req.a;
+    rsp->message_deliver.test_rsp.b = messageReq.message_deliver.test_req.b;
 }
 
 void battery_check(void* argv) 
