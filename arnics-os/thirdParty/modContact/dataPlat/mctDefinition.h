@@ -24,7 +24,7 @@ typedef enum
 typedef struct {
     uint16_t startOffset;
     uint16_t endOffset;
-    uint16_t length;
+    size_t length;
     uint16_t tcmd_id;
     dealprocess status;
 } Frame_t;
@@ -68,8 +68,8 @@ struct MctInstance{
 };
 
 /* typedef -----------------------------------------------------------*/
-typedef bool (*cmd_Pack)(MctInstance *cb, void *para);
-typedef bool (*cmd_Analyze)(MctInstance *cb, void *para);
+typedef bool (*cmd_Pack)(uint8_t* buf, size_t maxlen, void *para);
+typedef bool (*cmd_Analyze)(uint8_t* buf, size_t len, void *para);
 
 typedef enum
 {

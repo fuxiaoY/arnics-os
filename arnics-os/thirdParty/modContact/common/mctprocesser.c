@@ -86,7 +86,7 @@ bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const
         {
 
             // 打包命令，如果失败则返回false
-            if (false == List[i].pack(inst, para))
+            if (false == List[i].pack(inst->cmd_cache,inst->CMD_MAX_SIZE, para))
             {
                 return false;
             }
@@ -241,12 +241,12 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
         {
             commandFound = true;
 
-            if (!cmdList[i].analyze(inst, para))
+            if (!cmdList[i].analyze(inst->payload_cache + payloadlist->frames[payloadlist_id].startOffset,payloadlist->frames[payloadlist_id].length, para))
             {
                 break;
             }
 
-            if (!cmdList[i].pack(inst, para))
+            if (!cmdList[i].pack(inst->cmd_cache,inst->CMD_MAX_SIZE,para))
             {
                 break;
             }
@@ -301,7 +301,7 @@ bool expectframeDeal(MctInstance *inst, StaticFrameList *payloadlist, tCmd const
         if (payloadlist->frames_expected.tcmd_id == cmdList[i].id)
         {
             // 调用 analyze 函数
-            if (cmdList[i].analyze(inst, para))
+            if (cmdList[i].analyze(inst->payload_cache + payloadlist->frames_expected.startOffset,payloadlist->frames_expected.length, para))
             {
                 // 分析成功，设置状态为成功并返回 true
                 payloadlist->frames_expected.status = FRAME_SUCCEED;
