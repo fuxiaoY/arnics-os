@@ -60,7 +60,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* USART1 interrupt Init */
+      /* USART1 interrupt Init */
     HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
@@ -75,7 +75,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   if(uartHandle->Instance==USART1)
   {
   /* USER CODE BEGIN USART1_MspDeInit 0 */
-
   /* USER CODE END USART1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_USART1_CLK_DISABLE();
@@ -92,15 +91,17 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END USART1_MspDeInit 1 */
   }
-}
+} 
 
 /* USER CODE BEGIN 1 */
 void bsp_usart_init(uart_t *dev)
 {
+
   if (HAL_UART_Init(&dev->huart) != HAL_OK)
   {
     Error_Handler();
   }
+  __HAL_UART_ENABLE_IT(&dev->huart,UART_IT_RXNE);
 }
 void bsp_usart_close(uart_t *dev)
 {
@@ -153,6 +154,7 @@ void bsp_uart_irq_ring(uart_t *dev)
 
   if (__HAL_UART_GET_FLAG(&dev->huart, UART_FLAG_IDLE))
   {
+    
     __HAL_UART_CLEAR_IDLEFLAG(&dev->huart); // 清IDLE标志
   }
 

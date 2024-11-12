@@ -254,6 +254,51 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thirdParty/modContact</GroupName>
+          <Files>
+            <File>
+              <FileName>mctprocesser.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\common\mctprocesser.c</FilePath>
+            </File>
+            <File>
+              <FileName>mctDriver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\port\mctDriver.c</FilePath>
+            </File>
+            <File>
+              <FileName>mctLib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\common\mctLib.c</FilePath>
+            </File>
+            <File>
+              <FileName>mctAdapter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\common\mctAdapter.c</FilePath>
+            </File>
+            <File>
+              <FileName>mctList.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\mctList.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/thirdParty/modContact/list</GroupName>
+          <Files>
+            <File>
+              <FileName>command_console.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\console\command_console.c</FilePath>
+            </File>
+            <File>
+              <FileName>command_consoleAdapter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\console\command_consoleAdapter.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/drivers/common</GroupName>
           <Files>
             <File>
