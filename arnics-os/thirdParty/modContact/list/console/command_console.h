@@ -7,13 +7,17 @@ extern "C" {
 
 #include "../../common/mctProcesser.h"
 
+
+
 #define CMD_CONSOLE_ID_BASE                           (uint16_t)0
-
-#define CMD_CONSOLE_ID_TEST1                          (1+CMD_CONSOLE_ID_BASE)
-#define CMD_CONSOLE_ID_TEST2                          (1+CMD_CONSOLE_ID_TEST1)
-#define CMD_CONSOLE_ID_TEST3                          (1+CMD_CONSOLE_ID_TEST2)
+#define CMD_CONSOLE_ID_REV                            (1+CMD_CONSOLE_ID_BASE)
 
 
+typedef struct
+{
+  const uint8_t command;
+  void (*handler)(const uint8_t *buf, size_t len);
+} CommandHandler;
 
 
 extern tCmd const *CMD_ConsoleCmdGet(void);
