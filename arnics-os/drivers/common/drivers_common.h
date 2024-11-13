@@ -101,9 +101,8 @@ extern int dev_params_set(device_t *device, const param_value_t *params, size_t 
  */
 #define DEV_PARAMS_SET(dev, ...)                                          \
     do {                                                                  \
-        static const size_t counter = __COUNTER__;                        \
-        param_value_t CONCATENATE(params_, counter)[sizeof((param_value_t[]){__VA_ARGS__}) / sizeof(param_value_t)] = {__VA_ARGS__}; \
-        dev_params_set(dev, CONCATENATE(params_, counter), sizeof(CONCATENATE(params_, counter)) / sizeof(param_value_t)); \
+        param_value_t CONCATENATE(params_, __LINE__)[sizeof((param_value_t[]){__VA_ARGS__}) / sizeof(param_value_t)] = {__VA_ARGS__}; \
+        dev_params_set(dev, CONCATENATE(params_, __LINE__), sizeof(CONCATENATE(params_, __LINE__)) / sizeof(param_value_t)); \
     } while (0)
 /**
  * @fn dev_open
