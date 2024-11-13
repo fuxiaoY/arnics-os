@@ -2,26 +2,36 @@
 #include "../../common/mctLib.h"
 #include "../../../ulog/ulogDef.h"
 #include "../../../../port/portInclude.h"
-static void handleCmd_7F(const uint8_t *buf, size_t len)
+
+static void handleCmd_FF(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
+{
+    const char version[] = "V1.0.0\n";
+    *packlen = strlen(version);
+    memcpy(packbuf, version, *packlen);
+
+}
+
+static void handleCmd_7F(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
 {
     NVIC_SystemReset();
 }
 
-CommandHandler commandHandlers[] = {
 
+CommandHandler commandHandlers[] = {
+    {0xFF, handleCmd_FF},
     {0x7F, handleCmd_7F},
 };
 // 查表的大小
 const size_t numHandlers = sizeof(commandHandlers) / sizeof(commandHandlers[0]);
 
-static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLen)
+static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLen,uint8_t *buf, size_t len)
 {
   // 查找命令
   for (size_t i = 0; i < numHandlers; ++i)
   {
     if (memcmp(cmd, &commandHandlers[i].command, 1) == 0)
     {
-      commandHandlers[i].handler(arg, argLen);
+      commandHandlers[i].handler(arg, argLen,buf,len);
       return;
     }
   }
@@ -30,15 +40,21 @@ static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLe
 
 
 
-static bool cmd_PackRevFlow(uint8_t* buf, size_t len, void *para)
+static bool cmd_PackRevFlow(uint8_t* buf, size_t* len, void *para)
 {
-
+    command_t *console_cmd = (command_t *)para;
+    if(console_cmd->commad_rev.len >= 0)
+    {
+        processCommand(&console_cmd->commad_rev.cmd, console_cmd->commad_rev.buf, console_cmd->commad_rev.len, \
+                        buf,len);
+    }
 
     return true;
 }
 
 static bool cmd_AnalyzeRevFlow(uint8_t* buf, size_t len, void *para)
 {
+    command_t *console_cmd = (command_t *)para;
     uint8_t Cmd = 0;
     int remainLen = (int)len;
 
@@ -53,10 +69,22 @@ static bool cmd_AnalyzeRevFlow(uint8_t* buf, size_t len, void *para)
     ptr += 2;
     remainLen -= (ptr - buf);
     remainLen -= strlen("*#*#");
-    if(remainLen >= 0)
-    {
-        processCommand(&Cmd, ptr, remainLen);
-    }
+
+    console_cmd->commad_rev.cmd = Cmd;
+    console_cmd->commad_rev.buf =  ptr;
+    console_cmd->commad_rev.len = remainLen;
+
+    return true;
+}
+static bool cmd_PackRevHexFlow(uint8_t* buf, size_t* len, void *para)
+{
+
+
+    return true;
+}
+//7e len cmd 7e
+static bool cmd_AnalyzeRevHexFlow(uint8_t* buf, size_t len, void *para)
+{
 
 
     return true;
@@ -64,12 +92,13 @@ static bool cmd_AnalyzeRevFlow(uint8_t* buf, size_t len, void *para)
 
 
 
-
+static const char header[2] = {0x7e,0x00};
+static const char tail[2] = {0x7e,0x00};
 
 static const tCmd cmdList[] =
 {
     CMD_ADD(CMD_CONSOLE_ID_REV,             2,  "$$COMX$$",          "*#*#",         NULL,         RecvSend,        RevFlow),
-
+    CMD_ADD(CMD_CONSOLE_ID_REV2,             2,  &header,              &tail,         NULL,        RecvSend,        RevHexFlow),
 };
 tCmd const *CMD_ConsoleCmdGet(void)
 {

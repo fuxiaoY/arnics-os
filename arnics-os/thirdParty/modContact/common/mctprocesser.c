@@ -86,7 +86,7 @@ bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const
         {
 
             // 打包命令，如果失败则返回false
-            if (false == List[i].pack(inst->cmd_cache,inst->cmd_size, para))
+            if (false == List[i].pack(inst->cmd_cache,&inst->cmd_size, para))
             {
                 return false;
             }
@@ -246,7 +246,7 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
                 break;
             }
 
-            if (!cmdList[i].pack(inst->cmd_cache,inst->cmd_size,para))
+            if (!cmdList[i].pack(inst->cmd_cache,&inst->cmd_size,para))
             {
                 break;
             }

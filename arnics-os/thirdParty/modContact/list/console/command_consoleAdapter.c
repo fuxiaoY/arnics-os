@@ -4,13 +4,13 @@
 
 static bool cmd_reqHandle(MctInstance *inst,void *para)
 {
-    mct_console_execute(inst,true,CMD_CONSOLE_ID_REV,para);
     return true;
 }
 
 static bool cmd_revHandle(MctInstance *inst,void *para)
 {
-    mct_console_execute(inst,false,0,para);
+    command_t console_cmd = {0};
+    mct_console_execute(inst,false,0,&console_cmd);
     return true;
 }
 

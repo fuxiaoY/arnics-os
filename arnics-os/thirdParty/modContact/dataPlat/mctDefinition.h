@@ -68,7 +68,7 @@ struct MctInstance{
 };
 
 /* typedef -----------------------------------------------------------*/
-typedef bool (*cmd_Pack)(uint8_t* buf, size_t len, void *para);
+typedef bool (*cmd_Pack)(uint8_t* buf, size_t* len, void *para);
 typedef bool (*cmd_Analyze)(uint8_t* buf, size_t len, void *para);
 
 typedef enum
