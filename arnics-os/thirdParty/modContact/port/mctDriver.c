@@ -6,7 +6,7 @@
 //并不会阻塞整个系统的调度
 void MCT_DELAY(uint32_t time)
 {
-    rtosThreadDelay(time);
+    rtosThreadDelayUntil(time);
 }
 
 
