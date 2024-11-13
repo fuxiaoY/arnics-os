@@ -30,7 +30,7 @@ static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLe
 
 
 
-static bool cmd_PackRevFlow(uint8_t* buf, size_t maxlen, void *para)
+static bool cmd_PackRevFlow(uint8_t* buf, size_t len, void *para)
 {
 
 
