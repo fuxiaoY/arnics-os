@@ -7,6 +7,8 @@
 #endif
 
 // 函数指针类型的定义
+typedef void (T_TYPEDEF(rtosTaskSuspendAll))(void);
+typedef void (T_TYPEDEF(rtosTaskResumeAll))(void);
 typedef bool (T_TYPEDEF(rtosEventosGetMsg))(void *msg, uint32_t delay);
 typedef bool (T_TYPEDEF(rtosEventosSendMsg))(void *msg, uint32_t delay);
 typedef bool (T_TYPEDEF(rtosTakeMsgFromEventos))(void *msg, uint32_t delay);
@@ -29,6 +31,8 @@ typedef bool (T_TYPEDEF(rtosDeliverMsgToMedia))(void *msg, uint32_t delay);
 // 输出函数接口结构体
 typedef struct
 {
+    T_STRUCT_MEMBER(rtosTaskSuspendAll);   
+    T_STRUCT_MEMBER(rtosTaskResumeAll);
     T_STRUCT_MEMBER(rtosEventosGetMsg);
     T_STRUCT_MEMBER(rtosEventosSendMsg);
     T_STRUCT_MEMBER(rtosTakeMsgFromEventos);
@@ -57,6 +61,8 @@ extern const tRTOSEntry entry_rtos_list;
 #define RTOS_MICRODEF(name) (rtos_api->t_##name)
 
 // 宏定义
+#define rtosTaskSuspendAll                        RTOS_MICRODEF(rtosTaskSuspendAll)
+#define rtosTaskResumeAll                         RTOS_MICRODEF(rtosTaskResumeAll)
 #define rtosEventosGetMsg                         RTOS_MICRODEF(rtosEventosGetMsg)
 #define rtosEventosSendMsg                        RTOS_MICRODEF(rtosEventosSendMsg)
 #define rtosTakeMsgFromEventos                    RTOS_MICRODEF(rtosTakeMsgFromEventos)

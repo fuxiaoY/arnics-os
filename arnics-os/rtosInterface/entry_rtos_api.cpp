@@ -1,12 +1,13 @@
 #include "entry_rtos_api.h"
-#undef rtosThreadDelayUntil
-#undef rtosThreadDelay
+
 #undef rtosTaskSuspendAll
 #undef rtosTaskResumeAll
 #undef rtosEventosGetMsg
 #undef rtosEventosSendMsg
 #undef rtosTakeMsgFromEventos
 #undef rtosDeliverMsgToEventos
+#undef rtosThreadDelayUntil
+#undef rtosThreadDelay
 #undef TakeEventosMsgQueueMutex
 #undef ReleaseEventosMsgQueueMutex
 #undef TakeEventosMutex
@@ -25,6 +26,10 @@
 __attribute__((section("._entry_rtos_api")))
 const tRTOSEntry entry_rtos_list =
 {
+    #undef rtosTaskSuspendAll
+    INIT_MEMBER(rtosTaskSuspendAll),
+    #undef rtosTaskResumeAll
+    INIT_MEMBER(rtosTaskResumeAll),
     #undef rtosEventosGetMsg
     INIT_MEMBER(rtosEventosGetMsg),
     #undef rtosEventosSendMsg
