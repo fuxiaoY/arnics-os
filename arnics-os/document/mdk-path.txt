@@ -418,3 +418,18 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>arnics/department/centerMedia</GroupName>
+          <Files>
+            <File>
+              <FileName>entry_media_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerMedia\entry_media_api.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>media_process.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\arnics-os\dePartment\centerMedia\media_process.cpp</FilePath>
+            </File>
+          </Files>
+        </Group>
