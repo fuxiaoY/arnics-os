@@ -54,7 +54,7 @@ typedef struct
  * 
  * @return 当前的任务计数器值
  */
-extern uint32_t arnics_getTick();
+extern uint32_t arnics_getTick(void);
 
 /**
  * @fn arnics_systick_handler
@@ -64,7 +64,7 @@ extern uint32_t arnics_getTick();
  * 
  * @retval None
  */
-extern void arnics_systick_handler();
+extern void arnics_systick_handler(void);
 
 /**
  * @fn arnics_addTick

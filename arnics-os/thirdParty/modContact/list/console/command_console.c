@@ -2,7 +2,23 @@
 #include "../../common/mctLib.h"
 #include "../../../ulog/ulogDef.h"
 #include "../../../../port/portInclude.h"
+#include "../../../../dataPlat/dataPlatInclude.h"
+#include "../../../../rtosInterface/rtosInclude.h"
 
+static void handleCmd_7F(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
+{
+    NVIC_SystemReset();
+}
+
+static void handleCmd_E0(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
+{
+  rtosTaskSuspendAll();
+  {
+    UnitySystemInterface((const char*)buf);
+  }
+  rtosTaskResumeAll();
+
+}
 static void handleCmd_FF(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
 {
     const char version[] = "V1.0.0\n";
@@ -11,15 +27,11 @@ static void handleCmd_FF(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 
 }
 
-static void handleCmd_7F(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
-{
-    NVIC_SystemReset();
-}
-
 
 CommandHandler commandHandlers[] = {
-    {0xFF, handleCmd_FF},
     {0x7F, handleCmd_7F},
+    {0xE0, handleCmd_E0},
+    {0xFF, handleCmd_FF},
 };
 // 查表的大小
 const size_t numHandlers = sizeof(commandHandlers) / sizeof(commandHandlers[0]);
@@ -43,11 +55,9 @@ static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLe
 static bool cmd_PackRevFlow(uint8_t* buf, size_t* len, void *para)
 {
     command_t *console_cmd = (command_t *)para;
-    if(console_cmd->commad_rev.len > 0)
-    {
-        processCommand(&console_cmd->commad_rev.cmd, console_cmd->commad_rev.buf, console_cmd->commad_rev.len, \
+    processCommand(&console_cmd->commad_rev.cmd, console_cmd->commad_rev.buf, console_cmd->commad_rev.len, \
                         buf,len);
-    }
+    
 
     return true;
 }
@@ -68,6 +78,10 @@ static bool cmd_AnalyzeRevFlow(uint8_t* buf, size_t len, void *para)
     Cmd = hexChrToAscii((const char*)ptr);
     ptr += 2;
     remainLen -= (ptr - buf);
+    if(remainLen < strlen("*#*#"))
+    {
+        return false;
+    }
     remainLen -= strlen("*#*#");
 
     console_cmd->commad_rev.cmd = Cmd;
