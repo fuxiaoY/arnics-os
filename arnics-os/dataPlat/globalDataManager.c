@@ -4,29 +4,25 @@
 #include "../thirdParty/thirdPartyInclude.h"
 #include "../common/commonInclude.h"
 _SECTION( "._entry_dataPlat_api")
-// 静态缓冲区
-SytemCfg *unityGlobalCfgPara = &global_cfg;
-SytemState *unityGlobalStatPara = &global_state;
+
 // S权限由督查中心开机后自动更新存取
 static const unityParaList_t unity_system_ParaList[] = 
 {
     {R|W,  Unity_System_usr_systick,               UINT32_TYPE, NULL_TYPE,   (void*)&arnics_systick,                       sizeof(uint32_t),       "arnics_systick"}
 };
 
-
-
-
 static const unityParaList_t unity_GlobalCfg_ParaList[] = 
 {
-    {R|W, Unity_global_cfg_SaveTs,                      UINT32_TYPE, NULL_TYPE,   &unityGlobalCfgPara->SaveTs,                      sizeof(uint32_t),  "SaveTs"}
+    {R|W, Unity_global_cfg_SaveTs,                      UINT32_TYPE, NULL_TYPE,   &global_cfg.SaveTs,                      sizeof(uint32_t),  "SaveTs"}
 };
 
 static const unityParaList_t unity_GlobalStat_ParaList[] = 
 {
-    {R|W,  Unity_global_state_SaveTs,            UINT32_TYPE,NULL_TYPE, &unityGlobalStatPara->SaveTs,             sizeof(uint32_t),  "SaveTs"},
-    {R,    Unity_global_cfg_WorkStat,            UINT8_TYPE, NULL_TYPE, &unityGlobalStatPara->WorkStat,           sizeof(uint8_t),  "WorkStat"},
-    {R,    Unity_global_cfg_PreWorkStat,         UINT8_TYPE, NULL_TYPE, &unityGlobalStatPara->PreWorkStat,        sizeof(uint8_t),  "PreWorkStat"}
+    {R|W,  Unity_global_state_SaveTs,            UINT32_TYPE,NULL_TYPE, &global_state.SaveTs,             sizeof(uint32_t),  "SaveTs"},
+    {R,    Unity_global_cfg_WorkStat,            UINT8_TYPE, NULL_TYPE, &global_state.WorkStat,           sizeof(uint8_t),  "WorkStat"},
+    {R,    Unity_global_cfg_PreWorkStat,         UINT8_TYPE, NULL_TYPE, &global_state.PreWorkStat,        sizeof(uint8_t),  "PreWorkStat"}
 };
+
 
 static uint16_t Unity_systemParaNumGet(void)
 {

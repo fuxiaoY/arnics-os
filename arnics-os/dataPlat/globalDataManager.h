@@ -95,8 +95,6 @@ extern void Unityglobal_cfgInterface(const char *ArgReq);
 extern void Unityglobal_stateInterface(const char *ArgReq);
 extern char *UnityWanInterface(const char *ArgReq);
 
-extern void SystemParaLoad();
-extern void SystemParaStore();
 
 #ifdef __cplusplus
 }
