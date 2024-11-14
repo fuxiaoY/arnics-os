@@ -7,6 +7,7 @@
 #include "../dePartment/centerEvent/entry_event_api.h"
 #include "../dePartment/centerBusiness/entry_business_api.h"
 #include "../dePartment/centerConsole/entry_console_api.h"
+#include "../dePartment/centerMedia/entry_media_api.h"
 /* ---------------------------------休眠相关 -----------------------------------------------*/
 /**
  * @func StartConsleTask
@@ -59,6 +60,23 @@ void StartEventTask(void const *argument)
     rtosThreadDelay(100);
   }
 
+}
+/**
+ * @func StartMaintTask
+ * @brief 主功能线程
+ * @param 无
+ * @retval 无
+ * @note 无
+ * @attention
+ */
+void StartMediaTask(void const *argument)
+{
+
+  while (1)
+  {
+    media_process();
+    rtosThreadDelay(1000);
+  }
 }
 
 

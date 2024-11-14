@@ -39,6 +39,7 @@
 /* Private define ------------------------------------------------------------*/
 osThreadId consleTaskHandle;
 osThreadId GuardTaskHandle;
+osThreadId MediaTaskHandle;
 osThreadId mainTaskHandle;
 osThreadId eventTaskHandle;
 osThreadId sleepTaskHandle;
@@ -180,6 +181,9 @@ void MX_FREERTOS_Init(void)
 
   osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
   eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
+
+  osThreadDef(MediaTask, StartMediaTask, osPriorityNormal, 0, 640);
+  MediaTaskHandle = osThreadCreate(osThread(MediaTask), NULL);
 
   osThreadDef(mainTask, StartMaintTask, osPriorityNormal, 0, 640);
   mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
