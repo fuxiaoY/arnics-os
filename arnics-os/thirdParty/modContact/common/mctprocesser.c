@@ -1,7 +1,7 @@
 #include "mctProcesser.h"
 #include "mctLib.h"
 #include "../dataPlat/mctDefinition.h"
-#include "../port/mctDriver.h"
+
 
 /*-------------------------------------------------------------------------------------*/
 
@@ -90,7 +90,7 @@ bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const
             {
                 return false;
             }
-            mct_write(inst->cmd_cache,inst->cmd_size);  
+            inst->mct_write(inst->cmd_cache,inst->cmd_size);  
             return true;
         }
     }
@@ -112,7 +112,7 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
         uint16_t single_len = 0;
 
         //收帧
-        single_len = mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
+        single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
         inst->payload_size += single_len;
         remain_len += single_len;
         //有数据更新，则进入一次判断
@@ -173,7 +173,7 @@ static bool unexpected_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t
     bool result = false;
 
     // 收帧
-    single_len = mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
+    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
     inst->payload_size += single_len;
     remain_len += single_len;
     // 有数据更新，则进入一次判断
@@ -251,7 +251,7 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
                 break;
             }
 
-            if (!mct_write(inst->cmd_cache, inst->cmd_size))
+            if (!inst->mct_write(inst->cmd_cache, inst->cmd_size))
             {
                 break;
             }

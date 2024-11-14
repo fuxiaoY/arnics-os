@@ -12,7 +12,7 @@ uint8_t console_rx_cache[CMD_MAX_SIZE];
 void console_process(void)
 {
     mct_init(&consoleInstance,console_tx_cache,CMD_MAX_SIZE, \
-                                console_rx_cache,CMD_MAX_SIZE);
+                                console_rx_cache,CMD_MAX_SIZE,command_mct_write,command_mct_read);
     mct_reg("CONSOLE",&consoleInstance,false);
     while(1)
     {

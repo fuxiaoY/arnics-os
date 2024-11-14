@@ -1,6 +1,43 @@
 #include "mctAdapter.h"
 #include "../port/mctDriver.h"
 #include "../list/mctList.h"
+#include "mctLib.h"
+
+bool AT_found(MctInstance *inst)
+{
+    
+    inst->cmd_size = sprintf((char*)inst->cmd_cache, "\r\nATI\r\n");
+    inst->mct_write(inst->cmd_cache, inst->cmd_size);
+    uint32_t cnt = 0;
+    uint16_t total_len = 0;
+    do
+    {
+        uint16_t single_len = 0;
+
+        //收帧
+        single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
+        inst->payload_size += single_len;
+        total_len += single_len;
+        //有数据更新，则进入一次判断
+        if (single_len > 0)
+        {
+            for(uint8_t i =0;i<mctModemLisNumGet();i++)
+            {
+                if (NULL != hexhex(inst->payload_cache, (uint8_t*)mctModemListGet()[i].name, total_len, strlen(mctModemListGet()[i].name)))
+                {
+                    inst->api = mctModemListGet()[i].api;
+                    return true;
+
+                }
+            }
+        }
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+        cnt++;
+    } while (cnt < (3000 / WAIT_SCHEDULE_TIME_MS));
+
+   return false;
+}
+
 
 
 /**
@@ -15,9 +52,10 @@
  */
 bool mct_reg(const char* name,MctInstance *inst,bool ModemAtuoRecogniton)
 {
+    mct_data_reset(inst);
     if (true == ModemAtuoRecogniton)
     {
-        return false;
+        return AT_found(inst);
     }
     else
     {
@@ -77,4 +115,31 @@ bool mctApiExecute(MctInstance *inst,uint16_t id, void *para)
     {
         return false; // 如果为空，则返回执行失败
     }
+}
+/* define ------------------------------------------------------------*/
+
+void mct_init(MctInstance* pInstance,uint8_t *Cmd_cache,size_t cmd_max_size, \
+                                    uint8_t* Payload_cahe,size_t payload_max_size, \
+                                    int (*write_callback)(void *file, uint16_t len), \
+                                    uint32_t (*read_callback)(uint8_t *buf, uint16_t maxlen))
+{
+    //instance init
+    pInstance->cmd_cache = Cmd_cache;
+    pInstance->payload_cache = Payload_cahe;
+    pInstance->CMD_MAX_SIZE = cmd_max_size;
+    pInstance->PAYLOAD_MAX_SIZE = payload_max_size;
+    pInstance->mct_write = write_callback; // 设置写回调函数
+    pInstance->mct_read = read_callback;   // 设置读回调函数
+
+    pInstance->cmd_size = 0;
+    pInstance->payload_size = 0;
+    initStaticFrameList(&pInstance->payload_list);
+}    
+
+void mct_data_reset(MctInstance* pInstance)
+{
+    memset(pInstance->cmd_cache,0,pInstance->CMD_MAX_SIZE);
+    memset(pInstance->payload_cache,0,pInstance->PAYLOAD_MAX_SIZE);
+    pInstance->cmd_size = 0;
+    pInstance->payload_size = 0;
 }

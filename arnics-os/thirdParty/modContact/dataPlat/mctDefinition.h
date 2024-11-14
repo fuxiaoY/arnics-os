@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -64,6 +65,8 @@ struct MctInstance{
     StaticFrameList payload_list;
     size_t CMD_MAX_SIZE;
     size_t PAYLOAD_MAX_SIZE;
+    int (*mct_write)(void *file, uint16_t len);
+    uint32_t (*mct_read)(uint8_t *buf, uint16_t maxlen);
 
 };
 
