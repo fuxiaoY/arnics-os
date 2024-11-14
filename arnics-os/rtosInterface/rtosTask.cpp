@@ -63,7 +63,7 @@ void StartEventTask(void const *argument)
 }
 /**
  * @func StartMaintTask
- * @brief 主功能线程
+ * @brief 媒体中心线程
  * @param 无
  * @retval 无
  * @note 无
@@ -78,7 +78,6 @@ void StartMediaTask(void const *argument)
     rtosThreadDelay(1000);
   }
 }
-
 
 /**
  * @func StartMaintTask

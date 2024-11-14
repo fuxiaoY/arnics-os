@@ -36,6 +36,18 @@ extern void ReleaseEventosMutex(void);
 extern uint32_t  CheckEventRspMesgNum(void);
 extern bool  PeekEventRspMesg(void *receivedMsg);
 
+/*---------------------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------------------*/
+// 媒体中心队列
+extern uint32_t  CheckMediaRspMesgNum(void);
+// 获取读消息队列互斥信号量
+extern bool TakeMediaMutex(time_t waitTime);
+extern bool rtosMediaGetMsg(void *msg,uint32_t delay);
+// 释放读消息队列互斥信号量
+extern void ReleaseMediaMsgQueueMutex(void);
+extern bool CheckMediaQueueSpacesAvailable(void);
+extern bool rtosDeliverMsgToMedia(void *msg,uint32_t delay);
 
 #ifdef __cplusplus
 }

@@ -3,16 +3,20 @@
 #define ENTRY_MEDIA_API_H_
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
-
+#include "../../dataPlat/entry_dataPlat_api.h"
 
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(media_process))(void);
+typedef bool (T_TYPEDEF(readMediaReq))(MediaMessage_t *msg,time_t wait);
+typedef void (T_TYPEDEF(SendMsgToMediaCenter))(MediaMessage_t *message);
+
 // 输出函数接口结构体
 typedef struct
 {
 
     T_STRUCT_MEMBER(media_process);
-
+    T_STRUCT_MEMBER(readMediaReq);
+    T_STRUCT_MEMBER(SendMsgToMediaCenter);
 /*-----------------------------------*/
 } tMEDIAEntry;
 
@@ -24,6 +28,6 @@ extern const tMEDIAEntry entry_media_list;
 /*-----------------------------------*/
 
 #define media_process                          MEDIA_MICRODEF(media_process)
-
-
+#define readMediaReq                           MEDIA_MICRODEF(readMediaReq)
+#define SendMsgToMediaCenter                   MEDIA_MICRODEF(SendMsgToMediaCenter)
 #endif // API_H_

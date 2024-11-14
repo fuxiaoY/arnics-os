@@ -14,6 +14,13 @@
 #undef CheckEventRspMesgNum
 #undef PeekEventRspMesg
 
+#undef CheckMediaRspMesgNum
+#undef TakeMediaMutex
+#undef rtosMediaGetMsg
+#undef ReleaseMediaMsgQueueMutex
+#undef CheckMediaQueueSpacesAvailable
+#undef rtosDeliverMsgToMedia
+
 #include "rtosPort.h"
 __attribute__((section("._entry_rtos_api")))
 const tRTOSEntry entry_rtos_list =
@@ -42,4 +49,18 @@ const tRTOSEntry entry_rtos_list =
     INIT_MEMBER(CheckEventRspMesgNum),
     #undef PeekEventRspMesg
     INIT_MEMBER(PeekEventRspMesg),
+
+    #undef CheckMediaRspMesgNum
+    INIT_MEMBER(CheckMediaRspMesgNum),
+    #undef TakeMediaMutex
+    INIT_MEMBER(TakeMediaMutex),
+    #undef rtosMediaGetMsg
+    INIT_MEMBER(rtosMediaGetMsg),
+    #undef ReleaseMediaMsgQueueMutex
+    INIT_MEMBER(ReleaseMediaMsgQueueMutex),
+    #undef CheckMediaQueueSpacesAvailable
+    INIT_MEMBER(CheckMediaQueueSpacesAvailable),
+    #undef rtosDeliverMsgToMedia
+    INIT_MEMBER(rtosDeliverMsgToMedia),
+
 };

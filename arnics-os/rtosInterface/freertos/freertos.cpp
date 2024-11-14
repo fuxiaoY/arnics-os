@@ -39,11 +39,10 @@
 /* Private define ------------------------------------------------------------*/
 osThreadId consleTaskHandle;
 osThreadId GuardTaskHandle;
-osThreadId MediaTaskHandle;
 osThreadId mainTaskHandle;
 osThreadId eventTaskHandle;
 osThreadId sleepTaskHandle;
-
+osThreadId MediaTaskHandle;
 //消息中心队列
 QueueHandle_t eventosReqQueue;
 QueueHandle_t eventosRspQueue;
@@ -57,6 +56,9 @@ QueueHandle_t adRspQueue;
 // 消息中心信号量
 SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
 SemaphoreHandle_t eventosID_mutex;   //消息ID锁
+// 媒体中心信号量
+SemaphoreHandle_t MediaRspQueue_xSemaphore; //读媒体中心队列锁
+
 //sfud锁
 SemaphoreHandle_t flashDB_mutex;  
 
@@ -147,6 +149,8 @@ void initSemaphore()
     // Create the semaphore
     eventosRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
     eventosID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
+    MediaRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
+
     flashDB_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
 }
 /**
@@ -181,7 +185,7 @@ void MX_FREERTOS_Init(void)
 
   osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
   eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
-
+  
   osThreadDef(MediaTask, StartMediaTask, osPriorityNormal, 0, 640);
   MediaTaskHandle = osThreadCreate(osThread(MediaTask), NULL);
 

@@ -10,8 +10,12 @@ extern "C" {
 #include "../../dataPlat/entry_dataPlat_api.h"
 #include "../../drivers/driversInclude.h"
 
-extern void media_process(void);
 
+
+
+extern void media_process(void);
+extern bool readMediaReq(MediaMessage_t *msg,time_t wait);
+extern void SendMsgToMediaCenter(MediaMessage_t *message);
 
 #ifdef __cplusplus
 }
