@@ -1,8 +1,5 @@
 #include "console_process.h"
-#include "../../core/coreInclude.h"
-#include "../../rtosInterface/entry_rtos_api.h"
-#include "../../thirdParty/thirdPartyInclude.h"
-#include "../../drivers/driversInclude.h"
+
 
 #define CMD_MAX_SIZE 512
 MctInstance consoleInstance;

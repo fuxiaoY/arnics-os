@@ -1,10 +1,10 @@
 #ifndef _GLOBALDATA_H_
 #define _GLOBALDATA_H_
-#include "globalDef.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#include "globalDef.h"
 
 // 系统参数
 extern bool arnics_start;

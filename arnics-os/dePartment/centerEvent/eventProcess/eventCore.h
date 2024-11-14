@@ -33,7 +33,7 @@ extern "C" {
 
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
-#include "../../../dataPlat/entry_dataPlat_api.h"
+#include "../../../dataPlat/dataPlatInclude.h"
 
 
 

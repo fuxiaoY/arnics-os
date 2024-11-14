@@ -3,7 +3,7 @@
 #define ENTRY_MEDIA_API_H_
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
-#include "../../dataPlat/entry_dataPlat_api.h"
+#include "../../dataPlat/dataPlatInclude.h"
 
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(media_process))(void);

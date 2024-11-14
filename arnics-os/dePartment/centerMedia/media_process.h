@@ -3,12 +3,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
 #include "../../core/coreInclude.h"
 #include "../../thirdParty/thirdPartyInclude.h"
 #include "../../rtosInterface/entry_rtos_api.h"
-#include "../../dataPlat/entry_dataPlat_api.h"
-#include "../../drivers/driversInclude.h"
+#include "../../dataPlat/dataPlatInclude.h"
+
 
 
 

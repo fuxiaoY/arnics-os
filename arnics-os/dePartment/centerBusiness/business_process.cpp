@@ -2,7 +2,7 @@
 #include "../../core/coreInclude.h"
 #include "../../thirdParty/thirdPartyInclude.h"
 #include "../../rtosInterface/entry_rtos_api.h"
-#include "../../dataPlat/entry_dataPlat_api.h"
+#include "../../dataPlat/dataPlatInclude.h"
 
 #include "../centerEvent/entry_event_api.h"
 _SECTION( "._entry_business_api")

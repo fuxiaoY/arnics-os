@@ -1,5 +1,5 @@
 #include "ulogDef.h"
-#include "../../dataPlat/entry_dataPlat_api.h"
+#include "../../dataPlat/dataPlatInclude.h"
 #include "../../drivers/driversInclude.h"
 static void CurrentTimeToString(rtcTimeDateTypeDef_t* DT, char* buffer, size_t bufferSize)
 {

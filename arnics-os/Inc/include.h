@@ -10,7 +10,7 @@
 #include "../rtosInterface/rtosInclude.h"
 
 // 数据平台
-#include "../dataPlat/entry_dataPlat_api.h"
+#include "../dataPlat/dataPlatInclude.h"
 // 驱动层
 #include "../drivers/driversInclude.h"
 // 接口
