@@ -24,7 +24,7 @@ CommandHandler commandHandlers[] = {
 // 查表的大小
 const size_t numHandlers = sizeof(commandHandlers) / sizeof(commandHandlers[0]);
 
-static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLen,uint8_t *buf, size_t len)
+static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLen,uint8_t *buf, size_t* len)
 {
   // 查找命令
   for (size_t i = 0; i < numHandlers; ++i)
@@ -43,7 +43,7 @@ static void processCommand(const uint8_t *cmd, const uint8_t  *arg, size_t argLe
 static bool cmd_PackRevFlow(uint8_t* buf, size_t* len, void *para)
 {
     command_t *console_cmd = (command_t *)para;
-    if(console_cmd->commad_rev.len >= 0)
+    if(console_cmd->commad_rev.len > 0)
     {
         processCommand(&console_cmd->commad_rev.cmd, console_cmd->commad_rev.buf, console_cmd->commad_rev.len, \
                         buf,len);
@@ -98,7 +98,7 @@ static const char tail[2] = {0x7e,0x00};
 static const tCmd cmdList[] =
 {
     CMD_ADD(CMD_CONSOLE_ID_REV,             2,  "$$COMX$$",          "*#*#",         NULL,         RecvSend,        RevFlow),
-    CMD_ADD(CMD_CONSOLE_ID_REV2,             2,  &header,              &tail,         NULL,        RecvSend,        RevHexFlow),
+    CMD_ADD(CMD_CONSOLE_ID_REV2,            2,  (char*)&header,     (char*)&tail,    NULL,        RecvSend,        RevHexFlow),
 };
 tCmd const *CMD_ConsoleCmdGet(void)
 {
