@@ -3,7 +3,7 @@
 #include "../../../ulog/ulogDef.h"
 #include "../../../../port/portInclude.h"
 #include "../../../../dataPlat/dataPlatInclude.h"
-#include "../../../../rtosInterface/rtosInclude.h"
+#include "../../../../rtosInterface/entry_rtos_api.h"
 
 static void handleCmd_7F(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
 {
