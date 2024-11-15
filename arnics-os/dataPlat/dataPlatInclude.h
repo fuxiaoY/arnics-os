@@ -11,7 +11,7 @@ extern "C" {
 #include "globalDef.h"
 #include "globalData.h"
 #include "globalDataManager.h"
-
+#include "globalDataAction.h"
 #ifdef __cplusplus
 }
 #endif

@@ -41,6 +41,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\dataPlat\globalDataManager.c</FilePath>
             </File>
+            <File>
+              <FileName>globalDataAction.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\globalDataAction.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
