@@ -93,14 +93,13 @@ static bool cmd_AnalyzeRevFlow(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackRevHexFlow(uint8_t* buf, size_t* len, void *para)
 {
 
-
+    printf("cmd_PackRevHexFlow\r\n");
     return true;
 }
 //7e len cmd 7e
 static bool cmd_AnalyzeRevHexFlow(uint8_t* buf, size_t len, void *para)
 {
-
-
+    printf("cmd_AnalyzeRevHexFlow\r\n");
     return true;
 }
 

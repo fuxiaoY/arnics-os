@@ -76,7 +76,7 @@ static bool frame_mache(MctInstance *inst, const tCmd *expected_cmd,bool is_expe
 /*-------------------------------------------------------------------------------------*/
 
 /*预期帧流程-----------------------------------------------------------------------------*/
-bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *List, uint16_t cmdNum, uint16_t expected_tcmd_id,void *para)
+bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *List, uint16_t cmdNum, int32_t expected_tcmd_id,void *para)
 {
     // 遍历命令列表，寻找匹配的命令
     for (uint16_t i = 0; i < cmdNum; i++)
@@ -100,7 +100,7 @@ bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const
 
 
 static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cmdListNum, \
-                                    uint16_t expected_tcmd_id, \
+                                    int32_t expected_tcmd_id, \
                                     StaticFrameList *payloadlist)
 {
     uint32_t cnt = 0;
@@ -205,7 +205,46 @@ static bool unexpected_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t
     return result;
 }
 
+static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdList, uint16_t cmdListNum, \
+                                                                            int32_t expected_tcmd_id, \
+                                                                            StaticFrameList *payloadlist)
+{
+    uint16_t single_len = 0;
+    uint16_t remain_len = 0;
+    bool result = false;
 
+    // 收帧
+    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
+    inst->payload_size += single_len;
+    remain_len += single_len;
+    // 有数据更新，则进入一次判断
+    if (single_len > 0) 
+    {
+        for (uint16_t i = 0; i < cmdListNum; i++)
+        {
+            //此机制下，同一帧重复命令出现多次会被过滤，只处理第一次出现的重复命令
+            //只匹配预期
+            if((RecvSend == cmdList[i].Type)&&(expected_tcmd_id == cmdList[i].id))
+            {
+                bool frame_match_result = frame_mache(inst, &cmdList[i], false,cmdList[i].id, payloadlist, &remain_len);
+                // 如果匹配成功，记录结果
+                if (frame_match_result) 
+                {
+                    result = true;
+                }
+                // 处理完毕，无需继续遍历
+                if (remain_len == 0) 
+                {
+                    break; 
+                }
+            }
+            //只会扫描一次，如果扫描不到，也认为帧处理完毕
+        }
+    }
+
+    // 返回最终结果
+    return result;
+}
 /**
  * @fn payload_scan
 
@@ -213,7 +252,7 @@ static bool unexpected_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t
  */
 static bool payload_scan(MctInstance *inst,StaticFrameList *payloadlist, \
                     tCmd const *cmdList,uint16_t cmdListNum, \
-                    bool is_expected,uint32_t expected_tcmd_id)
+                    bool is_expected,int32_t expected_tcmd_id)
 {
     if(true == is_expected)//有预期帧
     {
@@ -222,7 +261,15 @@ static bool payload_scan(MctInstance *inst,StaticFrameList *payloadlist, \
     }
     else
     {
-        return unexpected_cmd_seek(inst, cmdList,cmdListNum,payloadlist);
+        if(NULL_CMD_SEEK == expected_tcmd_id)
+        {
+            return unexpected_cmd_seek(inst, cmdList,cmdListNum,payloadlist);  
+        }
+        else
+        {
+            return unexpected_cmd_seek_with_pecify(inst, cmdList,cmdListNum,expected_tcmd_id,payloadlist);  
+        }
+
     }
 
 }
@@ -325,7 +372,7 @@ bool expectframeDeal(MctInstance *inst, StaticFrameList *payloadlist, tCmd const
 
 
 bool CMD_Execute(MctInstance *inst, \
-                bool is_expected,uint32_t expected_tcmd_id, \
+                bool is_expected,int32_t expected_tcmd_id, \
                 tCmd const *List,uint16_t cmdNum,void *para)
 {
 

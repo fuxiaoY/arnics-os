@@ -13,6 +13,7 @@ extern "C" {
 
 
 #define MAX_FRAMES 5
+#define NULL_CMD_SEEK (int32_t)-1
 /* typedef -----------------------------------------------------------*/
 	
 typedef enum
@@ -82,7 +83,7 @@ typedef enum
 
 typedef struct
 {
-    uint16_t                        id;
+    int32_t                         id;
     uint16_t                        timeout;
     char                            *rightPhase;
     char                            *SubRightPhase;

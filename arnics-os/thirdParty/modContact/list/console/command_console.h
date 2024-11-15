@@ -9,7 +9,7 @@ extern "C" {
 
 
 
-#define CMD_CONSOLE_ID_BASE                           (uint16_t)0
+#define CMD_CONSOLE_ID_BASE                           (int32_t)0
 #define CMD_CONSOLE_ID_REV                            (1+CMD_CONSOLE_ID_BASE)
 #define CMD_CONSOLE_ID_REV2                           (1+CMD_CONSOLE_ID_REV)
 
@@ -35,7 +35,16 @@ typedef union
 
 extern tCmd const *CMD_ConsoleCmdGet(void);
 extern uint16_t CMD_ConsoleCmdNumGet(void);
-
+/**
+ * @fn mct_console_execute
+ * @brief 
+ * 
+ * @param [in] inst - mct实例
+ * @param [in] is_expected - true->SendRev模型  false->RevSend模型   
+ * @param [in] expected_tcmd_id   - 期望的命令id   NULL_CMD_SEEK：无需匹配（仅is_expected = false有效）
+ * @param [in] para - 回调参数
+ * @retval None
+ */
 #define mct_console_execute(inst,is_expected,expected_tcmd_id, para)                  CMD_Execute(inst,is_expected,expected_tcmd_id,CMD_ConsoleCmdGet(), CMD_ConsoleCmdNumGet(), para)
 
 
