@@ -1,7 +1,7 @@
 #include "mctProcesser.h"
 #include "mctLib.h"
 #include "../dataPlat/mctDefinition.h"
-
+#include "mctAdapter.h"
 
 /*-------------------------------------------------------------------------------------*/
 
@@ -107,6 +107,23 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
     uint16_t remain_len = 0;
     bool result = false;
     bool found = false;
+    uint8_t cmdlist_seq_i = 0;
+    //寻找匹配的id
+    for (uint8_t i = 0; i < cmdListNum; i++)
+    {
+        // 检查当前命令项是否与目标ID匹配
+        if (expected_tcmd_id == cmdList[i].id)
+        {
+            cmdlist_seq_i = i;
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        return false; //没有匹配的id
+    }
+
     do
     {
         uint16_t single_len = 0;
@@ -118,24 +135,15 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
         //有数据更新，则进入一次判断
         if (single_len > 0)
         {
-            for (uint8_t i = 0; i < cmdListNum; i++)
+            result = frame_mache(inst,&cmdList[cmdlist_seq_i],true,expected_tcmd_id,payloadlist,&remain_len);
+            if(true == result)
             {
-                // 检查当前命令项是否与目标ID匹配
-                if (expected_tcmd_id == cmdList[i].id)
-                {
-                    result = frame_mache(inst,&cmdList[i],true,expected_tcmd_id,payloadlist,&remain_len);
-                     found = true;
-                     break;
-                }
-            }
-            if (found)
-            {
-                break; // 找到匹配的命令项，退出外层循环
+                break;
             }
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
         cnt++;
-    } while (cnt < (cmdList->timeout * 1000 / WAIT_SCHEDULE_TIME_MS));
+    } while (cnt < (cmdList[cmdlist_seq_i].timeout * 1000 / WAIT_SCHEDULE_TIME_MS));
 
     if(remain_len > 0)
     {
