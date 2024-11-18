@@ -21,6 +21,32 @@ extern SemaphoreHandle_t MediaRspQueue_xSemaphore; //读媒体中心队列锁
 /*---------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------*/
+
+void cpuInfo(void)
+{
+  uint8_t CPU_RunInfo[400]; // 保存任务运行时间信息
+  char CPU_left_stack[50]= {0}; // 剩余堆栈
+
+    memset(CPU_RunInfo, 0, 400); // 信息缓冲区清零
+
+    vTaskList((char *)&CPU_RunInfo); // 获取任务运行时间信息
+
+    printf("---------------------------------------------\r\n");
+    printf("任务名      任务状态 优先级   剩余栈 任务序号 \r\n");
+    printf("%s", CPU_RunInfo);
+    printf("---------------------------------------------\r\n");
+    memset(CPU_left_stack, 0, 50); // 信息缓冲区清零
+    sprintf(CPU_left_stack,"当前剩余动态内存大小                  %u Bytes\r\n ",xPortGetFreeHeapSize());
+    printf("%s",CPU_left_stack);
+
+    memset(CPU_left_stack, 0, 50); // 信息缓冲区清零
+	  sprintf(CPU_left_stack,"系统启动至当前时刻的动态内存最小剩余 %u Bytes\r\n ",xPortGetMinimumEverFreeHeapSize());
+    printf("%s",CPU_left_stack);
+    printf("---------------------------------------------\r\n\n");
+
+  
+}
+
 // 系统函数
 void rtosTaskSuspendAll(void)
 {

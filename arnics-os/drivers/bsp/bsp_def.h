@@ -173,6 +173,15 @@ typedef struct
     X("Second", rtc_t, rtcTimeDate.Second, uint8_t) \
     X("Week", rtc_t, rtcTimeDate.Week, uint8_t)
 
+typedef struct 
+{
+    ADC_HandleTypeDef hadc;
+    ADC_ChannelConfTypeDef sConfig;
+}adc_t;
+
+#define ADC_PARAM_MAP_X \
+    X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
+    X("sConfig", adc_t, sConfig, ADC_ChannelConfTypeDef)
 
 
 #ifdef __cplusplus

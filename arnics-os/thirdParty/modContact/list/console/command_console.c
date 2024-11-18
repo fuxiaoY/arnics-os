@@ -9,6 +9,10 @@ static void handleCmd_7F(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 {
     NVIC_SystemReset();
 }
+static void handleCmd_80(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
+{
+    cpuInfo();
+}
 
 static void handleCmd_E0(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
 {
@@ -30,6 +34,7 @@ static void handleCmd_FF(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 
 CommandHandler commandHandlers[] = {
     {0x7F, handleCmd_7F},
+    {0x80, handleCmd_80},
     {0xE0, handleCmd_E0},
     {0xFF, handleCmd_FF},
 };

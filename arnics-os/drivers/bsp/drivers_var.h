@@ -33,6 +33,7 @@ extern device_t debug_ds; // debug串口
 extern device_t mcuflash_ds; // mcu flash
 extern device_t iwdg_ds; // 独立看门狗
 extern device_t rtc_ds; // rtc
+extern device_t adc1_ds;
 extern device_t mct_ds;
 // 驱动实例
 extern uart_t uart1;
@@ -43,6 +44,7 @@ extern spi_t w25q_spi;
 extern flash_t mcu_flash;
 extern iwdg_t iwdg;
 extern rtc_t rtc;
+extern adc_t adc1;
 /* Lists--- -----------------------------------------------------------*/
 // 设备总表的 X-macro
 // {设备名称（可任意），设备实例，设备类型结构体名称}
@@ -55,8 +57,8 @@ extern rtc_t rtc;
     X("w25q_spi", &w25q_spi, "spi_t") \
     X("mcu_flash", &mcu_flash, "flash_t") \
     X("iwdg", &iwdg, "iwdg_t") \
-    X("rtc", &rtc, "rtc_t")
-
+    X("rtc", &rtc, "rtc_t") \
+    X("adc1", &adc1, "adc_t") 
 
 
 #ifdef __cplusplus

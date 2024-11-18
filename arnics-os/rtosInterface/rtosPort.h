@@ -14,7 +14,7 @@ extern "C" {
 #include "main.h"
 #include "cmsis_os.h"
 #endif // _USE_FREERTOS_
-
+extern void cpuInfo(void);
 extern void rtosTaskSuspendAll(void);
 extern void rtosTaskResumeAll(void);
 extern void rtosThreadDelayUntil(uint32_t time);

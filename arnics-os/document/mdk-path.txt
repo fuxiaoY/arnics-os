@@ -346,6 +346,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_rtc.c</FilePath>
             </File>
+            <File>
+              <FileName>interface_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_adc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

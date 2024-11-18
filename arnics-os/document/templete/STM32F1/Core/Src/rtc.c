@@ -155,10 +155,6 @@ int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
   }
   return 0;
 }
-
-
-
-
 static uint32_t last_call_time = 0; // 上一次调用函数的时间，单位为秒
 
 bool bsp_rtc_check_second_update(rtc_t *dev) 
@@ -182,5 +178,4 @@ bool bsp_rtc_check_second_update(rtc_t *dev)
     
     return false; // 表示没有过去一秒
 }
-
 /* USER CODE END 1 */

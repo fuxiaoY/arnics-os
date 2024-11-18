@@ -113,7 +113,25 @@ const dev_operations rtc_ops = {
                         NULL};
 
 /* Lists--- -----------------------------------------------------------*/
+/* Lists--- -----------------------------------------------------------*/
+// 使用 X-macro 生成 adc 参数映射表
+const param_map_t adc_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    ADC_PARAM_MAP_X
+    #undef X
+};
+const size_t adc_param_map_size = sizeof(adc_param_map) / sizeof(param_map_t);
 
+const dev_operations adc_ops = {
+                        adc_open,
+                        adc_close,
+                        adc_read,
+                        NULL,
+                        NULL,
+                        NULL};
+
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
     {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),&uart_ops},
@@ -122,6 +140,7 @@ const device_type_map_t device_type_maps[] = {
     {"flash_t", flash_param_map, sizeof(flash_param_map) / sizeof(param_map_t),&flash_ops},
     {"iwdg_t", iwdg_param_map, sizeof(iwdg_param_map) / sizeof(param_map_t),&iwdg_ops},
     {"rtc_t", rtc_param_map, sizeof(rtc_param_map) / sizeof(param_map_t),&rtc_ops},
+    {"adc_t", adc_param_map, sizeof(adc_param_map) / sizeof(param_map_t),&adc_ops},
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);

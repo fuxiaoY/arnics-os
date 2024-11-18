@@ -10,6 +10,7 @@ extern "C" {
 #include "interface_flash.h"
 #include "interface_iwdg.h"
 #include "interface_rtc.h"
+#include "interface_adc.h"
 #ifdef __cplusplus
 }
 #endif
