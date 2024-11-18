@@ -107,8 +107,8 @@ int bsp_rtc_get_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
     RTC_DateTypeDef sDate;
 
     // Get the current time and date from the RTC
-    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+    HAL_RTC_GetTime(&dev->hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&dev->hrtc, &sDate, RTC_FORMAT_BIN);
 
     // Convert BCD values to binary
     dt->Year = sDate.Year;
@@ -143,13 +143,13 @@ int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
   // Set the time and date on the RTC
 
     // 设置 RTC 时间
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  if (HAL_RTC_SetTime(&dev->hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
   {
     Error_Handler();
   }
 
   // 设置 RTC 日期
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+  if (HAL_RTC_SetDate(&dev->hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
   {
     Error_Handler();
   }

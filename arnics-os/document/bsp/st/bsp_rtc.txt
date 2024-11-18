@@ -28,8 +28,8 @@ int bsp_rtc_get_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
     RTC_DateTypeDef sDate;
 
     // Get the current time and date from the RTC
-    HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
-    HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+    HAL_RTC_GetTime(&dev->hrtc, &sTime, RTC_FORMAT_BIN);
+    HAL_RTC_GetDate(&dev->hrtc, &sDate, RTC_FORMAT_BIN);
 
     // Convert BCD values to binary
     dt->Year = sDate.Year;
@@ -64,15 +64,38 @@ int bsp_rtc_set_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
   // Set the time and date on the RTC
 
     // 设置 RTC 时间
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
+  if (HAL_RTC_SetTime(&dev->hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
   {
     Error_Handler();
   }
 
   // 设置 RTC 日期
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
+  if (HAL_RTC_SetDate(&dev->hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
   {
     Error_Handler();
   }
   return 0;
+}
+static uint32_t last_call_time = 0; // 上一次调用函数的时间，单位为秒
+
+bool bsp_rtc_check_second_update(rtc_t *dev) 
+{
+    rtcTimeDateTypeDef_t current_time;
+
+    // 获取当前日期和时间
+    bsp_rtc_get_datetime(dev, &current_time);
+    
+    // 计算当前时间的总秒数
+    uint32_t current_time_in_sec = current_time.Hour * 3600 + 
+                                    current_time.Minute * 60 + 
+                                    current_time.Second;
+
+    // 检查和上一次调用值是否不相等
+    if (current_time_in_sec != last_call_time) 
+    {
+        last_call_time = current_time_in_sec; // 更新上一次调用时间
+        return true; // 表示已经过去了一秒
+    }
+    
+    return false; // 表示没有过去一秒
 }
