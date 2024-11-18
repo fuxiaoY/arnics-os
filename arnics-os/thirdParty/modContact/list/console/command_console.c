@@ -23,6 +23,24 @@ static void handleCmd_E0(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
   rtosTaskResumeAll();
 
 }
+static void handleCmd_E3(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
+{
+  rtosTaskSuspendAll();
+  {
+    UnityGlobalStatInterface((const char*)buf);
+  }
+  rtosTaskResumeAll();
+
+}
+static void handleCmd_E4(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
+{
+  rtosTaskSuspendAll();
+  {
+    UnityGlobalCfgInterface((const char*)buf);
+  }
+  rtosTaskResumeAll();
+
+}
 static void handleCmd_FF(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t* packlen)
 {
     const char version[] = "V1.0.0\n";
@@ -33,10 +51,20 @@ static void handleCmd_FF(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 
 
 CommandHandler commandHandlers[] = {
+    // 软复位
     {0x7F, handleCmd_7F},
-    {0x80, handleCmd_80},
+    // 读系统参数
     {0xE0, handleCmd_E0},
+    // 读运行参数
+    {0xE3, handleCmd_E3},
+    // 读配置参数
+    {0xE4, handleCmd_E4},
+    // 系统堆栈情况
+    {0x80, handleCmd_80},
+    // 版本号
     {0xFF, handleCmd_FF},
+
+
 };
 // 查表的大小
 const size_t numHandlers = sizeof(commandHandlers) / sizeof(commandHandlers[0]);

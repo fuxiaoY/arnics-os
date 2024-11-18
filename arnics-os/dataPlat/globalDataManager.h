@@ -90,10 +90,9 @@ typedef struct
     const char *key;
 } unityParaList_t;
 extern void UnitySystemInterface(const char *ArgReq);
-extern char *UnityUploadInterface(const char *ArgReq);
-extern void Unityglobal_cfgInterface(const char *ArgReq);
-extern void Unityglobal_stateInterface(const char *ArgReq);
-extern char *UnityWanInterface(const char *ArgReq);
+extern void UnityGlobalStatInterface(const char *ArgReq);
+extern void UnityGlobalCfgInterface(const char *ArgReq);
+
 
 
 #ifdef __cplusplus
