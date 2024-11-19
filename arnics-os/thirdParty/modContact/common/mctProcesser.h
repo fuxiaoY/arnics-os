@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "../dataPlat/mctDefinition.h"
+#include "../dataplat/mctStruct.h"
 #include "../port/mctDriver.h"
 
 extern void initStaticFrameList(StaticFrameList *list);

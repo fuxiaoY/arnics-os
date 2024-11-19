@@ -15,7 +15,13 @@ extern "C" {
 #define MAX_FRAMES 5
 #define NULL_CMD_SEEK (int32_t)-1
 /* typedef -----------------------------------------------------------*/
-	
+typedef enum
+{
+    match_error = (uint8_t)0,
+    match_sucess,
+    match_null,
+}frameMacheType;	
+
 typedef enum
 {
     FRAME_NONE = 0,

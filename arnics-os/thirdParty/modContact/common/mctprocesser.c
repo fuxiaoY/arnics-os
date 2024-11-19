@@ -42,7 +42,7 @@ void addFrameToFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t e
 /*-------------------------------------------------------------------------------------*/
 
 /*帧匹配--------------------------------------------------------------------------------*/
-static bool frame_mache(MctInstance *inst, const tCmd *expected_cmd,bool is_expected,uint16_t id,StaticFrameList *payloadlist,uint16_t *remain_len)
+static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bool is_expected,uint16_t id,StaticFrameList *payloadlist,uint16_t *remain_len)
 {
     uint16_t PhaseOffset = 0;
     uint16_t SubphaseOffset = 0;
@@ -52,7 +52,7 @@ static bool frame_mache(MctInstance *inst, const tCmd *expected_cmd,bool is_expe
     if (NULL != expected_cmd->errorPhase && true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase, NULL, &PhaseOffset, &SubphaseOffset))
     {
         *remain_len = 0;
-        return false;
+        return match_error;
     }
     // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
     if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
@@ -67,11 +67,11 @@ static bool frame_mache(MctInstance *inst, const tCmd *expected_cmd,bool is_expe
         }
 
         *remain_len -= (SubphaseOffset - PhaseOffset);
-        return true;
+        return match_sucess;
     }
     //什么都没查询到 
     *remain_len -= (SubphaseOffset - PhaseOffset);
-    return false;
+    return match_null;
 }
 /*-------------------------------------------------------------------------------------*/
 
@@ -135,9 +135,17 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
         //有数据更新，则进入一次判断
         if (single_len > 0)
         {
-            result = frame_mache(inst,&cmdList[cmdlist_seq_i],true,expected_tcmd_id,payloadlist,&remain_len);
-            if(true == result)
+
+            frameMacheType matcheResult = frame_mache(inst,&cmdList[cmdlist_seq_i],true,expected_tcmd_id,payloadlist,&remain_len);
+            //匹配到正确字段和匹配到错误字段都直接退出
+            if(match_sucess == matcheResult)
             {
+                result = true;
+                break;
+            }
+            else if(match_error == matcheResult)
+            {
+                result = false;
                 break;
             }
         }
@@ -193,12 +201,18 @@ static bool unexpected_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t
 
             if( RecvSend == cmdList[i].Type)
             {
-                bool frame_match_result = frame_mache(inst, &cmdList[i], false,cmdList[i].id, payloadlist, &remain_len);
-                // 如果匹配成功，记录结果
-                if (frame_match_result) 
+                frameMacheType matcheResult = frame_mache(inst, &cmdList[i], false,cmdList[i].id, payloadlist, &remain_len);
+                // 如果匹配到，记录结果
+                if(match_sucess == matcheResult)
                 {
                     result = true;
                 }
+                else if(match_error == matcheResult)
+                {
+                    result = false;
+                }
+
+
                 // 处理完毕，无需继续遍历
                 if (remain_len == 0) 
                 {
@@ -234,12 +248,17 @@ static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdLi
             //只匹配预期
             if((RecvSend == cmdList[i].Type)&&(expected_tcmd_id == cmdList[i].id))
             {
-                bool frame_match_result = frame_mache(inst, &cmdList[i], false,cmdList[i].id, payloadlist, &remain_len);
-                // 如果匹配成功，记录结果
-                if (frame_match_result) 
+                frameMacheType matcheResult = frame_mache(inst, &cmdList[i], false,cmdList[i].id, payloadlist, &remain_len);
+                // 如果匹配到，记录结果
+                if(match_sucess == matcheResult)
                 {
                     result = true;
                 }
+                else if(match_error == matcheResult)
+                {
+                    result = false;
+                }
+                
                 // 处理完毕，无需继续遍历
                 if (remain_len == 0) 
                 {

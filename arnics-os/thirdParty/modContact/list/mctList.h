@@ -62,9 +62,10 @@ extern "C" {
 #define CMD_USERCALL                (1 + CMD_BOOTUPCLOCK )
 #define CMD_MQTTREVPUSH             (1 + CMD_USERCALL )
 #define CMD_STICKFRAME              (1 + CMD_MQTTREVPUSH )
-#define CMD_REV_FLOW               (1 + CMD_STICKFRAME )
+#define CMD_REV_FLOW                (1 + CMD_STICKFRAME )
+#define CMD_POWEROFF                (1 + CMD_REV_FLOW )
 
-#define CMD_MAX                     (1 + CMD_REV_FLOW)
+#define CMD_MAX                     (1 + CMD_POWEROFF)
 
 extern uint16_t mctModemLisNumGet(void);
 extern const tModemList *mctModemListGet(void);
