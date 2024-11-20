@@ -74,7 +74,6 @@ int uart_ctl(device_t *self, int cmd, void *args)
         default: return -1; 
     }
 
-    return 0;
 }
 void uart_irq(device_t *self)
 {

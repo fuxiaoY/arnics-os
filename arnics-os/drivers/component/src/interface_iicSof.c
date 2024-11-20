@@ -36,7 +36,7 @@ void IIC_SDA(device_t *self, uint8_t level)
     bsp_gpio_set(&iicSofInstance->SDA_OUT, level);
 }
 
-void IIC_Init(device_t *self)
+int IIC_Init(device_t *self)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
     bsp_gpio_init(&iicSofInstance->SCL);
@@ -44,6 +44,7 @@ void IIC_Init(device_t *self)
 
     IIC_SCL(self, 1);
     IIC_SDA(self, 1);
+    return 0;
 }
 
 // 产生IIC起始信号
@@ -311,7 +312,7 @@ int IIC_ByteRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint32_t TimeO
 }
 
 // I2CGS_Master_BufferRead函数实现
-int IIC_BufferRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t RWAddrSize, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut)
+int IIC_BufferRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut)
 {
     int Ret = 0;
 

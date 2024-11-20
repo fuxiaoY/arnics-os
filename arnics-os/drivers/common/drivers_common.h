@@ -31,22 +31,23 @@ extern "C"
 
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
+typedef struct device_t device_t;
 typedef struct 
 {
-    int (*ds_open)(void *dev);
-    int (*ds_close)(void *dev);
-    int (*ds_read)(void *dev, void *buf, size_t count);
-    int (*ds_write)(void *dev, void *buf, size_t count);
-    int (*ds_ctl)(void *dev, int cmd, void *args);
-    void (*ds_irq)(void *dev);
+    int (*ds_open)(device_t *dev);
+    int (*ds_close)(device_t *dev);
+    int (*ds_read)(device_t *dev, void *buf, size_t count);
+    int (*ds_write)(device_t *dev, void *buf, size_t count);
+    int (*ds_ctl)(device_t *dev, int cmd, void *args);
+    void (*ds_irq)(device_t *dev);
 }dev_operations;
 
-typedef struct 
+struct device_t
 {
     int ds;       /* 设备号 */
     void *device; /* 设备指针 */
     dev_operations *dev_ops; /* 设备操作函数 */
-} device_t;
+} ;
 
 
 

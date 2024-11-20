@@ -10,7 +10,7 @@ const param_map_t uart_param_map[] = {
     #undef X
 };
 const size_t uart_param_map_size = sizeof(uart_param_map) / sizeof(param_map_t);
-const dev_operations uart_ops = {
+dev_operations uart_ops = {
                         uart_open,
                         uart_close,
                         uart_read,
@@ -28,7 +28,7 @@ const param_map_t io_param_map[] = {
 };
 const size_t io_param_map_size = sizeof(io_param_map) / sizeof(param_map_t);
 
-const dev_operations io_ops = {
+dev_operations io_ops = {
                         gpio_open,
                         gpio_close,
                         NULL,
@@ -46,7 +46,7 @@ const param_map_t spi_param_map[] = {
 };
 const size_t spi_param_map_size = sizeof(spi_param_map) / sizeof(param_map_t);
 
-const dev_operations spi_ops = {
+dev_operations spi_ops = {
                         spi_open,
                         spi_close,
                         spi_read,
@@ -66,7 +66,7 @@ const param_map_t flash_param_map[] = {
 };
 const size_t flash_param_map_size = sizeof(flash_param_map) / sizeof(param_map_t);
 
-const dev_operations flash_ops = {
+dev_operations flash_ops = {
                         NULL,
                         NULL,
                         flash_read,
@@ -85,7 +85,7 @@ const param_map_t iwdg_param_map[] = {
 };
 const size_t iwdg_param_map_size = sizeof(iwdg_param_map) / sizeof(param_map_t);
 
-const dev_operations iwdg_ops = {
+dev_operations iwdg_ops = {
                         iwdg_open,
                         iwdg_close,
                         NULL,
@@ -104,7 +104,7 @@ const param_map_t rtc_param_map[] = {
 };
 const size_t rtc_param_map_size = sizeof(rtc_param_map) / sizeof(param_map_t);
 
-const dev_operations rtc_ops = {
+dev_operations rtc_ops = {
                         rtc_open,
                         rtc_close,
                         NULL,
@@ -123,7 +123,7 @@ const param_map_t adc_param_map[] = {
 };
 const size_t adc_param_map_size = sizeof(adc_param_map) / sizeof(param_map_t);
 
-const dev_operations adc_ops = {
+dev_operations adc_ops = {
                         adc_open,
                         adc_close,
                         adc_read,
@@ -142,8 +142,8 @@ const param_map_t iicsof_param_map[] = {
 };
 const size_t iicsof_param_map_size = sizeof(iicsof_param_map) / sizeof(param_map_t);
 
-const dev_operations iicsof_ops = {
-                        NULL,
+dev_operations iicsof_ops = {
+                        IIC_Init,
                         NULL,
                         NULL,
                         NULL,

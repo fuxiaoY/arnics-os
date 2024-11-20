@@ -44,35 +44,35 @@ extern "C" {
 // 声明设备参数表
 extern const param_map_t uart_param_map[];
 extern const size_t uart_param_map_size ;
-extern const dev_operations uart_ops;
+extern dev_operations uart_ops;
 
 extern const param_map_t io_param_map[];
 extern const size_t io_param_map_size ;
-extern const dev_operations io_ops;
+extern dev_operations io_ops;
 
 extern const param_map_t spi_param_map[];
 extern const size_t spi_param_map_size ;
-extern const dev_operations spi_ops;
+extern dev_operations spi_ops;
 
 extern const param_map_t flash_param_map[];
 extern const size_t flash_param_map_size ;
-extern const dev_operations flash_ops;
+extern dev_operations flash_ops;
 
 extern const param_map_t iwdg_param_map[];
 extern const size_t iwdg_param_map_size ;
-extern const dev_operations iwdg_ops;
+extern dev_operations iwdg_ops;
 
 extern const param_map_t rtc_param_map[];
 extern const size_t rtc_param_map_size ;
-extern const dev_operations rtc_ops;
+extern dev_operations rtc_ops;
 
 extern const param_map_t adc_param_map[];
 extern const size_t adc_param_map_size ;
-extern const dev_operations adc_ops;
+extern dev_operations adc_ops;
 
 extern const param_map_t iicsof_param_map[];
 extern const size_t iicsof_param_map_size ;
-extern const dev_operations iicsof_ops;
+extern dev_operations iicsof_ops;
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];

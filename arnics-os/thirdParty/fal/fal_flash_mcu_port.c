@@ -35,7 +35,7 @@ static int write(long offset, const uint8_t *buf, size_t size)
     DEV_PARAMS_SET(&mcuflash_ds,
         {"offset", &offset}
     );
-    return dev_write(&mcuflash_ds,buf,size);
+    return dev_write(&mcuflash_ds,(void *)buf,size);
 }
 
 static int erase(long offset, size_t size)
