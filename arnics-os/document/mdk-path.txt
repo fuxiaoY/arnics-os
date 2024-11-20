@@ -26,6 +26,11 @@
               <FileType>8</FileType>
               <FilePath>..\arnics-os\core\arnicsCore.cpp</FilePath>
             </File>
+            <File>
+              <FileName>processTask.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\core\processTask\processTask.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
