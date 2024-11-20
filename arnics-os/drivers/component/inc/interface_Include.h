@@ -11,6 +11,8 @@ extern "C" {
 #include "interface_iwdg.h"
 #include "interface_rtc.h"
 #include "interface_adc.h"
+#include "interface_iicSof.h"
+
 #ifdef __cplusplus
 }
 #endif

@@ -356,6 +356,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_adc.c</FilePath>
             </File>
+            <File>
+              <FileName>interface_iicSof.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_iicSof.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

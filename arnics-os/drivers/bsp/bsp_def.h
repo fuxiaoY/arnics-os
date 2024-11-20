@@ -184,6 +184,21 @@ typedef struct
     X("sConfig", adc_t, sConfig, ADC_ChannelConfTypeDef)
 
 
+
+
+typedef struct 
+{
+    io_t SCL;
+    io_t SDA_OUT;
+    io_t SDA_IN;
+}iicSof_t;
+
+#define IICSOF_PARAM_MAP_X \
+    X("SCL", iicSof_t, SCL, io_t) \
+    X("SDA_OUT", iicSof_t, SDA_OUT, io_t) \
+    X("SDA_IN", iicSof_t, SDA_IN, io_t)
+
+
 #ifdef __cplusplus
 }
 #endif

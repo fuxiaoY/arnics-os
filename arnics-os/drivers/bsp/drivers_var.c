@@ -24,6 +24,7 @@ device_t mcuflash_ds; // mcuflash
 device_t iwdg_ds; // 独立看门狗
 device_t rtc_ds; // rtc
 device_t adc1_ds;
+device_t iicsof1_ds;
 device_t mct_ds;
 
 
@@ -125,4 +126,28 @@ adc_t adc1 =
     .sConfig.Channel = ADC_CHANNEL_10,
     .sConfig.Rank = ADC_REGULAR_RANK_1,
     .sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5,
+};
+
+iicSof_t iicsof1 = 
+{
+    .SCL.GPIOx = GPIOC,
+    .SCL.GPIO_InitStruct.Pin = GPIO_PIN_6,
+    .SCL.GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .SCL.GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .SCL.GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+
+    .SDA_OUT.GPIOx = GPIOC,
+    .SDA_OUT.GPIO_InitStruct.Pin = GPIO_PIN_7,
+    .SDA_OUT.GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD,
+    .SDA_OUT.GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .SDA_OUT.GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+	
+    .SDA_IN.GPIOx = GPIOC,
+    .SDA_IN.GPIO_InitStruct.Pin = GPIO_PIN_7,
+    .SDA_IN.GPIO_InitStruct.Mode = GPIO_MODE_INPUT,
+    .SDA_IN.GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .SDA_IN.GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+	
+	
+	
 };

@@ -45,6 +45,8 @@ extern flash_t mcu_flash;
 extern iwdg_t iwdg;
 extern rtc_t rtc;
 extern adc_t adc1;
+extern device_t iicsof1_ds;
+extern iicSof_t iicsof1;
 /* Lists--- -----------------------------------------------------------*/
 // 设备总表的 X-macro
 // {设备名称（可任意），设备实例，设备类型结构体名称}
@@ -58,7 +60,8 @@ extern adc_t adc1;
     X("mcu_flash", &mcu_flash, "flash_t") \
     X("iwdg", &iwdg, "iwdg_t") \
     X("rtc", &rtc, "rtc_t") \
-    X("adc1", &adc1, "adc_t") 
+    X("adc1", &adc1, "adc_t") \
+    X("iicsof1", &iicsof1, "iicSof_t") 
 
 
 #ifdef __cplusplus

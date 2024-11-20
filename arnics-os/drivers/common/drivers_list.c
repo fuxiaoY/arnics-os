@@ -132,6 +132,25 @@ const dev_operations adc_ops = {
                         NULL};
 
 /* Lists--- -----------------------------------------------------------*/
+/* Lists--- -----------------------------------------------------------*/
+// 使用 X-macro 生成 adc 参数映射表
+const param_map_t iicsof_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    IICSOF_PARAM_MAP_X
+    #undef X
+};
+const size_t iicsof_param_map_size = sizeof(iicsof_param_map) / sizeof(param_map_t);
+
+const dev_operations iicsof_ops = {
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL};
+
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
     {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),&uart_ops},
