@@ -171,6 +171,11 @@ sfud_err sfud_read_status(const sfud_flash *flash, uint8_t *status);
  */
 sfud_err sfud_write_status(const sfud_flash *flash, bool is_volatile, uint8_t status);
 
+
+/*
+ * usr:power action for w25q
+ */
+uint8_t sfud_w25q_power_action(const sfud_flash *flash, bool status);
 #ifdef __cplusplus
 }
 #endif

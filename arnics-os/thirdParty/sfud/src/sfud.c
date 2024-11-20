@@ -1053,3 +1053,25 @@ sfud_err sfud_write_status(const sfud_flash *flash, bool is_volatile, uint8_t st
 
     return result;
 }
+#define W25X_PowerDown			0xB9 
+#define W25X_ReleasePowerDown	0xAB 
+// power action for w25qxx true for wakeup
+uint8_t sfud_w25q_power_action(const sfud_flash *flash, bool status) 
+{
+    uint8_t cmd  = 0;
+    if(status)
+    {
+        cmd = W25X_ReleasePowerDown;
+    }
+    else
+    {
+        cmd = W25X_PowerDown;
+    }
+    SFUD_ASSERT(flash);
+    SFUD_ASSERT(status);
+
+    uint8_t result  = 0;
+    flash->spi.wr(&flash->spi, &cmd, 1, &result, 1);
+    return result;
+}
+
