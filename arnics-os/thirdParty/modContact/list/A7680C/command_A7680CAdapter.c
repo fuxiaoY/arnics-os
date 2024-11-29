@@ -26,7 +26,7 @@ static bool cmd_EchoClose(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst, true, CMD_A7680C_ECHO_SWITCH, &echo_state) == true)
         {
-            printf("ECHO disable successfully!\r\n");
+            //printf("ECHO disable successfully!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
@@ -53,11 +53,19 @@ static bool cmd_apnConfig(MctInstance *inst, void *para)
             break;
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
     }
-    if (apn_state == true)
+
     {
-        char string_ip[] = {"\"IP\""};
-        char string_cmnet[] = {"\"cmnet\""};
-        if (!strncmp(pdp_read.PDP_type, string_ip, sizeof(string_ip)) && !strncmp(pdp_read.APN, string_cmnet, sizeof(string_cmnet)))
+        char string_ip[] = {"IP"};
+        char string_cmnet[] = {"cmnet"};
+        /*
+        char string_ctnet[] = {"ctnet"};
+
+        if ((NULL != hexhex((uint8_t *)pdp_read.PDP_type, (uint8_t *)string_ip,sizeof(pdp_read.PDP_type),strlen(string_ip))) &&  \
+              (NULL!= hexhex((uint8_t *)pdp_read.APN, (uint8_t *)string_cmnet,sizeof(pdp_read.APN),strlen(string_cmnet))|| \
+              NULL!= hexhex((uint8_t *)pdp_read.APN, (uint8_t *)string_ctnet,sizeof(pdp_read.APN),strlen(string_ctnet))))
+              */
+        if ((NULL != hexhex((uint8_t *)pdp_read.PDP_type, (uint8_t *)string_ip,sizeof(pdp_read.PDP_type),strlen(string_ip))))
+
         {
             printf("Match successfully, PDP_type = %s, APN = %s\r\n", pdp_read.PDP_type, pdp_read.APN);
         }
@@ -86,11 +94,7 @@ static bool cmd_apnConfig(MctInstance *inst, void *para)
             return false;
         }
     }
-    else
-    {
-        printf("execute cmd AT+CGDCON? failed!\r\n");
-        return false;
-    }
+
 
     return true;
 }
@@ -106,7 +110,7 @@ static bool cmd_PDP_IPConfig(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst, true, CMD_A7680C_PDP_IPSET, &pdpip_auth) == true)
         {
-            printf("PDP-IP set successfully!\r\n");
+            //printf("PDP-IP set successfully!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
@@ -127,7 +131,7 @@ static bool cmd_CSQ_AutoReportOff(MctInstance *inst, void *para)
 
     if (mct_a7680c_execute(inst, true, CMD_A7680C_CSQ_AUTO_REPORT, &csq_rep) == true)
     {
-        printf("CSQ auto report autodisable successfully!\r\n");
+        //printf("CSQ auto report autodisable successfully!\r\n");
 
     }
     else
@@ -148,7 +152,7 @@ static bool cmd_checkPinReady(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst, true, CMD_A7680C_CPIN_READ, &sim_ready) == true)
         {
-            printf("SIM is ready!\r\n");
+            //printf("SIM is ready!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
@@ -171,7 +175,7 @@ static bool cmd_UpdateZonNITZ(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst, true, CMD_A7680C_NITZ_TIMEUPDATE_SWITCH, &nitz_state) == true)
         {
-            printf("NITZ enable successfully!\r\n");
+            //printf("NITZ enable successfully!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
@@ -293,7 +297,36 @@ static bool cmd_CGMRRead(MctInstance *inst, void *para)
     }
     return true;
 }
+static bool cmd_InfoRead(MctInstance *inst, void *para)
+{
+        // AT+CIMI  IMSI read
+    if(!cmd_ReadIMSI(inst, para))
+    {
+        return false;
+    }
+    // AT+CGSN  SN bumber read
+    if(!cmd_SnNumberRead(inst, para))
+    {
+        return false;
+    }
 
+    // AT+CICCID  SIM ICCID read
+    if(!cmd_ICCIDRead(inst, para))
+    {
+        return false;
+    }
+    // AT+CGMM   model id read
+    if(!cmd_CGMMRead(inst, para))
+    {
+        return false;
+    }
+    // AT+CGMR   FW version id read
+    if(!cmd_CGMRRead(inst, para))
+    {
+        return false;
+    }
+		return true;
+}
 
 static bool cmd_autoConfig(MctInstance *inst, void *para)
 {
@@ -328,30 +361,7 @@ static bool cmd_autoConfig(MctInstance *inst, void *para)
     {
         return false;
     }
-
-    // AT+CIMI  IMSI read
-    if(!cmd_ReadIMSI(inst, para))
-    {
-        return false;
-    }
-    // AT+CGSN  SN bumber read
-    if(!cmd_SnNumberRead(inst, para))
-    {
-        return false;
-    }
-
-    // AT+CICCID  SIM ICCID read
-    if(!cmd_ICCIDRead(inst, para))
-    {
-        return false;
-    }
-    // AT+CGMM   model id read
-    if(!cmd_CGMMRead(inst, para))
-    {
-        return false;
-    }
-    // AT+CGMR   FW version id read
-    if(!cmd_CGMRRead(inst, para))
+    if(!cmd_InfoRead(inst, para))
     {
         return false;
     }
@@ -418,7 +428,9 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     }
     // accq
     MqttAccq_Info accq_test;
-    char client_id[] = {"DefaultProductKey.8212345678200235|securemode=3,signmethod=hmacsha1|"};
+    char client_id[128] = {0};
+    sprintf(client_id, "%s.%s|securemode=3,signmethod=hmacsha1|", global_cfg.ProductKey,global_cfg.DevName);
+
     accq_test.client_index = MQTT_CLIENT_INDEX;
     accq_test.clientID = client_id;
     accq_test.server_type = SERVER_TCP;
@@ -429,7 +441,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     /*
     connect
     from : RTConfig.cpp
-    0,"tcp://teeechina.xicp.net:11883",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
+    0,"tcp://teeechina.xicp.net:21903",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
     */
     //网络连接参数
 
@@ -481,7 +493,7 @@ static bool cmd_mqttSubscribe(MctInstance *inst, void *para)
 }
 static bool cmd_mqttflow(MctInstance *inst, void *para)
 {
-    printf("cmd_mqttflow start----------------------\r\n");
+    //printf("cmd_mqttflow start----------------------\r\n");
     // connect
     if(!cmd_mqttConnect(inst, para))
     {
@@ -534,7 +546,23 @@ static bool cmd_mqttpublish(MctInstance *inst, void *para)
     }
     return true;
 }
-
+static bool cmd_mqttStop(MctInstance *inst, void *para)
+{
+     //执行一次 无需关心失败与否
+    if (!mct_a7680c_execute(inst, true, CMD_A7680C_CMQTT_DISC, NULL))
+    {
+        //return false;
+    }
+     if (!mct_a7680c_execute(inst, true, CMD_A7680C_CMQTT_REL, NULL))
+    {
+        //return false;
+    }   
+    if (!mct_a7680c_execute(inst, true, CMD_A7680C_CMQTT_STOP, NULL))
+    {
+        //return false;
+    }
+    return true;
+}
 
 // time read
 static bool cmd_GetZTZEU(MctInstance *inst, void *para)
@@ -567,14 +595,17 @@ static bool cmd_NULL(MctInstance *inst, void *para)
 //cold start check
 static bool cmd_coldstartcheck(MctInstance *inst, void *para)
 {
-    bool is_started = false;
-    mct_a7680c_execute(inst,false,CMD_A7680C_COLD_START_CHECK,&is_started);
-    return is_started;
+    return mct_a7680c_execute(inst,false,CMD_A7680C_COLD_START_CHECK,NULL);
+}
+
+static bool cmd_revHandle(MctInstance *inst,void *para)
+{
+    mct_a7680c_execute(inst,false,NULL_CMD_SEEK,NULL);
+    return true;
 }
 
 static const tCmdApi funList[] =
     {
-        {.id = CMD_BOOTUPCLOCK, .fun = cmd_GetZTZEU},
         {.id = CMD_ECHO_CLOSE, .fun = cmd_NULL},
         {.id = CMD_WORKLOCKSET, .fun = cmd_NULL},
         {.id = CMD_MODEM_INFO, .fun = cmd_NULL},
@@ -585,11 +616,14 @@ static const tCmdApi funList[] =
         {.id = CMD_MQTTFLOW, .fun = cmd_mqttflow},
         {.id = CMD_MQTTPUBLISH, .fun = cmd_mqttpublish},
         {.id = CMD_MQTTREV, .fun = cmd_NULL},
-        {.id = CMD_MODEM_CLOCK_GET, .fun = cmd_NULL},
+        {.id = CMD_MODEM_CLOCK_GET, .fun = cmd_GetZTZEU},
         {.id = CMD_MQTTREVPUSH, .fun = cmd_NULL},
+        {.id = CMD_MQTTSTOP,   .fun = cmd_mqttStop},
         {.id = CMD_STICKFRAME, .fun = cmd_NULL},
         {.id = CMD_COLDSTARTUP_CHECK, .fun = cmd_coldstartcheck},
         {.id = CMD_POWEROFF, .fun = cmd_poweroff},
+        {.id = CMD_REV_FLOW,   .fun = cmd_revHandle},
+
 };
 
 tCmdApi const *CMD_A7680CApiGet(void)

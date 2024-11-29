@@ -436,7 +436,7 @@ static bool cmd_AnalyzeMqttAccq(uint8_t* buf, size_t len, void *para)
 }
 
 // AT+CMQTTCONNECT
-// [ATCmd: AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:11883",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
+// [ATCmd: AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:21903",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t *len, void *para)
 {
     MqttConnect_Info *connct_info = (MqttConnect_Info *)para;
@@ -634,6 +634,43 @@ static bool cmd_AnalyzeMqttPayloadSend(uint8_t* buf, size_t len, void *para)
     return true;
 }
 
+//AT+CMQTTDISC=0,120
+static bool cmd_PackMqttDisc(uint8_t* buf, size_t *len, void *para)
+{
+
+    *len = sprintf(buf, "AT+CMQTTDISC=%d,120\r\n", MQTT_CLIENT_INDEX);
+    return true;
+}
+static bool cmd_AnalyzeMqttDisc(uint8_t* buf, size_t len, void *para)
+{
+    return true;
+}
+
+//AT+CMQTTREL=0
+static bool cmd_PackMqttRel(uint8_t* buf, size_t *len, void *para)
+{
+
+    *len = sprintf(buf, "AT+CMQTTREL=%d\r\n", MQTT_CLIENT_INDEX);
+    return true;
+}
+static bool cmd_AnalyzeMqttRel(uint8_t* buf, size_t len, void *para)
+{
+    return true;
+}
+
+//AT+CMQTTSTOP
+static bool cmd_PackMqttStop(uint8_t* buf, size_t *len, void *para)
+{
+
+    *len = sprintf(buf, "AT+CMQTTSTOP\r\n");
+    return true;
+}
+static bool cmd_AnalyzeMqttStop(uint8_t* buf, size_t len, void *para)
+{
+    return true;
+}
+
+
 // AT+CMQTTPUB=0,0,60
 // AT+CMQTTPUB=<client_index>,<qos>,<pub_timeout>[,<ratained>[,<dup>]]
 static bool cmd_PackMqttPublish(uint8_t* buf, size_t *len, void *para)
@@ -652,6 +689,7 @@ static bool cmd_AnalyzeMqttPublish(uint8_t* buf, size_t len, void *para)
     ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, prefixLen);
     if (ptr == NULL)
     {
+        printf("Mqtt ptr null!\r\n");
         return false;
     }
     char *char_ptr = (char *)ptr;
@@ -667,6 +705,7 @@ static bool cmd_AnalyzeMqttPublish(uint8_t* buf, size_t len, void *para)
         if (i > 100)
         {
             recv_info.RevCmdValidFlag = 0;
+            printf("Mqtt Publish max try failed!\r\n");
             return false;
         }
     }
@@ -754,8 +793,7 @@ static bool cmd_AnalyzeCockRead(uint8_t* buf, size_t len, void *para)
 
 static bool cmd_PackColdStart(uint8_t* buf, size_t *len, void *para)
 {
-    bool *is_started = (bool *)para;
-    *is_started = true;
+    *len = 0;
     return true;
 }
 
@@ -779,9 +817,34 @@ static bool cmd_AnalyzePowerOff(uint8_t* buf, size_t len, void *para)
     return true;
 }
 
+/*
+receive: len:143
+
++CMQTTRXSTART: 0,38,15
++CMQTTRXTOPIC: 0,38
+$PERSISTENCE/configDn/8212345678100001
++CMQTTRXPAYLOAD: 0,15
+{"boardType":0}
++CMQTTRXEND: 0
+ 
+
+*/
+
+static bool cmd_PackmqttRev(uint8_t* buf, size_t *len, void *para)
+{
+    *len = 0;
+    return true;
+}
+static bool cmd_AnalyzemqttRev(uint8_t* buf, size_t len, void *para)
+{
+    printf("cmd_AnalyzemqttRev:\r\n");
+    printf("%.*s \r\n", (len), buf);
+    return true;
+}
+
 static const tCmd cmdList[] =
 {
-    CMD_ADD(CMD_A7680C_PDP_READ              ,   5,  "+CGDCONT:",       "\r\n",   "ERROR",       SendRev,    PdpRead    ),
+    CMD_ADD(CMD_A7680C_PDP_READ              ,   5,  "+CGDCONT:",       "\r\n",   "ERROR",    SendRev,    PdpRead    ),
     CMD_ADD(CMD_A7680C_PDP_CONFIG            ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    PdpConfig  ), 
     CMD_ADD(CMD_A7680C_PDP_IPSET             ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    PdpIpSet   ), 
     CMD_ADD(CMD_A7680C_ECHO_SWITCH           ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    EchoSwitch ),
@@ -798,16 +861,20 @@ static const tCmd cmdList[] =
     CMD_ADD(CMD_A7680C_CMMQTT_START          ,   5,  "+CMQTTSTART:",    "\r\n",   "ERROR",    SendRev,    MqttStart  ), 
     CMD_ADD(CMD_A7680C_CMQTT_ACCQ            ,   5,  "OK",              "\r\n",   "ERROR",    SendRev,    MqttAccq   ), 
     CMD_ADD(CMD_A7680C_CMQTT_CONNECT         ,   5,  "+CMQTTCONNECT:",  "\r\n",   "ERROR",    SendRev,    MqttConnect),
-    CMD_ADD(CMD_A7680C_CMQTT_SUBSCRIBE       ,   5,  "\r\n>",           NULL,   "ERROR",    SendRev,    MqttSub    ),
-    CMD_ADD(CMD_A7680C_CMQTT_SUB_SEND        ,   5,  "+CMQTTSUB:",      "\r\n", "ERROR",    SendRev,    MqttSubSend),
+    CMD_ADD(CMD_A7680C_CMQTT_SUBSCRIBE       ,   5,  "\r\n>",           NULL,    "ERROR",    SendRev,    MqttSub    ),
+    CMD_ADD(CMD_A7680C_CMQTT_SUB_SEND        ,   5,  "+CMQTTSUB:",      "\r\n",  "ERROR",    SendRev,    MqttSubSend),
     CMD_ADD(CMD_A7680C_CMQTT_TOPIC           ,   5,  "\r\n>",            NULL,   "ERROR",    SendRev,    MqttTopic    ),
     CMD_ADD(CMD_A7680C_CMQTT_TOPIC_SEND      ,   5,  "OK",              "\r\n",  "ERROR",    SendRev,    MqttTopicSend),
-    CMD_ADD(CMD_A7680C_CMQTT_PAYLOAD         ,   5,  "\r\n>",           NULL,   "ERROR",    SendRev,    MqttPayload    ),
-    CMD_ADD(CMD_A7680C_CMQTT_PAYLOAD_SEND    ,   5,  "OK",              NULL,   "ERROR",    SendRev,    MqttPayloadSend),
-    CMD_ADD(CMD_A7680C_CMQTT_PUBISH          ,   5,  "+CMQTTPUB:",      "\r\n",   "ERROR",    SendRev,    MqttPublish),
-    CMD_ADD(CMD_A7680C_CLOCK_READ            ,   5,  NULL,              NULL,     "ERROR",    SendRev,    CockRead),
-    CMD_ADD(CMD_A7680C_POWEROFF              ,   5,  "OK",              "\r\n",  "ERROR",      SendRev,   PowerOff),
-    CMD_ADD(CMD_A7680C_COLD_START_CHECK      ,   5,  "^SIMST:",         NULL,    NULL,      RecvSend,   ColdStart),
+    CMD_ADD(CMD_A7680C_CMQTT_PAYLOAD         ,   5,  "\r\n>",           NULL,    "ERROR",    SendRev,    MqttPayload    ),
+    CMD_ADD(CMD_A7680C_CMQTT_PAYLOAD_SEND    ,   5,  "OK",              NULL,    "ERROR",    SendRev,    MqttPayloadSend),
+    CMD_ADD(CMD_A7680C_CMQTT_PUBISH          ,   5,  "+CMQTTPUB:",     "\r\n",   "ERROR",    SendRev,    MqttPublish),
+    CMD_ADD(CMD_A7680C_CMQTT_DISC            ,   5,  "OK",            "\r\n",    "ERROR",    SendRev,    MqttDisc),
+    CMD_ADD(CMD_A7680C_CMQTT_REL             ,   5,  "OK",            "\r\n",    "ERROR",    SendRev,    MqttRel),
+    CMD_ADD(CMD_A7680C_CMQTT_STOP            ,   5,  "OK",            "\r\n",    "ERROR",    SendRev,    MqttStop),
+    CMD_ADD(CMD_A7680C_CLOCK_READ            ,   5,  "+CCLK:",         "\r\n",    "ERROR",    SendRev,    CockRead),
+    CMD_ADD(CMD_A7680C_POWEROFF              ,   5,  "OK",              "\r\n",  "ERROR",    SendRev,   PowerOff),
+    CMD_ADD(CMD_A7680C_COLD_START_CHECK      ,   5,  "^SIMST:",         NULL,    NULL,       RecvSend,   ColdStart),
+    CMD_ADD(CMD_A7680C_MQTTREV               ,   5,  "+CMQTTRXSTART:",  NULL,    NULL,       RecvSend,   mqttRev),
 
 };
 
@@ -900,8 +967,8 @@ bool MqttConfig_Test(void)
         return false;
     }
     //connect
-    //AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:11883",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
-    char server_addr[] = {"tcp://teeechina.xicp.net:11883"};
+    //AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:21903",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"
+    char server_addr[] = {"tcp://teeechina.xicp.net:21903"};
     char user_name[] = {"8212345678200235&DefaultProductKey"};
     char pass_word[] = {"EF78D2329E1E387DCB5CA110E71E3839A134C3CF"};
     MqttConnect_Info connect_info;

@@ -51,9 +51,13 @@
 #define CMD_A7680C_CMQTT_PAYLOAD                 (int32_t)(CMD_A7680C_ID_BASE +  22)
 #define CMD_A7680C_CMQTT_PAYLOAD_SEND            (int32_t)(CMD_A7680C_ID_BASE +  23)
 #define CMD_A7680C_CMQTT_PUBISH                  (int32_t)(CMD_A7680C_ID_BASE +  24)
-#define CMD_A7680C_CLOCK_READ                    (int32_t)(CMD_A7680C_ID_BASE +  25)
-#define CMD_A7680C_COLD_START_CHECK              (int32_t)(CMD_A7680C_ID_BASE +  26)
-#define CMD_A7680C_POWEROFF                      (int32_t)(CMD_A7680C_ID_BASE +  27)
+#define CMD_A7680C_CMQTT_DISC                    (int32_t)(CMD_A7680C_ID_BASE +  25)      
+#define CMD_A7680C_CMQTT_REL                     (int32_t)(CMD_A7680C_ID_BASE +  26)
+#define CMD_A7680C_CMQTT_STOP                    (int32_t)(CMD_A7680C_ID_BASE +  27)
+#define CMD_A7680C_CLOCK_READ                    (int32_t)(CMD_A7680C_ID_BASE +  28)
+#define CMD_A7680C_COLD_START_CHECK              (int32_t)(CMD_A7680C_ID_BASE +  29)
+#define CMD_A7680C_MQTTREV                       (int32_t)(CMD_A7680C_ID_BASE +  30)
+#define CMD_A7680C_POWEROFF                      (int32_t)(CMD_A7680C_ID_BASE +  31)
 /* 
 1,"IP","cmnet","10.7.70.160,"",0,0,,,,C11
 <cid>,<PDP_type>,<APN>[[,<PDP_addr>],<d_comp>,<h_comp>,<ipv4_ctrl>,<request_type>,<PCSCF_discovery>,<IM_CN_Signalling_Flag_Ind>]<CR><LF>
