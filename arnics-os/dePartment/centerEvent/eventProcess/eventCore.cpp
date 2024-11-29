@@ -195,8 +195,6 @@ _WEAK void onResetState()
             event_state = OnWattingOutMsg; // 进入等待消息状态
             break;
         }
-
-        break;
     }
 }
 
