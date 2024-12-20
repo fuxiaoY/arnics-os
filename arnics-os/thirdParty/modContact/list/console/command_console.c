@@ -138,13 +138,13 @@ static bool cmd_AnalyzeRevHexFlow(uint8_t* buf, size_t len, void *para)
 
 
 
-static const char header[2] = {0x7e,0x00};
-static const char tail[2] = {0x7e,0x00};
+static const uint8_t header[2] = {0x7e,0x00};
+static const uint8_t tail[2] = {0x7e,0x00};
 
 static const tCmd cmdList[] =
 {
-    CMD_ADD(CMD_CONSOLE_ID_REV,             2,  "$$COMX$$",          "*#*#",         NULL,         RecvSend,        RevFlow),
-    CMD_ADD(CMD_CONSOLE_ID_REV2,            2,  (char*)&header,     (char*)&tail,    NULL,        RecvSend,        RevHexFlow),
+  CMD_ADD(CMD_CONSOLE_ID_REV,             2,  "$$COMX$$",                      "*#*#",                     NULL,         RecvSend,        RevFlow),
+  CMD_HEX_ADD(CMD_CONSOLE_ID_REV2,        2,  &header,sizeof(header),          &tail,sizeof(header),       NULL,0,       RecvSend,        RevHexFlow),
 };
 tCmd const *CMD_ConsoleCmdGet(void)
 {

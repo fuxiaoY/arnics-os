@@ -87,14 +87,25 @@ typedef enum
     RecvSend,
 }tCmd_type;
 
+typedef enum
+{
+    AscII = 0,
+    HeX,
+}tFormat_type;
+
+
 typedef struct
 {
     int32_t                         id;
     uint16_t                        timeout;
-    char                            *rightPhase;
-    char                            *SubRightPhase;
-    char                            *errorPhase;
+    void                            *rightPhase;
+    uint16_t                        rightPhaseLen;
+    void                            *SubRightPhase;
+    uint16_t                        SubRightPhaseLen;
+    void                            *errorPhase;
+    uint16_t                        errorPhaseLen;
     tCmd_type                       Type;
+    tFormat_type                    format;
     cmd_Pack                        pack;
     cmd_Analyze                     analyze;
 }tCmd;

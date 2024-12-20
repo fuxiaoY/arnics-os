@@ -26,6 +26,20 @@ extern "C" {
                                                                     .SubRightPhase = subright, \
                                                                     .errorPhase = error, \
                                                                     .Type = type, \
+                                                                    .format =AscII, \
+                                                                    .pack = cmd_Pack##funName, \
+                                                                    .analyze = cmd_Analyze##funName}
+
+#define CMD_HEX_ADD(index, time, right,rightlen, subright,subrightlen, error,errorlen, type, funName)  {.id = index, \
+                                                                    .timeout = time, \
+                                                                    .rightPhase = right, \
+                                                                    .rightPhaseLen = rightlen, \
+                                                                    .SubRightPhase = subright, \
+                                                                    .SubRightPhaseLen = subrightlen, \
+                                                                    .errorPhase = error, \
+                                                                    .errorPhaseLen = errorlen, \
+                                                                    .Type = type, \
+                                                                    .format =HeX, \
                                                                     .pack = cmd_Pack##funName, \
                                                                     .analyze = cmd_Analyze##funName}
 
@@ -36,7 +50,10 @@ extern "C" {
 /*内核辅助函数--------------------------------------------------------------------------*/
 extern bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_dest, uint16_t *offset);
 extern bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,const char *phase, const char *subphase, uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
-
+extern bool cmd_ComformResUint8(uint8_t *srcaddr, size_t src_len, \
+                            const uint8_t *phase, size_t phase_len, \
+                            const uint8_t *subphase, size_t subphase_len, \
+                            uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
 
 /*工具函数-----------------------------------------------------------------------------*/
 /**

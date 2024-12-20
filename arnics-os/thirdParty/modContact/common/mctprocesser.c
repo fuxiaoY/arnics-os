@@ -44,34 +44,74 @@ void addFrameToFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t e
 /*帧匹配--------------------------------------------------------------------------------*/
 static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bool is_expected,uint16_t id,StaticFrameList *payloadlist,uint16_t *remain_len)
 {
-    uint16_t PhaseOffset = 0;
-    uint16_t SubphaseOffset = 0;
-
-
-    // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
-    if (NULL != expected_cmd->errorPhase && true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase, NULL, &PhaseOffset, &SubphaseOffset))
+    if(AscII == expected_cmd->format)
     {
-        *remain_len = 0;
-        return match_error;
-    }
-    // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
-    if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
-    {
-        if(is_expected)
-        {
-            addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
-        }
-        else
-        {
-            addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
-        }
+        uint16_t PhaseOffset = 0;
+        uint16_t SubphaseOffset = 0;
 
+
+        // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
+        if (NULL != expected_cmd->errorPhase && true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase, NULL, &PhaseOffset, &SubphaseOffset))
+        {
+            *remain_len = 0;
+            return match_error;
+        }
+        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
+        if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
+        {
+            if(is_expected)
+            {
+                addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+            }
+            else
+            {
+                addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+            }
+
+            *remain_len -= (SubphaseOffset - PhaseOffset);
+            return match_sucess;
+        }
+        //什么都没查询到 
         *remain_len -= (SubphaseOffset - PhaseOffset);
-        return match_sucess;
+        return match_null;
+    
     }
-    //什么都没查询到 
-    *remain_len -= (SubphaseOffset - PhaseOffset);
-    return match_null;
+    else if(HeX == expected_cmd->format)
+    {
+        uint16_t PhaseOffset = 0;
+        uint16_t SubphaseOffset = 0;
+
+
+        // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
+        if (NULL != expected_cmd->errorPhase && true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase,expected_cmd->errorPhaseLen, NULL, 0,&PhaseOffset, &SubphaseOffset))
+        {
+            *remain_len = 0;
+            return match_error;
+        }
+        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
+        if (true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase,expected_cmd->rightPhaseLen, expected_cmd->SubRightPhase,expected_cmd->SubRightPhaseLen, &PhaseOffset, &SubphaseOffset))
+        {
+            if(is_expected)
+            {
+                addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+            }
+            else
+            {
+                addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+            }
+
+            *remain_len -= (SubphaseOffset - PhaseOffset);
+            return match_sucess;
+        }
+        //什么都没查询到 
+        *remain_len -= (SubphaseOffset - PhaseOffset);
+        return match_null;
+    }
+    else
+    {
+        return match_null;
+    }
+    
 }
 /*-------------------------------------------------------------------------------------*/
 
@@ -399,7 +439,7 @@ bool expectframeDeal(MctInstance *inst, StaticFrameList *payloadlist, tCmd const
 
 
 bool CMD_Execute(MctInstance *inst, \
-                bool is_expected,int32_t expected_tcmd_id, \
+                int32_t expected_tcmd_id, \
                 tCmd const *List,uint16_t cmdNum,void *para)
 {
 
@@ -408,8 +448,23 @@ bool CMD_Execute(MctInstance *inst, \
         mct_data_reset(inst);
     }
 
-
+    bool is_expected = false;
     bool result = false;
+
+    // 遍历命令列表，寻找匹配的命令
+    for (uint16_t i = 0; i < cmdNum; i++)
+    {
+        // 检查当前命令项是否与目标ID匹配
+        if (expected_tcmd_id == List[i].id)
+        {
+            if(List[i].Type == SendRev)
+            {
+                is_expected = true;
+            }
+            break;
+        }
+    }
+    
     //判断
     if(is_expected)
     {

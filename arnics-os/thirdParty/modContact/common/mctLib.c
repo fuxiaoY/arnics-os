@@ -125,7 +125,76 @@ bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,
     return true;
 }
 
+/**
+ * @fn cmd_ComformResUint8
+ * @brief 根据给定阶段确认资源（使用uint8_t数组）
+ * 
+ * 此函数用于验证回调函数中的资源是否符合特定阶段。
+ * 首先检查阶段参数是否为空。如果为空，则认为验证成功，并返回整个srcaddr的地址。
+ * 如果阶段参数不为空，则使用sd_Parse函数解析资源。如果解析失败，
+ * 验证失败。否则，认为验证成功。
+ *
+ * @param [in] srcaddr - 源地址指针
+ * @param [in] src_len - 源地址长度
+ * @param [in] phase - 用于验证的阶段uint8_t数组指针
+ * @param [in] phase_len - 阶段数组长度
+ * @param [in] subphase - 用于验证的子阶段uint8_t数组指针
+ * @param [in] subphase_len - 子阶段数组长度
+ * @param [out] PhaseOffset - 阶段偏移位置
+ * @param [out] SubphaseOffset - 子阶段偏移位置
+ * @retval 验证结果
+ *         - true: 验证成功
+ *         - false: 验证失败
+ */
+bool cmd_ComformResUint8(uint8_t *srcaddr, size_t src_len,
+                            const uint8_t *phase, size_t phase_len,
+                            const uint8_t *subphase, size_t subphase_len,
+                            uint16_t *PhaseOffset, uint16_t *SubphaseOffset)
+{
+    uint16_t phaseOffset = 0;
+    uint16_t subphaseOffset = 0;
 
+    // 检查阶段参数是否为空
+    if (NULL == phase || phase_len == 0)
+    {
+        *PhaseOffset = 0;
+        *SubphaseOffset = src_len;
+        return true; // no phase, return entire srcaddr
+    }
+
+    // 解析阶段
+    if (false == sd_Parse(srcaddr, phase, src_len, phase_len, &phaseOffset))
+    {
+        return false;
+    }
+
+    // 检查阶段偏移是否超出范围
+    if (phaseOffset + phase_len > src_len)
+    {
+        return false;
+    }
+
+    // 检查子阶段参数是否为空
+    if (NULL == subphase || subphase_len == 0)
+    {
+        // 设置阶段偏移和子阶段偏移
+        *PhaseOffset = phaseOffset;
+        *SubphaseOffset = src_len; // set subphaseOffset to the end of srcaddr
+        return true; // no subphase
+    }
+
+    // 解析子阶段
+    if (false == sd_Parse(srcaddr + phaseOffset + phase_len, subphase, src_len - (phaseOffset + phase_len), subphase_len, &subphaseOffset))
+    {
+        return false;
+    }
+
+    // 设置阶段偏移和子阶段偏移
+    *PhaseOffset = phaseOffset;
+    *SubphaseOffset = phaseOffset + phase_len + subphaseOffset + subphase_len;
+
+    return true;
+}
 
 /*-------------------------------------------------------------------------------------*/
 

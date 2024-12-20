@@ -40,12 +40,12 @@ extern uint16_t CMD_ConsoleCmdNumGet(void);
  * @brief 
  * 
  * @param [in] inst - mct实例
- * @param [in] is_expected - true->SendRev模型  false->RevSend模型   
- * @param [in] expected_tcmd_id   - 期望的命令id   NULL_CMD_SEEK：无需匹配（仅is_expected = false有效）
+
+ * @param [in] expected_tcmd_id   - 期望的命令id   NULL_CMD_SEEK：无需匹配
  * @param [in] para - 回调参数
  * @retval None
  */
-#define mct_console_execute(inst,is_expected,expected_tcmd_id, para)                  CMD_Execute(inst,is_expected,expected_tcmd_id,CMD_ConsoleCmdGet(), CMD_ConsoleCmdNumGet(), para)
+#define mct_console_execute(inst,expected_tcmd_id, para)                  CMD_Execute(inst,expected_tcmd_id,CMD_ConsoleCmdGet(), CMD_ConsoleCmdNumGet(), para)
 
 
 #ifdef __cplusplus
