@@ -102,7 +102,7 @@ extern void halTimerRestart(tSwTimer* t);
  * @retval 0 - 定时未到期
  * @retval 1 - 定时已到期
  */
-extern BOOL halTimerExpired(const tSwTimer* t);
+extern bool halTimerExpired(const tSwTimer* t);
 
 /**
  * @fn halTimerRemainingCorrected
@@ -112,7 +112,7 @@ extern BOOL halTimerExpired(const tSwTimer* t);
  * @retval 剩余时间，单位MS
  */
 extern uint32_t halTimerRemainingCorrected(const tSwTimer* t);
-
+extern uint32_t halTimerRemaining(const tSwTimer* t);
 /**
  * @fn findMinimum
  * @brief 查找多个软定时器中的最小剩余时间

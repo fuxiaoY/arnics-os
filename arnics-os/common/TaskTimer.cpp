@@ -38,27 +38,15 @@ void halTimerRestart(tSwTimer *t)
 }
 
 /**
- * @brief  查询软定时器是否定时到期
- * @param  [in]  t-软定时器
- * @retval 0-定时未到期
- * @retval 1-定时已到期
- */
-
-BOOL halTimerExpired(const tSwTimer *t)
+  * @brief  查询软定时器是否定时到期 uint32_t wrap-around特性应用
+  * @param  [in]  t-软定时器
+  * @retval 0-定时未到期
+  * @retval 1-定时已到期
+  */
+bool halTimerExpired(const tSwTimer* t)
 {
-    uint32_t currentTick = arnics_getTick();
-    uint32_t startTick = t->start;
-    uint32_t interval = t->interval;
-
-    // 检查是否发生了减法溢出
-    if (currentTick >= startTick) {
-        // 如果没有溢出，直接计算差值并与 interval 比较
-        return boolof((currentTick - startTick) >= interval);
-    } else {
-        // 如果发生了溢出，计算 UINT32_MAX 与 startTick 的差，再加上 currentTick
-        uint32_t diff = 0xffffffff - startTick + currentTick + 1;
-        return boolof(diff >= interval);
-    }
+    uint32_t diff = (arnics_getTick() - t->start) + 1;
+    return boolof(t->interval < diff);
 }
 
 /**
@@ -102,6 +90,16 @@ uint32_t halTimerRemainingCorrected(const tSwTimer *t)
     // 计算剩余时间
     return (uint32_t)(endDiff - currentDiff);
 }
+/**
+  * @brief  软定时器离到期还有多少MS -uint32_t wrap-around特性应用
+  * @param  [in]  t-软定时器
+  * @retval 剩余时间，单位MS
+  */
+uint32_t halTimerRemaining(const tSwTimer* t)
+{
+    return (uint32_t)(t->start + t->interval - arnics_getTick());
+}
+
 /**
  * @brief  软定时器中的最小值
  * @param  [in]  t-软定时器  d1:标准值
