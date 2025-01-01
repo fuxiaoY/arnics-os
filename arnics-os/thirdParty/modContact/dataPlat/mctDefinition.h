@@ -14,6 +14,8 @@ extern "C" {
 
 #define MAX_FRAMES 5
 #define NULL_CMD_SEEK (int32_t)-1
+
+#define MCT_VERSION "1.0.0"
 /* typedef -----------------------------------------------------------*/
 typedef enum
 {
