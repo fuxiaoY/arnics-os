@@ -42,7 +42,7 @@ void _sys_exit(int x) {
 int _ttywrch(int ch) {
     // 实现你的输出逻辑，例如通过 UART 发送字符
     uart_dirct_t bufcache = {0};
-    bufcache.buf = &ch;
+    bufcache.buf = (uint8_t *)&ch;
     bufcache.size = 1;
     dev_ctl(&debug_ds, UART_DSEND, &bufcache);
     return ch;
