@@ -12,7 +12,7 @@ void initStaticFrameList(StaticFrameList *list)
     memset(list, 0, sizeof(StaticFrameList));
 }
 
-void addFrameToExpectedFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
+static void addFrameToExpectedFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
 {
 
     list->frames_expected.startOffset = startOffset;
@@ -23,7 +23,7 @@ void addFrameToExpectedFrameList(StaticFrameList *list, uint16_t startOffset, ui
 
     list->have_expected = true;
 }
-void addFrameToFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
+static void addFrameToFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
 {
     if (list->size >= MAX_FRAMES) 
     {
@@ -116,53 +116,27 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
 /*-------------------------------------------------------------------------------------*/
 
 /*预期帧流程-----------------------------------------------------------------------------*/
-bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *List, uint16_t cmdNum, int32_t expected_tcmd_id,void *para)
+static bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *List, uint16_t cmdlist_seq_i, int32_t expected_tcmd_id,void *para)
 {
-    // 遍历命令列表，寻找匹配的命令
-    for (uint16_t i = 0; i < cmdNum; i++)
+    // 打包命令，如果失败则返回false
+    if (false == List[cmdlist_seq_i].pack(inst->cmd_cache,&inst->cmd_size, para))
     {
-        // 检查当前命令项是否与目标ID匹配
-        if (expected_tcmd_id == List[i].id)
-        {
-
-            // 打包命令，如果失败则返回false
-            if (false == List[i].pack(inst->cmd_cache,&inst->cmd_size, para))
-            {
-                return false;
-            }
-            inst->mct_write(inst->cmd_cache,inst->cmd_size);  
-            return true;
-        }
+        return false;
     }
-    return false;
+    inst->mct_write(inst->cmd_cache,inst->cmd_size);  
+    return true;
+
 }
 
 
 
 static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cmdListNum, \
                                     int32_t expected_tcmd_id, \
-                                    StaticFrameList *payloadlist)
+                                    StaticFrameList *payloadlist,uint16_t cmdlist_seq_i)
 {
     uint32_t cnt = 0;
     uint16_t remain_len = 0;
     bool result = false;
-    bool found = false;
-    uint8_t cmdlist_seq_i = 0;
-    //寻找匹配的id
-    for (uint8_t i = 0; i < cmdListNum; i++)
-    {
-        // 检查当前命令项是否与目标ID匹配
-        if (expected_tcmd_id == cmdList[i].id)
-        {
-            cmdlist_seq_i = i;
-            found = true;
-            break;
-        }
-    }
-    if (!found)
-    {
-        return false; //没有匹配的id
-    }
 
     do
     {
@@ -319,12 +293,12 @@ static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdLi
  */
 static bool payload_scan(MctInstance *inst,StaticFrameList *payloadlist, \
                     tCmd const *cmdList,uint16_t cmdListNum, \
-                    bool is_expected,int32_t expected_tcmd_id)
+                    bool is_expected,int32_t expected_tcmd_id,uint16_t cmdlist_seq_i)
 {
     if(true == is_expected)//有预期帧
     {
         //预期帧寻找
-        return expected_cmd_seek(inst,cmdList,cmdListNum,expected_tcmd_id,payloadlist); 
+        return expected_cmd_seek(inst,cmdList,cmdListNum,expected_tcmd_id,payloadlist,cmdlist_seq_i); 
     }
     else
     {
@@ -384,7 +358,7 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
     return status;
 }
 
-void frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum,void *para)
+static void frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum,void *para)
 {
   if(payloadlist->size > 0)
   { 
@@ -400,7 +374,7 @@ void frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cm
 
 
 
-bool expectframeDeal(MctInstance *inst, StaticFrameList *payloadlist, tCmd const *cmdList, uint16_t cmdListNum, void *para)
+static bool expectframeDeal(MctInstance *inst, StaticFrameList *payloadlist, tCmd const *cmdList, uint16_t cmdListNum, void *para)
 {
     // 如果没有预期帧，直接返回 false
     if (!payloadlist->have_expected)
@@ -447,16 +421,18 @@ bool CMD_Execute(MctInstance *inst, \
         initStaticFrameList(&inst->payload_list);
         mct_data_reset(inst);
     }
-
+    uint16_t i = 0;
     bool is_expected = false;
     bool result = false;
+    uint16_t cmdlist_seq_i = 0;
 
     // 遍历命令列表，寻找匹配的命令
-    for (uint16_t i = 0; i < cmdNum; i++)
+    for (i = 0; i < cmdNum; i++)
     {
         // 检查当前命令项是否与目标ID匹配
         if (expected_tcmd_id == List[i].id)
         {
+            cmdlist_seq_i = i;
             if(List[i].Type == SendRev)
             {
                 is_expected = true;
@@ -464,13 +440,18 @@ bool CMD_Execute(MctInstance *inst, \
             break;
         }
     }
+    if((i == cmdNum)&&(expected_tcmd_id != NULL_CMD_SEEK))
+    {
+        //未定义命令
+        return false;
+    }
     
-    //判断
+    //判断是否是SendRev类型的命令
     if(is_expected)
     {
-        if(expected_cmd_send(inst,&inst->payload_list,List,cmdNum,expected_tcmd_id,para))
+        if(expected_cmd_send(inst,&inst->payload_list,List,cmdlist_seq_i,expected_tcmd_id,para))
         {
-            if(payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id))
+            if(payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id,cmdlist_seq_i))
             {
                 result = expectframeDeal(inst,&inst->payload_list,List,cmdNum,para); 
                 
@@ -482,7 +463,7 @@ bool CMD_Execute(MctInstance *inst, \
     }
     else
     {
-        payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id);
+        payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id,cmdlist_seq_i);
         frameListDeal(inst,&inst->payload_list,List,cmdNum,para);
     }
 
