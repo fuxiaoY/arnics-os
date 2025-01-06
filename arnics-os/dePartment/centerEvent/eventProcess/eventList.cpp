@@ -10,11 +10,12 @@ extern Message_t mesg_cache;//事件应用消息
 // 定义函数
 void led_action(void* argv) 
 {
+    EVET_START
     static int a = 0;
     a++;
     // 函数实现
     ULOG_INFO("led_action\r\n");
-    dev_ctl(&led0_ds,IO_TOGGLE,NULL);
+
     dev_ctl(&led1_ds,IO_TOGGLE,NULL);
     if(a == 4)
     {
@@ -35,11 +36,16 @@ void led_action(void* argv)
 
     rsp->message_deliver.test_rsp.a = messageReq.message_deliver.test_req.a;
     rsp->message_deliver.test_rsp.b = messageReq.message_deliver.test_req.b;
+    EVET_END
 }
 
 void battery_check(void* argv) 
 {
+    EVET_START
+    dev_ctl(&led0_ds,IO_TOGGLE,NULL);
+    EVET_DELAY(1000);
     // 函数实现
+    EVET_END
 }
 
 

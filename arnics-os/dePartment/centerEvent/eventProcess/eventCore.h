@@ -34,8 +34,8 @@ extern "C" {
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
 #include "../../../dataPlat/dataPlatInclude.h"
-
-
+#include "../../../core/coreInclude.h"
+#include "../../../Common/commonInclude.h"
 
 /* define ------------------------------------------------------------*/
 #define EVENT_MAX_NUM 32
@@ -69,7 +69,28 @@ typedef enum
     ActionMsg,          // 执行命令
     SendingRspMsg,      // 返回外部消息的执行结果
 }EVENT_STATE;
+/* define ------------------------------------------------------------*/
+#define PT_END_NORETURN(pt) LC_END((pt)->lc); PT_YIELD_FLAG = 0; \
+                   PT_INIT(pt); }
+// 封装 _START 和 _END
+#define EVET_START static struct pt _pt_##__func__ = {0}; struct pt *ppt = &_pt_##__func__; PT_BEGIN(ppt); static uint32_t _delay_start_ = arnics_getTick(); 
+#define EVET_END PT_END_NORETURN(ppt);
 
+
+#define EV_WAIT_UNTIL(pt, condition) \
+  do {						         \
+    LC_SET((pt)->lc);				 \
+    if(!(condition)) {			 	 \
+      return ;			             \
+    }      \
+    else   \
+    {      \
+        _delay_start_ = arnics_getTick(); \
+    }						\
+  } while(0)
+#define _OUT_IF_TRUE(pt, cond)  EV_WAIT_UNTIL((pt), !(cond))
+
+#define EVET_DELAY(ms)  _OUT_IF_TRUE(ppt, (uint32_t)(arnics_getTick() - _delay_start_) < (ms)); 
 
 /* variables ---------------------------------------------------------*/
 extern Message_t mesg_cache;               //事件应用消息
