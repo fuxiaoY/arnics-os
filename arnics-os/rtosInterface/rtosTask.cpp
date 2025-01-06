@@ -8,6 +8,7 @@
 #include "../dePartment/centerBusiness/entry_business_api.h"
 #include "../dePartment/centerConsole/entry_console_api.h"
 #include "../dePartment/centerMedia/entry_media_api.h"
+#include "../dePartment/centerGuard/entry_guard_api.h"
 /* ---------------------------------休眠相关 -----------------------------------------------*/
 /**
  * @func StartConsleTask
@@ -109,6 +110,7 @@ void StartGuardTask(void const *argument)
 {
   while (1)
   {
+    guard_process();
     rtosThreadDelay(1000);
   }
 }
