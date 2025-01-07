@@ -6,6 +6,7 @@
 #include "rtosTask.h"
 #ifdef _USE_FREERTOS_
 #include "freertos/FreeRTOSConfig.h"
+#include "freertos/freertosDef.h"
 #endif
 
 #include "rtosPort.h"
