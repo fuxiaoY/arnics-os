@@ -57,23 +57,22 @@ RUN_ONCE_INIT(setup_hardware);
 void main(void)
 {
   int result = 0;
-  while(1)
-  {
-      // Try to call the print_once function multiple times, but it will only execute once
-      RUN_ONCE(print_once, result = print_once(1));
-      RUN_ONCE(print_once, result = print_once(2));
-      RUN_ONCE(print_once, result = print_once(3));
 
-      // Try to call the setup_hardware function multiple times, but it will only execute once
-      RUN_ONCE(setup_hardware, setup_hardware());
-      RUN_ONCE(setup_hardware, setup_hardware());
+  // Try to call the print_once function multiple times, but it will only execute once
+  RUN_ONCE(print_once, result = print_once(1));
+  RUN_ONCE(print_once, result = print_once(2));
+  RUN_ONCE(print_once, result = print_once(3));
 
-      // Reset the execution state of print_once
-      RUN_RESET(print_once);
+  // Try to call the setup_hardware function multiple times, but it will only execute once
+  RUN_ONCE(setup_hardware, setup_hardware());
+  RUN_ONCE(setup_hardware, setup_hardware());
 
-      // Call the print_once function again; since the state has been reset, it will execute again
-      RUN_ONCE(print_once, int result = print_once(4));
-  }
+  // Reset the execution state of print_once
+  RUN_RESET(print_once);
+
+  // Call the print_once function again; since the state has been reset, it will execute again
+  RUN_ONCE(print_once, int result = print_once(4));
+
 }
   ```
 Execution result:

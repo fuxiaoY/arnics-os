@@ -61,23 +61,22 @@ RUN_ONCE_INIT(setup_hardware);
 void main(void)
 {
     int result = 0;
-    while(1)
-    {
-        // 尝试多次调用print_once函数，但只会执行一次
-        RUN_ONCE(print_once, result = print_once(1));
-        RUN_ONCE(print_once, result = print_once(2));
-        RUN_ONCE(print_once, result = print_once(3));
 
-        // 尝试多次调用setup_hardware函数，但只会执行一次
-        RUN_ONCE(setup_hardware, setup_hardware());
-        RUN_ONCE(setup_hardware, setup_hardware());
+    // 尝试多次调用print_once函数，但只会执行一次
+    RUN_ONCE(print_once, result = print_once(1));
+    RUN_ONCE(print_once, result = print_once(2));
+    RUN_ONCE(print_once, result = print_once(3));
 
-        // 重置print_once的执行状态
-        RUN_RESET(print_once);
+    // 尝试多次调用setup_hardware函数，但只会执行一次
+    RUN_ONCE(setup_hardware, setup_hardware());
+    RUN_ONCE(setup_hardware, setup_hardware());
 
-        // 再次调用print_once函数，由于状态已重置，会再次执行
-        RUN_ONCE(print_once, int result = print_once(4));
-    }
+    // 重置print_once的执行状态
+    RUN_RESET(print_once);
+
+    // 再次调用print_once函数，由于状态已重置，会再次执行
+    RUN_ONCE(print_once, int result = print_once(4));
+
 }
 
   ```
