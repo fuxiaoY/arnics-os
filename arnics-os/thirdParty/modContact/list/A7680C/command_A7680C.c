@@ -436,7 +436,7 @@ static bool cmd_AnalyzeMqttAccq(uint8_t* buf, size_t len, void *para)
 }
 
 // AT+CMQTTCONNECT
-// [ATCmd: AT+CMQTTCONNECT=0,"tcp://teeechina.xicp.net:21903",120,1,"8212345678200235&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
+// [ATCmd: AT+CMQTTCONNECT=0,"tcp://arong.xicp.net:15321",120,1,"123&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t *len, void *para)
 {
     MqttConnect_Info *connct_info = (MqttConnect_Info *)para;

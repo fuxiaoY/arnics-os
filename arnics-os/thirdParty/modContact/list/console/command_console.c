@@ -138,8 +138,8 @@ static bool cmd_AnalyzeRevHexFlow(uint8_t* buf, size_t len, void *para)
 
 
 
-static const uint8_t header[2] = {0x7e,0x00};
-static const uint8_t tail[2] = {0x7e,0x00};
+static uint8_t header = 0x7e;
+static uint8_t tail = 0x7e;
 
 static const tCmd cmdList[] =
 {

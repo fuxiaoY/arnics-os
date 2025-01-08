@@ -17,14 +17,11 @@
  */
 #ifndef __COMMAND_A7680C_H__
 #define __COMMAND_A7680C_H__
-#include "../../../ulog/ulogDef.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include "../../common/mctProcesser.h"
 #include "../../common/mctLib.h"
 #include "../../dataplat/mctStruct.h"
 #include "../mctList.h"
+#include "../../../ulog/ulogDef.h"
 #include "../../port/mctDriver.h"
 #define CMD_A7680C_ID_BASE                      (int32_t)0
 
@@ -268,12 +265,10 @@ typedef struct
 
 //默认MQTT客户端ID
 #define  MQTT_CLIENT_INDEX 0         
-#define mct_a7680c_execute(inst,is_expected,expected_a7680c_id, para)                  CMD_Execute(inst,is_expected,expected_a7680c_id,CMD_A7680CCmdGet(), CMD_A7680CCmdNumGet(), para)
+#define mct_a7680c_execute(inst,expected_a7680c_id, para)                  CMD_Execute(inst,expected_a7680c_id,CMD_A7680CCmdGet(), CMD_A7680CCmdNumGet(), para)
 
 
 extern tCmd const *CMD_A7680CCmdGet(void);
 extern uint16_t CMD_A7680CCmdNumGet(void);
-#ifdef __cplusplus
-}
-#endif
+
 #endif
