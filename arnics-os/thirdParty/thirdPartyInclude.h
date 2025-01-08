@@ -12,6 +12,7 @@ extern "C" {
 #include "fal/inc/fal.h"
 #include "FlashDB/inc/flashdb.h"
 #include "modContact/mctInclude.h"
+#include "Runonce/Runonce.h"
 
 extern void thirdPartyInit(void);
 #ifdef __cplusplus
