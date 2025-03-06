@@ -102,7 +102,9 @@ extern void hexToAscii(const char *hexStr, char *asciiStr, size_t asciiLen);
  * @retval 返回转换后的ASCII字符
  */
 extern uint8_t hexChrToAscii(const char *HexChr);
-
+extern int cmd_TokenNextStr(uint8_t **p_cur, uint8_t **p_out);
+extern int cmd_TokenStart(uint8_t **p_cur, const char *phase);
+extern int cmd_TokenNextInt(uint8_t **p_cur, int *p_out, uint8_t format);
 
 #ifdef __cplusplus
 }

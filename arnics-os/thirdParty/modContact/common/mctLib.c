@@ -23,40 +23,46 @@
  */
 bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_dest, uint16_t *offset)
 {
-    const uint8_t *pcmp1 = src;
-    const uint8_t *pcmp2 = dst;
-    uint16_t tmp_len1 = len_src;
-    uint16_t found_len = 0;
-    uint16_t pcmp1_len = 0;
+    const uint8_t *pcmp1 = (uint8_t *)src;  // 指向源数据块的指针
+    const uint8_t *pcmp2 = (uint8_t *)dst;  // 指向目标数据块的指针
 
-    while (tmp_len1--)
+    // 如果目标数据块长度大于源数据块长度，设置偏移位置为源数据块长度 直接返回false
+    if (len_dest > len_src)
     {
-        if (*pcmp1 != *pcmp2)
+        *offset = len_src;
+        return false;
+    }
+
+    // 遍历源数据块的所有可能起始位置
+    for (uint16_t i = 0; i <= len_src - len_dest; i++)
+    {
+        pcmp1 = (const uint8_t *)src + i;  // 设置源数据块的当前起始位置
+        pcmp2 = (uint8_t *)dst;  // 重置目标数据块的指针
+
+        // 逐字节比较目标数据块和源数据块的子串
+        uint16_t j;
+        for (j = 0; j < len_dest; j++)
         {
-            if (tmp_len1 + 1 < len_dest)
+            if (*pcmp1 != *pcmp2)
             {
-                *offset = pcmp1_len;
-                return false;
+                break;  // 如果不匹配，跳出内层循环
             }
-            else
-            {
-                pcmp1_len++, pcmp1++, pcmp2 = dst;
-                found_len = 0;
-            }
+            pcmp1++;  // 移动源数据块指针
+            pcmp2++;  // 移动目标数据块指针
         }
-        else
+
+        // 如果内层循环完整执行，说明找到匹配
+        if (j == len_dest)
         {
-            pcmp1_len++, pcmp1++, pcmp2++, found_len++;
-            if (found_len == len_dest)
-            {
-                *offset = pcmp1_len - len_dest;
-                return true;
-            }
+            *offset = i;  // 设置匹配到的偏移位置
+            return true;  // 返回true表示找到匹配
         }
     }
-    *offset = pcmp1_len;
-    return false;
+
+    *offset = len_src;  // 如果没有找到匹配，设置偏移位置为源数据块长度
+    return false;  // 返回false表示没有找到匹配
 }
+
 /**
  * @fn cmd_ComformRes
  * @brief 根据给定阶段确认资源
@@ -334,7 +340,156 @@ uint8_t hexChrToAscii(const char *HexChr)
   HexTmp[1] = (HexChr[1] <= '9') ? (HexChr[1] - '0') : (HexChr[1] + 10 - 'A');
   return ((uint8_t)HexTmp[0] << 4) + (uint8_t)HexTmp[1];
 }
+static void cmd_SkipWhiteSpace(uint8_t **p_cur)
+{
+    if (*p_cur == NULL)
+    {
+        return;
+    }
+    while (**p_cur != '\0' && ISSPACE(**p_cur))
+    {
+        (*p_cur)++;
+    }
+}
+/**
+ * @brief 查找并提取下一个令牌
+ * 
+ * 本函数用于从给定的字符串中查找并提取下一个令牌。如果令牌被引号包围，则提取直到下一个引号的位置。
+ * 如果令牌不是被引号包围，则提取直到下一个逗号或行结束的位置。
+ * 
+ * @param p_cur 指向当前解析位置的指针，该指针会更新以指向下一个令牌之后的位置
+ * @return char* 返回提取的令牌，如果找不到则返回NULL
+ */
+static char *cmd_FindNextToken(uint8_t **p_cur)
+{
+    char *ret = NULL; // 用于存储提取的令牌
+    char *ptr = NULL; // 用于遍历和截断令牌
 
+    // 跳过开始的空白字符
+    cmd_SkipWhiteSpace(p_cur);
+    if (*p_cur == NULL) // 如果当前指针为空，则没有更多令牌可提取
+    {
+        return NULL;
+    }
+
+    // 如果当前指针指向的是一个引号包围的令牌
+    if ('"' == **p_cur)
+    {
+        ret = (char *)(*p_cur + 1); // 跳过引号，指向令牌实际开始位置
+        ptr = strchr(ret, '"'); // 查找结束引号的位置
+        if (NULL == ptr) // 如果找不到结束引号
+        {
+            return NULL;
+        }
+        *ptr = '\0'; // 用空字符结束令牌
+        // 如果结束引号后面是逗号，则移动到逗号位置
+        if (',' == *(ptr + 1))
+        {
+            ptr++;
+        }
+    }
+    else // 如果当前指针指向的是一个非引号包围的令牌
+    {
+        ret = (char *)*p_cur; // 指向令牌开始位置
+        ptr = (char *)*p_cur; // 用于遍历令牌
+        // 遍历直到回车符、逗号或字符串结束
+        for (; (('\r' != *ptr) && (',' != *ptr) && ('\0' != *ptr)); ptr++)
+        {
+        }
+        if (NULL == ptr) // 如果ptr为空，则表示异常情况
+        {
+            return NULL;
+        }
+    }
+
+    *ptr = '\0'; // 用空字符截断令牌
+    *p_cur = (uint8_t *)(ptr + 1); // 更新当前解析位置指针到下一个令牌之后的位置
+    return ret; // 返回提取的令牌
+}
+
+
+int cmd_TokenNextStr(uint8_t **p_cur, uint8_t **p_out)
+{
+    if (*p_cur == NULL)
+    {
+        return -1;
+    }
+    *p_out = (uint8_t *)cmd_FindNextToken(p_cur);
+    if (*p_out == NULL)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+/**
+ * 寻找令牌的起始位置。
+ * 
+ * 本函数用于在给定的字符串中查找特定令牌的起始位置。如果找到了令牌，则返回0，
+ * 否则返回-1。令牌可以是一个子字符串，本函数将返回子字符串在原字符串中的位置。
+ * 
+ * @param p_cur 指向当前处理的字符串位置的指针的指针。
+ * @param phase 需要查找的子字符串。
+ * @return 如果找到令牌返回0，否则返回-1。
+ */
+int cmd_TokenStart(uint8_t **p_cur, const char *phase)
+{
+    if (*p_cur == NULL)
+    {
+        return -1;
+    }
+    if (phase == NULL)
+    {
+        cmd_SkipWhiteSpace(p_cur);
+        if (*p_cur == NULL)
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        // 将 phase 转换为 uint8 * 类型
+        *p_cur = (uint8_t *)strstr((const char *)*p_cur, phase);
+        if (*p_cur == NULL)
+        {
+            return -1;
+        }
+        (*p_cur) += strlen(phase);
+    }
+    return 0;
+}
+static int cmd_TokenNextIntBase(uint8_t **p_cur, int *p_out, int base, int uns)
+{
+    char *ret;
+
+    if (*p_cur == NULL)
+    {
+        return -1;
+    }
+    ret = cmd_FindNextToken(p_cur);
+    if (ret == NULL)
+    {
+        return -1;
+    }
+    else
+    {
+        long l;
+        char *end;
+        l = uns ? strtoul(ret, &end, base) : strtol(ret, &end, base);
+        *p_out = (int)l;
+        if (end == ret)
+        {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+int cmd_TokenNextInt(uint8_t **p_cur, int *p_out, uint8_t format)
+{
+    return cmd_TokenNextIntBase(p_cur, p_out, format, 0);
+}
 
 
 
