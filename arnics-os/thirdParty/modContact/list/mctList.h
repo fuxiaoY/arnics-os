@@ -66,7 +66,10 @@ extern "C" {
 #define CMD_REV_FLOW                (1 + CMD_STICKFRAME )
 #define CMD_POWEROFF                (1 + CMD_REV_FLOW )
 
-#define CMD_MAX                     (1 + CMD_POWEROFF)
+#define CMD_HTTPCONNECT             (1 + CMD_POWEROFF )
+#define CMD_HTTPGET                 (1 + CMD_HTTPCONNECT )
+#define CMD_HTTPCLOSE                (1 + CMD_HTTPGET )
+#define CMD_MAX                     (1 + CMD_HTTPCLOSE)
 
 extern uint16_t mctModemLisNumGet(void);
 extern const tModemList *mctModemListGet(void);
