@@ -37,7 +37,7 @@ extern void StartConsleTask(void const *argument);
 extern void StartEventTask(void const *argument);
 
 /**
- * @func StartMaintTask
+ * @func StartMediaTask
  * @brief 媒体中心线程
  * @param 无
  * @retval 无
