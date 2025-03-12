@@ -443,6 +443,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     from : RTConfig.cpp
     0,"tcp://arong.xicp.net:21903",120,1,"1&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A13C3CF"
     */
+   
     //网络连接参数
 
     char server_addr[100] = {0};
