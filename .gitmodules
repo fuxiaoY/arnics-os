@@ -1,0 +1,3 @@
+[submodule "thirdParty/modContact"]
+	path = thirdParty/modContact
+	url = git@github.com:fuxiaoY/modContact.git
