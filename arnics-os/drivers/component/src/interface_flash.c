@@ -40,8 +40,9 @@ int flash_write(device_t *self, void *buf, size_t count)
     }
     return bsp_flash_write(self->device,buf,count);
 }
-int flash_ctl(device_t *self, int cmd, void *args)
+int flash_ctl(device_t *self, int cmd, va_list ap)
 {
+    void* arg1 = va_arg(ap, void*);
     if(self->ds == 0)
     {
         return -1;
@@ -50,7 +51,7 @@ int flash_ctl(device_t *self, int cmd, void *args)
     {
         case FLASH_EREASE:
         {
-            return flash_erase(self->device,args);
+            return flash_erase(self->device,arg1);
         }
         default: return -1; 
     }

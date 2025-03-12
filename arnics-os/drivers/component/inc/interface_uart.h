@@ -19,7 +19,7 @@ extern int uart_open(device_t *self);
 extern int uart_close(device_t *self);
 extern int uart_read(device_t *self,void *buf, size_t count);
 extern int uart_write(device_t *self, void *buf, size_t count);
-extern int uart_ctl(device_t *self, int cmd, void *args);
+extern int uart_ctl(device_t *self, int cmd, va_list ap);
 extern void uart_irq(device_t *self);
 
 
@@ -28,3 +28,4 @@ extern void uart_irq(device_t *self);
 }
 #endif
 #endif /* INTERFACE_UART_H */
+  

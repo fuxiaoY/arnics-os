@@ -24,8 +24,9 @@ extern int rtc_close(device_t *self)
     return 0;
 }
 
-extern int rtc_ctl(device_t *self, int cmd, void *args)
+extern int rtc_ctl(device_t *self, int cmd, va_list ap)
 {
+    void* arg1 = va_arg(ap, void*);
     if(self->ds == 0)
     {
         return -1;
@@ -33,9 +34,9 @@ extern int rtc_ctl(device_t *self, int cmd, void *args)
     switch(cmd)
     {
         case RTC_GETDATETIME:
-        return bsp_rtc_get_datetime(self->device,args);
+        return bsp_rtc_get_datetime(self->device,arg1);
         case RTC_SETDATETIME:
-        return bsp_rtc_set_datetime(self->device,args);
+        return bsp_rtc_set_datetime(self->device,arg1);
         case RTC_SECONDUPDATE:
         return bsp_rtc_check_second_update(self->device);
         default: return -1; 

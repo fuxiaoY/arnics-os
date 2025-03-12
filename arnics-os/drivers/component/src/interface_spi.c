@@ -43,7 +43,7 @@ int spi_write(device_t *self, void *buf, size_t count)
     return bsp_spi_write(self->device, buf, count);
 
 }
-int spi_ctl(device_t *self, int cmd, void *args)
+int spi_ctl(device_t *self, int cmd, va_list ap)
 {
     if(self->ds == 0)
     {

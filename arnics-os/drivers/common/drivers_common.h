@@ -31,6 +31,10 @@ extern "C"
 
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
+// va_arg 函数用于从可变参数列表中获取参数，但它并不限制只能传递 int 类型的参数。
+// va_arg 可以用于获取各种类型的参数，包括 int、float、指针类型等。
+// 然而，根据 C 标准，某些小整数类型（如 char、short、uint8_t 等）在传递给可变参数函数时会被提升为 int 类型。
+// 这意味着在使用 va_arg 获取这些参数时，需要使用 int 类型来获取，然后再进行适当的类型转换。
 typedef struct device_t device_t;
 typedef struct 
 {
@@ -38,7 +42,7 @@ typedef struct
     int (*ds_close)(device_t *dev);
     int (*ds_read)(device_t *dev, void *buf, size_t count);
     int (*ds_write)(device_t *dev, void *buf, size_t count);
-    int (*ds_ctl)(device_t *dev, int cmd, void *args);
+    int (*ds_ctl)(device_t *dev, int cmd, va_list ap);
     void (*ds_irq)(device_t *dev);
 }dev_operations;
 
@@ -154,7 +158,7 @@ extern int dev_write(device_t *dev, void *buf, size_t count);
  * @param args 控制参数
  * @return 返回操作结果，0表示成功，负值表示错误
  */
-extern int dev_ctl(device_t *dev, int cmd, void *args);
+extern int dev_ctl(device_t *dev, int cmd,  ...);
 /**
  * @fn dev_irq
  * @brief 设备中断

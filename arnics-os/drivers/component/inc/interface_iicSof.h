@@ -15,15 +15,17 @@ extern "C" {
 #ifndef I2C_Direction_Receiver
 #define I2C_Direction_Receiver         1
 #endif
+/* function prototypes -----------------------------------------------*/
+enum IIC_CTL
+{
+  IIC_WRITE = 0,
+  IIC_READ,
+};
 
 
-//IIC所有操作函数
-extern int IIC_Init(device_t *self);                           //初始化IIC的IO口	
-extern int IIC_ByteWrite(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data, uint32_t TimeOut);
-extern int IIC_ByteRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint32_t TimeOut);
-extern int IIC_BufferRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut);
-
-
+extern int iic_open(device_t *self);
+extern int iic_close(device_t *self);
+extern int iic_ctl(device_t *self, int cmd,va_list ap);
 
 
 #ifdef __cplusplus

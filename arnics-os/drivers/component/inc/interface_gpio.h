@@ -18,7 +18,7 @@ enum IO_CTL
 extern int gpio_open(device_t *self);
 extern int gpio_close(device_t *self);
 
-extern int gpio_ctl(device_t *self, int cmd, void *args);
+extern int gpio_ctl(device_t *self, int cmd, va_list ap);
 extern void gpio_irq(device_t *self);
 
 

@@ -207,7 +207,7 @@ void IIC_Send7bitAddress(device_t *self,uint8_t Address, uint8_t Direction)
     IIC_Send_Byte(self,Address);
 }
 
-int IIC_ByteWrite(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data, uint32_t TimeOut)
+int IIC_Write(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data, uint32_t TimeOut)
 {
     int Ret = 0;
 
@@ -255,112 +255,109 @@ int IIC_ByteWrite(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data,
     return Ret;
 }
 
-int IIC_ByteRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint32_t TimeOut)
-{
-    uint8_t Ret = 0;
-    uint8_t ReadChr = 0;
-
-    // 步骤1：等待I2C总线恢复空闲
-    Ret = IIC_WaitForIdle(self,TimeOut);
-    if (Ret != 0)
-    {
-        return Ret;
-    }
-
-    // 步骤2：产生第一个起始信号
-    IIC_Start(self);
-
-    // 步骤3：向对方地址发出寻址指令，参数2填的是对方的设备地址
-    // 发完之后阻塞等待ACK
-    IIC_Send7bitAddress(self,devAddr, I2C_Direction_Transmitter); // 发送设备地址，写模式
-    if (IIC_Wait_Ack(self))
-    {
-        IIC_Stop(self);
-        return -13;
-    }
-
-    // 步骤4：发送数据，内容为数据存入对方存储空间中的存储地址（或者应该理解为EEPROM芯片的寄存器地址）
-    // 发完之后阻塞等待ACK
-    // 对于不同的EEPROM芯片，存储地址字长不同，对于多字节来表示地址的芯片，需要按大端字序依次发送地址值的每一个字节
-    // 例如AT24C1024，地址字长为3字节，访问0x012345地址，则需要依次发送0x01，0x23，0x45，每发一个字节都要等一次ACK
-    IIC_Send_Byte(self,regAddr);
-    if (IIC_Wait_Ack(self))
-    {
-        IIC_Stop(self);
-        return -14;
-    }
-
-    // 步骤5：产生第二个起始信号
-    IIC_Start(self);
-
-    // 步骤6：向对方地址发出读取指令，参数2填的是对方的设备地址
-    // 发完之后阻塞等待ACK
-    IIC_Send_Byte(self,(devAddr | 0x01)); // 读取时需要将地址的最低位设为1
-    if (IIC_Wait_Ack(self))
-    {
-        IIC_Stop(self);
-        return -22;
-    }
-
-    // 步骤7：收取应答并回NACK让对方结束
-    ReadChr = IIC_Read_Byte(self,false); // 不发送ACK
-
-    // 步骤8：产生停止信号
-    IIC_Stop(self);
-
-    return ReadChr;
-}
-
-// I2CGS_Master_BufferRead函数实现
-int IIC_BufferRead(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut)
+int IIC_Read(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut)
 {
     int Ret = 0;
 
     // 步骤1：等待I2C总线恢复空闲
-    Ret = IIC_WaitForIdle(self,TimeOut);
+    Ret = IIC_WaitForIdle(self, TimeOut);
     if (Ret != 0)
+    {
+        Ret = -1; 
         return Ret;
+    }
 
     // 步骤2：产生第一个起始信号
     IIC_Start(self);
 
     // 步骤3：向对方地址发出寻址指令
-    IIC_Send7bitAddress(self,devAddr, I2C_Direction_Transmitter); // 发送设备地址，写模式
+    IIC_Send7bitAddress(self, devAddr, I2C_Direction_Transmitter); // 发送设备地址，写模式
     if (IIC_Wait_Ack(self) != 0)
     {
         IIC_Stop(self);
-        return -13;
+        Ret = -13; 
+        return Ret;
     }
 
     // 步骤4：发送寄存器地址
-    IIC_Send_Byte(self,regAddr);
+    IIC_Send_Byte(self, regAddr);
     if (IIC_Wait_Ack(self))
     {
         IIC_Stop(self);
-        return -14;
+        Ret = -14; 
+        return Ret;
     }
 
     // 步骤5：产生第二个起始信号
     IIC_Start(self);
 
-    // 步骤6：向对方地址发出读取指令，参数2填的是对方的设备地址
-    IIC_Send7bitAddress(self,devAddr, I2C_Direction_Receiver); // 发送设备地址，读模式
+    // 步骤6：向对方地址发出读取指令
+    IIC_Send7bitAddress(self, devAddr, I2C_Direction_Receiver); // 发送设备地址，读模式
     if (IIC_Wait_Ack(self) != 0)
     {
         IIC_Stop(self);
-        return -22;
-    }
-    // 步骤7：读取数据
-    for (uint32_t i = 0; i < ReadLen - 1; ++i)
-    {
-        ReadBuf[i] = IIC_Read_Byte(self,1); // 读取数据并发送ACK
+        Ret = -22; 
+        return Ret;
     }
 
-    // 最后一个字节读取后发送NACK
-    ReadBuf[ReadLen - 1] = IIC_Read_Byte(self,0);
+    // 步骤7：读取数据
+    for (uint32_t i = 0; i < ReadLen; ++i)
+    {
+        if (i == ReadLen - 1)
+        {
+            ReadBuf[i] = IIC_Read_Byte(self, 0); // 最后一个字节读取后发送NACK
+        }
+        else
+        {
+            ReadBuf[i] = IIC_Read_Byte(self, 1); // 读取数据并发送ACK
+        }
+    }
 
     // 步骤8：产生停止信号
     IIC_Stop(self);
 
-    return Ret;
+    return Ret; // 返回成功状态码 0
 }
+
+
+
+int iic_open(device_t *self)
+{
+    return IIC_Init(self);
+}
+
+int iic_close(device_t *self)
+{
+    return 0;
+}
+
+int iic_ctl(device_t *self, int cmd,va_list ap)
+{
+    uint8_t devAddr = (uint8_t)va_arg(ap, int);
+    uint8_t regAddr = (uint8_t)va_arg(ap, int);
+
+    if(self->ds == 0)
+    {
+        return -1;
+    }
+
+    switch(cmd)
+    {
+        case IIC_WRITE:
+        {
+            uint8_t Writedata = (uint8_t)va_arg(ap, int);
+            uint32_t TimeOut = (uint32_t)va_arg(ap, int);    
+            return IIC_Write(self->device,devAddr,regAddr,Writedata,TimeOut);
+        }
+        case IIC_READ:
+        {
+            uint8_t* ReadBuf = va_arg(ap, uint8_t*);
+            uint32_t ReadLen = (uint32_t)va_arg(ap, int); 
+            uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
+            return IIC_Read(self->device,devAddr,regAddr,ReadBuf,ReadLen,TimeOut);   
+        }
+        default: return -1;
+
+    }
+}
+

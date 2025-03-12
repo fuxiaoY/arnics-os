@@ -19,7 +19,7 @@ int iwdg_close(device_t *self)
     bsp_iwdg_deinit(self->device);
     return 0;
 }
-int iwdg_ctl(device_t *self, int cmd, void *args)
+int iwdg_ctl(device_t *self, int cmd,va_list ap)
 {
     if(self->ds == 0)
     {

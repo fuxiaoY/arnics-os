@@ -24,7 +24,7 @@ int gpio_close(device_t *self)
 }
 
 
-int gpio_ctl(device_t *self, int cmd, void *args)
+int gpio_ctl(device_t *self, int cmd, va_list ap)
 {
     if(self->ds == 0)
     {

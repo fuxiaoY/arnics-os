@@ -177,12 +177,16 @@ int dev_write(device_t *dev, void *buf, size_t count)
  * @param args 控制参数
  * @return 返回操作结果，0表示成功，负值表示错误
  */
-int dev_ctl(device_t *dev, int cmd, void *args)
+int dev_ctl(device_t *dev, int cmd, ...)
 {
     if (dev == NULL || dev->dev_ops == NULL || dev->dev_ops->ds_ctl == NULL) {
         return -1;
     }
-    return dev->dev_ops->ds_ctl(dev, cmd, args);
+    va_list ap;
+    va_start(ap, cmd);
+    int result = dev->dev_ops->ds_ctl(dev, cmd, ap);
+    va_end(ap);
+    return result;
 }
 
 void dev_irq(device_t *dev)

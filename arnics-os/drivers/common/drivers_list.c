@@ -143,11 +143,11 @@ const param_map_t iicsof_param_map[] = {
 const size_t iicsof_param_map_size = sizeof(iicsof_param_map) / sizeof(param_map_t);
 
 dev_operations iicsof_ops = {
-                        IIC_Init,
+                        iic_open,
+                        iic_close,
                         NULL,
                         NULL,
-                        NULL,
-                        NULL,
+                        iic_ctl,
                         NULL};
 
 /* Lists--- -----------------------------------------------------------*/

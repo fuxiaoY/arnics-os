@@ -15,7 +15,7 @@ enum IWDG_CTL
 
 extern int iwdg_open(device_t *self);
 extern int iwdg_close(device_t *self);
-extern int iwdg_ctl(device_t *self, int cmd, void *args);
+extern int iwdg_ctl(device_t *self, int cmd, va_list ap);
 
 
 #ifdef __cplusplus

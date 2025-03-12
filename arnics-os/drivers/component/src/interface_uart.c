@@ -61,8 +61,9 @@ int uart_write(device_t *self, void *buf, size_t count)
 
 }
 
-int uart_ctl(device_t *self, int cmd, void *args)
+int uart_ctl(device_t *self, int cmd,va_list ap)
 {
+    void* arg1 = va_arg(ap, void*);
     if(self->ds == 0)
     {
         return -1;
@@ -70,7 +71,7 @@ int uart_ctl(device_t *self, int cmd, void *args)
     switch(cmd)
     {
         case UART_DSEND:
-        return bsp_uart_dirct_send(self->device,args);
+        return bsp_uart_dirct_send(self->device,arg1);
         default: return -1; 
     }
 

@@ -18,7 +18,7 @@ extern int spi_open(device_t *self);
 extern int spi_close(device_t *self);
 extern int spi_read(device_t *self,void *buf, size_t count);
 extern int spi_write(device_t *self, void *buf, size_t count);
-extern int spi_ctl(device_t *self, int cmd, void *args);
+extern int spi_ctl(device_t *self, int cmd,va_list ap);
 
 
 #ifdef __cplusplus
