@@ -13,8 +13,11 @@ extern "C" {
 #include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
+#include "freertosDef.h"
 #endif // _USE_FREERTOS_
 extern void cpuInfo(void);
+extern void vApplicationMallocFailedHook( void ) ;
+extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName );
 extern void rtosTaskSuspendAll(void);
 extern void rtosTaskResumeAll(void);
 extern void rtosThreadDelayUntil(uint32_t time);

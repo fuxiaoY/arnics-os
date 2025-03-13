@@ -19,17 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "../../Inc/projDefine.h"
-#include "../../Inc/typedef.h"
 
-#include "../../dataPlat/globalDef.h"
-#include "../rtosTask.h"
-
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "task.h"
-#include "main.h"
-#include "cmsis_os.h"
 #include "freertosDef.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -201,6 +191,4 @@ void MX_FREERTOS_Init(void)
   osThreadDef(SleepTask, StartSleepTask, osPriorityRealtime, 0, 128);
   sleepTaskHandle = osThreadCreate(osThread(SleepTask), NULL);
 }
-
-
 
