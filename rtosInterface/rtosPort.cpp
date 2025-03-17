@@ -18,6 +18,8 @@ extern SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
 extern SemaphoreHandle_t eventosID_mutex;   //消息ID锁
 // 媒体中心信号量
 extern SemaphoreHandle_t MediaRspQueue_xSemaphore; //读媒体中心队列锁
+// 行政中心信号量
+extern SemaphoreHandle_t AdRspQueue_xSemaphore; //读行政中心队列锁
 /*---------------------------------------------------------------------------------------*/
 
 /*-系统监控-------------------------------------------------------------------------------*/
@@ -109,7 +111,63 @@ void rtosThreadDelay(uint32_t ms)
 /*---------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------*/
-// 消息中心队列
+// 行政管理部门队列
+bool rtosAdGetMsg(void *msg,uint32_t delay)
+{
+    return (xQueueReceive(adReqQueue, msg, delay) == pdTRUE);
+}
+bool rtosAdSendMsg(void *msg,uint32_t delay)
+{
+    return (xQueueSend(adRspQueue, msg, delay) == pdPASS);
+}
+bool rtosTakeMsgFromAd(void *msg,uint32_t delay)
+{
+    return (xQueueReceive(adRspQueue, msg, delay) == pdTRUE);
+}
+bool rtosDeliverMsgToAd(void *msg,uint32_t delay)
+{
+    return (xQueueSend(adReqQueue, msg, delay) == pdTRUE);
+}
+// 获取读队列互斥信号量
+bool TakeAdMsgQueueMutex(time_t waitTime)
+{
+    return (xSemaphoreTake(AdRspQueue_xSemaphore, waitTime) == pdTRUE);
+}
+
+// 释放读队列互斥信号量
+void ReleaseAdMsgQueueMutex(void)
+{
+    xSemaphoreGive(AdRspQueue_xSemaphore);
+}
+
+
+// 检查请求队列中是否有可用空间
+bool CheckAdqueueSpacesAvailable(void)
+{
+    return uxQueueSpacesAvailable(adReqQueue);
+}
+
+uint32_t  CheckAdRspMesgNum(void)
+{
+    return (uint32_t)uxQueueMessagesWaiting(adRspQueue);
+}
+
+bool  PeekAdRspMesg(void *receivedMsg)
+{
+    // 使用队列的Peek功能查看消息而不取出
+    return  (uint32_t)xQueuePeek(adRspQueue, receivedMsg, 0)== pdTRUE;
+}
+
+// 检查请求队列中是否有可用空间
+bool CheckAdQueueSpacesAvailable(void)
+{
+    return uxQueueSpacesAvailable(adReqQueue);
+}
+
+/*---------------------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------------------*/
+// 事件中心队列
 
 bool rtosEventosGetMsg(void *msg,uint32_t delay)
 {
@@ -130,13 +188,13 @@ bool rtosDeliverMsgToEventos(void *msg,uint32_t delay)
     return (xQueueSend(eventosReqQueue, msg, delay) == pdTRUE);
 }
 
-// 获取读消息队列互斥信号量
+// 获取读队列互斥信号量
 bool TakeEventosMsgQueueMutex(time_t waitTime)
 {
     return (xSemaphoreTake(eventosRspQueue_xSemaphore, waitTime) == pdTRUE);
 }
 
-// 释放读消息队列互斥信号量
+// 释放读队列互斥信号量
 void ReleaseEventosMsgQueueMutex(void)
 {
     xSemaphoreGive(eventosRspQueue_xSemaphore);
@@ -165,46 +223,61 @@ bool  PeekEventRspMesg(void *receivedMsg)
     // 使用队列的Peek功能查看消息而不取出
     return  (uint32_t)xQueuePeek(eventosRspQueue, receivedMsg, 0)== pdTRUE;
 }
+
+// 检查请求队列中是否有可用空间
+bool CheckEventQueueSpacesAvailable(void)
+{
+    return uxQueueSpacesAvailable(eventosReqQueue);
+}
 /*---------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------*/
 // 媒体中心队列
-
-uint32_t  CheckMediaRspMesgNum(void)
-{
-    return (uint32_t)uxQueueMessagesWaiting(MediaReqQueue);
-}
-
-// 获取读消息队列互斥信号量
-bool TakeMediaMutex(time_t waitTime)
-{
-    return (xSemaphoreTake(MediaRspQueue_xSemaphore, waitTime) == pdTRUE);
-}
-
-
 bool rtosMediaGetMsg(void *msg,uint32_t delay)
 {
     return (xQueueReceive(MediaReqQueue, msg, delay) == pdTRUE);
 }
 
-// 释放读消息队列互斥信号量
-void ReleaseMediaMsgQueueMutex(void)
+bool rtosMediaSendMsg(void *msg,uint32_t delay)
 {
-    xSemaphoreGive(MediaRspQueue_xSemaphore);
+    return (xQueueSend(MediaRspQueue, msg, delay) == pdPASS);
 }
 
-
-bool CheckMediaQueueSpacesAvailable(void)
+bool rtosTakeMsgFromMedia(void *msg,uint32_t delay)
 {
-    return uxQueueSpacesAvailable(MediaReqQueue);
+    return (xQueueReceive(MediaRspQueue, msg, delay) == pdTRUE);
 }
-
 
 bool rtosDeliverMsgToMedia(void *msg,uint32_t delay)
 {
     return (xQueueSend(MediaReqQueue, msg, delay) == pdTRUE);
 }
 
+// 获取读队列互斥信号量
+bool TakeMediaMutex(time_t waitTime)
+{
+    return (xSemaphoreTake(MediaRspQueue_xSemaphore, waitTime) == pdTRUE);
+}
+// 释放读队列互斥信号量
+void ReleaseMediaMsgQueueMutex(void)
+{
+    xSemaphoreGive(MediaRspQueue_xSemaphore);
+}
+
+uint32_t  CheckMediaRspMesgNum(void)
+{
+    return (uint32_t)uxQueueMessagesWaiting(MediaReqQueue);
+}
+bool  PeekMediaRspMesg(void *receivedMsg)
+{
+    // 使用队列的Peek功能查看消息而不取出
+    return  (uint32_t)xQueuePeek(MediaReqQueue, receivedMsg, 0)== pdTRUE;
+}
+// 检查请求队列中是否有可用空间
+bool CheckMediaQueueSpacesAvailable(void)
+{
+    return uxQueueSpacesAvailable(MediaReqQueue);
+}
 
 
 #else

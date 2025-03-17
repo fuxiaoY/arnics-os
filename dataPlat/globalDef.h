@@ -15,10 +15,16 @@ extern "C" {
 
 /*----------------------------------------行政中心----------------------------------------*/
 
-typedef struct {
-    time_t ID_Ts;    //消息ID，可用于检查区分消息传送
+typedef struct 
+{
+    time_t ID_Ts;                        //消息ID，可用于检查区分消息传送
     uint32_t sleepTime_ms;
 } adMessage_t;
+
+typedef enum
+{
+    AD_SLEEP,                             //休假员
+} administrativePart_t;
 
 /*---------------------------------------------------------------------------------------*/
 
@@ -60,20 +66,21 @@ typedef struct
 
 
 
-typedef struct {
-    time_t ID_Ts;    //消息ID，可用于检查区分消息传送 
-    uint32_t eventflag; //事件
-    char buf[MAX_MESSAGE_LENGTH];  // 可以根据需要添加更多的字段
-    int length;     // 数据长度
+typedef struct 
+{
+    time_t ID_Ts;                         //消息ID，可用于检查区分消息传送 
+    uint32_t eventflag;                   //事件
+    char buf[MAX_MESSAGE_LENGTH];         // 可以根据需要添加更多的字段
+    int length;                           // 数据长度
 } Message_t;
 
 /*---------------------------------------------------------------------------------------*/
 
 /*-----------------------------------------媒体中心----------------------------------------*/
 typedef struct {
-    time_t ID_Ts;    //消息ID，可用于检查区分消息传送
-    char buf[20];  // 可以根据需要添加更多的字段
-    int length;     // 数据长度
+    time_t ID_Ts;                         //消息ID，可用于检查区分消息传送
+    char buf[20];                         // 可以根据需要添加更多的字段
+    int length;                           // 数据长度
 } MediaMessage_t;
 
 /*---------------------------------------------------------------------------------------*/
@@ -83,8 +90,8 @@ typedef struct {
 // 设备运行状态
 typedef enum 
 {
-  WORKSTAT_INIT = 0,   // 上电初始化
-}ENUM_WORKSTATE;
+  WORKSTAT_INIT = 0,                     // 上电初始化
+}wisdomStackPart_t;
 
 
 /*---------------------------------------------------------------------------------------*/
@@ -93,10 +100,8 @@ typedef enum
 //设备运行参数集，存放于片上Flash，同步一份到内存中常驻
 typedef struct 
 {
-  uint32_t SaveTs;					//保存时间戳，同时也用于判定Flash上保存的参数集是否有效
-
-  //校验位
-  uint16_t crc;    
+  uint32_t SaveTs;                       //保存时间戳，同时也用于判定Flash上保存的参数集是否有效
+  uint16_t crc;                          //校验位
 
 }SytemCfg;
 #define SytemCfg_SIZE	sizeof(SytemCfg)
@@ -106,14 +111,10 @@ typedef struct
 //设备运行状态记录集，常驻内存中，同步存放一份到片上Flash，复位重启后读回来作为缺省状态
 typedef struct 
 {
-  uint32_t SaveTs;				//保存时间戳，同时也用于判定Flash上保存的参数集是否有效
-
-  ENUM_WORKSTATE WorkStat;			//当前运行状态 参考ENUM_WORKSTATE定义
-  ENUM_WORKSTATE PreWorkStat;		//上次的运行状态 参考ENUM_WORKSTATE定义
-
-
-  //校验位
-  uint16_t crc;    
+  uint32_t SaveTs;				        //保存时间戳
+  wisdomStackPart_t WorkStat;			//当前运行状态 
+  wisdomStackPart_t PreWorkStat;		//上次的运行状态
+  uint16_t crc;                         //校验位
 
 }SytemState;
 #define SytemState_SIZE		sizeof(SytemState)

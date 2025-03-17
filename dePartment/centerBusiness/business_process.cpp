@@ -1,12 +1,7 @@
 #include "business_process.h"
-#include "../../core/coreInclude.h"
-#include "../../thirdParty/thirdPartyInclude.h"
-#include "../../rtosInterface/entry_rtos_api.h"
-#include "../../dataPlat/dataPlatInclude.h"
 
-#include "../centerEvent/entry_event_api.h"
 _SECTION( "._entry_business_api")
-ENUM_WORKSTATE business_state = WORKSTAT_INIT;
+wisdomStackPart_t business_state = WORKSTAT_INIT;
 
 
 /*-------------------------------------------------------------------------------------*/
@@ -23,7 +18,7 @@ static void SEPARATE_DEFAULT_NOT_FOUND_CALLBACK() {
     business_state = WORKSTAT_INIT;
 }
 // 初始化内核
-SEPARATE_INIT_KERNEL(BusinessList, ENUM_WORKSTATE, &(business_state), SEPARATE_DEFAULT_NOT_FOUND_CALLBACK);
+SEPARATE_INIT_KERNEL(BusinessList, wisdomStackPart_t, &(business_state), SEPARATE_DEFAULT_NOT_FOUND_CALLBACK);
 
 void business_process(void)
 {

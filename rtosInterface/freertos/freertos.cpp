@@ -48,7 +48,8 @@ SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
 SemaphoreHandle_t eventosID_mutex;   //消息ID锁
 // 媒体中心信号量
 SemaphoreHandle_t MediaRspQueue_xSemaphore; //读媒体中心队列锁
-
+// 行政中心信号量
+SemaphoreHandle_t AdRspQueue_xSemaphore; //读行政中心队列锁
 //sfud锁
 SemaphoreHandle_t flashDB_mutex;  
 
@@ -140,7 +141,7 @@ void initSemaphore()
     eventosRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
     eventosID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
     MediaRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-
+    AdRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
     flashDB_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
 }
 /**
