@@ -164,7 +164,7 @@ static inline void nop_process(void* argv) {}
  * 
  * logo
  */
-extern void logo_print();
+extern void logo_print(void);
 
 /**
  * @fn void arnics_core_init(void)
@@ -172,7 +172,7 @@ extern void logo_print();
  * 
  * 该函数用于初始化核心功能模块。
  */
-extern void arnics_core_init();
+extern void arnics_core_init(void);
 
 
 

@@ -12,6 +12,8 @@ bool BusinessWantSleep = false;
 bool MediaWantSleep    = false;
 bool GuardWantSleep    = false;
 bool ConsoleWantSleep  = false;
+// 系统是否允许休眠标志位
+bool ALLOWSLEEP = false;
 /*-------------------------------------------------------------------------------------*/
 
 /*运行与配置参数------------------------------------------------------------------------*/

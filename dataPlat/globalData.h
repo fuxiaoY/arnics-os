@@ -17,7 +17,8 @@ extern bool BusinessWantSleep;
 extern bool MediaWantSleep;
 extern bool GuardWantSleep;
 extern bool ConsoleWantSleep;
-
+// 系统是否允许休眠标志位
+extern bool ALLOWSLEEP;
 /*-------------------------------------------------------------------------------------*/
 
 /*运行与配置参数------------------------------------------------------------------------*/
