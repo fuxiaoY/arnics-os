@@ -11,10 +11,10 @@ extern "C" {
 
 /**
  * @func StartConsleTask
- * @brief 休眠专用线程
+ * @brief 行政管理专用线程
  * @note 无
  */
-extern void StartSleepTask(void const *argument);
+extern void StartAdTask(void const *argument);
 
 /**
  * @func StartConsleTask

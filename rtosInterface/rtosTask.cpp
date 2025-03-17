@@ -9,23 +9,23 @@
 #include "../dePartment/centerConsole/entry_console_api.h"
 #include "../dePartment/centerMedia/entry_media_api.h"
 #include "../dePartment/centerGuard/entry_guard_api.h"
-/* ---------------------------------休眠相关 -----------------------------------------------*/
+#include "../dePartment/centerAdministrative/entry_ad_api.h"
+/* ---------------------------------用户任务 -----------------------------------------------*/
 /**
- * @func StartConsleTask
- * @brief 休眠专用线程
+ * @func StartAdTask
+ * @brief 行政管理专用线程
  * @note 无
  */
-void StartSleepTask(void const *argument)
+void StartAdTask(void const *argument)
 {
 
   while (1)
   {
-
+    ad_process();
     rtosThreadDelay(100);
   }
 }
 
-/* ---------------------------------用户任务 -----------------------------------------------*/
 /**
  * @func StartConsleTask
  * @brief 控制台专用线程

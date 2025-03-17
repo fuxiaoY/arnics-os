@@ -189,7 +189,7 @@ void MX_FREERTOS_Init(void)
   osThreadDef(CPUTask, CPU_Task, osPriorityHigh, 0, 256);
   cpuTaskHandle = osThreadCreate(osThread(CPUTask), NULL);
 #endif
-  osThreadDef(SleepTask, StartSleepTask, osPriorityRealtime, 0, 128);
-  sleepTaskHandle = osThreadCreate(osThread(SleepTask), NULL);
+  osThreadDef(AdTask, StartAdTask, osPriorityRealtime, 0, 128);
+  sleepTaskHandle = osThreadCreate(osThread(AdTask), NULL);
 }
 
