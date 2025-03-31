@@ -18,13 +18,13 @@ typedef struct
     T_STRUCT_MEMBER(readAdReq);
     T_STRUCT_MEMBER(SendMsgToAdCenter);
 /*-----------------------------------*/
-} tSLEEPEntry;
+} tADEntry;
 
 // 作为一个指向结构体的指针
-extern const tSLEEPEntry entry_sleep_list;
+extern const tADEntry entry_ad_list;
 //  指向 函数指针
-#define sleep_api (&entry_sleep_list)
-#define SLEEP_MICRODEF(name) (sleep_api->t_##name)
+#define ad_api (&entry_ad_list)
+#define SLEEP_MICRODEF(name) (ad_api->t_##name)
 /*-----------------------------------*/
 
 #define ad_process                             SLEEP_MICRODEF(ad_process)

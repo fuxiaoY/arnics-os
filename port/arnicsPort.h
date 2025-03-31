@@ -31,7 +31,7 @@ extern "C" {
 #elif defined(MCU_STM32L4)
 #define STM32CHIP
 #include "stm32l4xx_hal.h"
-#define MCU_GRAN 32
+#define MCU_GRAN 64
 #define _TOTAL_FLASH_SIZE_ 256 // 芯片容量 （KB）
 #define MCU_START_ADDR 0x08000000
 #endif

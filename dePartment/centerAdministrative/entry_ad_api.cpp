@@ -7,7 +7,7 @@
 #include "ad_process.h"
 
 __attribute__((section("._entry_ad_api")))
-const tSLEEPEntry entry_sleep_list =
+const tADEntry entry_ad_list =
 {
     #undef sleep_process
     INIT_MEMBER(ad_process),

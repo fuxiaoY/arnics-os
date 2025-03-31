@@ -468,3 +468,23 @@
             </File>
           </Files>
         </Group>
+        <Group>
+        <GroupName>arnics/department/centerAdministrative</GroupName>
+        <Files>
+          <File>
+            <FileName>ad_process.cpp</FileName>
+            <FileType>8</FileType>
+            <FilePath>..\arnics-os\dePartment\centerAdministrative\ad_process.cpp</FilePath>
+          </File>
+          <File>
+            <FileName>entry_ad_api.cpp</FileName>
+            <FileType>8</FileType>
+            <FilePath>..\arnics-os\dePartment\centerAdministrative\entry_ad_api.cpp</FilePath>
+          </File>
+          <File>
+            <FileName>sleep_wkcycle.cpp</FileName>
+            <FileType>8</FileType>
+            <FilePath>..\arnics-os\dePartment\centerAdministrative\sleepStrategy\sleep_wkcycle.cpp</FilePath>
+          </File>
+        </Files>
+      </Group>
