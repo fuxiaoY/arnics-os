@@ -12,6 +12,7 @@
 #define _FAL_CFG_H_
 #include "../../Inc/typedef.h"
 #include "../../Inc/ProjDefine.h"
+#include "../../port/portInclude.h"
 #include "inc/fal_def.h"
 //定义使用SFUD
 #define FAL_USING_SFUD_PORT
