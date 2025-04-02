@@ -309,6 +309,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thirdParty/upgrade</GroupName>
+          <Files>
+            <File>
+              <FileName>upgradeManager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\upgrade\upgradeManager.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/drivers/common</GroupName>
           <Files>
             <File>

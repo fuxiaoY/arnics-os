@@ -80,7 +80,30 @@ static unsigned int buf_filelen(unsigned char *ptr)
     }
     return result;
 }
-
+/*
+发送端                                     接收端
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   C   //接收端发送大写字母C启动传输
+SOH 00 FF "foo.c" 1064 NUL[118] CRCH CRCL>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ACK  
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   C  //收到第0帧数据后，反馈ACK 以及C启动第一帧传输
+STX 01 FE data[1024] CRCH CRCL>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ACK
+STX 02 FD data[1024] CRCH CRCL>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ACK
+STX 03 FC data[1024] CRCH CRCL>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ACK
+STX 04 FB data[1024] CRCH CRCL>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ACK
+SOH 05 FA data[100] 1A[28] CRCH CRCL>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<   ACK
+EOT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  NAK
+EOT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  ACK
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  C
+SOH 00 FF NUL[128] CRCH CRCL>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  ACK
+*/
 static int modem_recvdata(modem_struct* mblock)
 {
     unsigned char hd_found = 0;
@@ -107,12 +130,17 @@ static int modem_recvdata(modem_struct* mblock)
             
             case MODEM_EOT: // 文件传输结束
                 (delayms)(100);
-                (send)(MODEM_ACK);
-                if (!(recv)(&ch, MODEM_NAK_TIMEOUT)) return -1; // 等待另一个SOH
+                (send)(MODEM_NAK);
+                if (!(recv)(&ch, MODEM_NAK_TIMEOUT)) return -1; // 等待另一个MODEM_EOT
+                if (ch == MODEM_EOT) {
+                    (delayms)(100);
+                    (send)(MODEM_ACK);
+                }
+                (send)(MODEM_C);
+                if (!(recv)(&ch, MODEM_NAK_TIMEOUT)) return -1; // 等待另一个MODEM_EOT
                 if (ch == MODEM_SOH) {
                     (delayms)(100);
                     (send)(MODEM_ACK);
-                    return 1;
                 }
                 return 1;// 文件强制传输结束
 
@@ -121,7 +149,7 @@ static int modem_recvdata(modem_struct* mblock)
     
     if(!(recv)(&blk, MODEM_NAK_TIMEOUT))  return -1; // 数据块序号
     if(!(recv)(&cblk, MODEM_NAK_TIMEOUT)) return -1; // 数据块序号补码
-
+    
     for(int i = 0; i < mblock->len ; i++)
     {
         if(!(recv)(&mblock->buf[i], MODEM_NAK_TIMEOUT)) return -1; // 数据内容

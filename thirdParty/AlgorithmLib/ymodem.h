@@ -58,4 +58,4 @@ void ymodem_print(const unsigned char* s);
 
 #endif
 
-/******* (C) *****END OF FILE****/
+/******* (C) COPYRIGHT ShenZhen Kaifa Technology (Chengdu) *****END OF FILE****/

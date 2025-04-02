@@ -13,6 +13,7 @@ extern "C" {
 #include "FlashDB/inc/flashdb.h"
 #include "modContact/mctInclude.h"
 #include "Runonce/Runonce.h"
+#include "upgrade/upgradeManager.h"
 
 extern void thirdPartyInit(void);
 #ifdef __cplusplus
