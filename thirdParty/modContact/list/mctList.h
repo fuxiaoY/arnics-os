@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 #include "../dataPlat/mctDefinition.h"
+#include "modbus/command_modbusAdapter.h"
 /***************************************************************
 *Command API
 ***************************************************************/
@@ -58,7 +59,7 @@ extern "C" {
 #define CMD_MQTTFLOW                (1 + CMD_WORKLOCKSET )
 #define CMD_MQTTPUBLISH             (1 + CMD_MQTTFLOW )
 #define CMD_MQTTREV                 (1 + CMD_MQTTPUBLISH )
-#define CMD_MQTTSTOP                 (1 + CMD_MQTTREV )
+#define CMD_MQTTSTOP                (1 + CMD_MQTTREV )
 #define CMD_BOOTUPCLOCK             (1 + CMD_MQTTSTOP )
 #define CMD_USERCALL                (1 + CMD_BOOTUPCLOCK )
 #define CMD_MQTTREVPUSH             (1 + CMD_USERCALL )
@@ -68,8 +69,17 @@ extern "C" {
 
 #define CMD_HTTPCONNECT             (1 + CMD_POWEROFF )
 #define CMD_HTTPGET                 (1 + CMD_HTTPCONNECT )
-#define CMD_HTTPCLOSE                (1 + CMD_HTTPGET )
-#define CMD_MAX                     (1 + CMD_HTTPCLOSE)
+#define CMD_HTTPCLOSE               (1 + CMD_HTTPGET )
+
+
+
+#define CMD_MODBUS_01              (1 + CMD_HTTPCLOSE)
+#define CMD_MODBUS_03              (1 + CMD_MODBUS_01)
+#define CMD_MODBUS_05              (1 + CMD_MODBUS_03)
+#define CMD_MODBUS_06              (1 + CMD_MODBUS_05)
+
+#define CMD_MODBUS_SLAVE           (1 + CMD_MODBUS_06)
+#define CMD_MAX                    (1 + CMD_MODBUS_SLAVE)
 
 extern uint16_t mctModemLisNumGet(void);
 extern const tModemList *mctModemListGet(void);

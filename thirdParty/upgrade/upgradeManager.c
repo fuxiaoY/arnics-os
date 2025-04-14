@@ -592,3 +592,399 @@ uint8_t ymodem_upgrade(void)
     }
     return result;
 }
+
+/* 远程升级-------------------------------------------------------------
+#define GETWAIT_TIMEOUT_MS          100         //GET失败重试的时间
+#define FRAME_GET_RETRY_TIMES       10          //CRC比对错误重新GET的次数
+#define EXFLASH_PAGE_SIZE           1024    
+static uint8_t *framedata;
+
+
+
+static bool HttpCmdExecute(uint16_t id, void *para)
+{
+    uint32_t cnt = 0;
+    const uint32_t maxCnt = GETWAIT_TIMEOUT_MS / WAIT_SCHEDULE_TIME_MS;
+    while (cnt < maxCnt)
+    {
+        if(mctApiExecute(&mediaInstance,id,para))
+        {
+            cnt = 0;
+            return true;
+        }
+        else
+        {
+            cnt++; 
+        }
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+    }
+    return false;
+}
+
+static void HttpEraseFlash(void)
+{
+    if(fwType == 2)
+    {
+        if(SECTIONA == Section_Flag)
+        {
+            exflash_erase_partition(PARTITION_NAME_FW_IDENTIFER_APP_A);
+            exflash_erase_partition(PARTITION_NAME_FW_APP_A);
+        }
+        else if(SECTIONB == Section_Flag)
+        {
+            exflash_erase_partition(PARTITION_NAME_FW_IDENTIFER_APP_B);
+            exflash_erase_partition(PARTITION_NAME_FW_APP_B);
+        }
+    }
+    if(fwType == 1)
+    {
+        if(SECTIONA == Section_Flag)
+        {
+            exflash_erase_partition(PARTITION_NAME_FW_IDENTIFIER_BOOT_A);
+            exflash_erase_partition(PARTITION_NAME_FW_BOOT_A);
+        }
+        else if(SECTIONB == Section_Flag)
+        {
+            exflash_erase_partition(PARTITION_NAME_FW_IDENTIFER_BOOT_B);
+            exflash_erase_partition(PARTITION_NAME_FW_BOOT_B);
+        }
+    }
+}
+
+static void HttpCheckUpdateAddress(tImageIdentifer *identifier, const char *partitionIdentA, const char *partitionIdentB,
+                                  const char *partitionDataA, const char *partitionDataB, const char *moduleName)
+{
+    exflash_read(partitionIdentA, 0, (uint8_t*)identifier, sizeof(tImageIdentifer));
+    if (identifier->enabled != PART_LOAD)
+    {
+        ULOG_INFO("%s A is not active. Using A partition for upgrade.", moduleName);
+        Section_Flag = SECTIONA;
+    }
+    else
+    {
+        exflash_read(partitionIdentB, 0, (uint8_t*)identifier, sizeof(tImageIdentifer));
+        if (identifier->enabled != PART_LOAD)
+        {
+            ULOG_INFO("%s B is not active. Using B partition for upgrade.", moduleName);
+            Section_Flag = SECTIONB;
+        }
+        else
+        {
+            ULOG_INFO("Both %s A and B are active. Cannot perform upgrade.", moduleName);
+        }
+    }
+}
+
+static bool HttpFirstFrameParse(tImageIdentifer *fIdentifier)
+{
+    if (!first_packet_received)
+    {
+        //远程identifier
+        ULOG_INFO("------------------------");
+        ULOG_INFO("Http file header:");
+        ULOG_INFO("Identification: %s", fIdentifier->identification);
+        ULOG_INFO("Image size: %lu", fIdentifier->image_size);
+        ULOG_INFO("Image version: %lu", fIdentifier->image_version);
+        ULOG_INFO("Enabled: 0x%x", fIdentifier->enabled);
+        ULOG_INFO("Transfer status: %d", fIdentifier->transfer_status);
+        if (strstr((char*)fIdentifier->identification, "app"))
+        {
+            fwType = 2;
+            ULOG_INFO("Detected: APP");
+        }
+        else if (strstr((char*)fIdentifier->identification, "boot"))
+        {
+            fwType = 1;
+            ULOG_INFO("Detected: BOOTLoader"); 
+        }
+        else
+        {
+            ULOG_INFO("[Error] Unknown image type.");
+            return false;
+        }
+        tImageIdentifer tempIdentifer;
+        if(fwType == 2)
+        {
+            HttpCheckUpdateAddress(&tempIdentifer, PARTITION_NAME_FW_IDENTIFER_APP_A, PARTITION_NAME_FW_IDENTIFER_APP_B,
+                                  PARTITION_NAME_FW_APP_A, PARTITION_NAME_FW_APP_B, "Application");
+        }
+        if(fwType == 1)
+        {
+            HttpCheckUpdateAddress(&tempIdentifer, PARTITION_NAME_FW_IDENTIFIER_BOOT_A, PARTITION_NAME_FW_IDENTIFER_BOOT_B,
+                                  PARTITION_NAME_FW_BOOT_A, PARTITION_NAME_FW_BOOT_B, "Boot");
+        }
+        //本地identifier
+        ULOG_INFO("------------------------");
+        ULOG_INFO("Local file header:");
+        ULOG_INFO("Identification: %s", tempIdentifer.identification);
+        ULOG_INFO("Image size: %lu", tempIdentifer.image_size);
+        ULOG_INFO("Image version: %lu", tempIdentifer.image_version);
+        ULOG_INFO("Enabled: 0x%x", tempIdentifer.enabled);
+        ULOG_INFO("Transfer status: %d", tempIdentifer.transfer_status);
+        if(Section_Flag != SECTIONNONE)
+        {
+            memcpy(&upgradeStorage, &tempIdentifer, sizeof(tImageIdentifer));
+        }
+        else
+        {
+            ULOG_INFO("[Error] Section_Flag invalid");
+            return false;
+        }
+        first_packet_received = true;
+        return true;
+    }
+    ULOG_INFO("[Error] not the first frame");
+    return false;
+}
+
+static uint16_t HttpCrc16Caculate(void *buf,uint16_t len)
+{
+    return DL_CRC16(buf, len);
+}
+
+static void HttpExFlashWrite(uint32_t writeAddr, uint8_t *buffer, uint32_t len)
+{
+    if (first_packet_received && (2 == fwType))
+    {
+        if(SECTIONA == Section_Flag)
+        {
+            exflash_write(PARTITION_NAME_FW_APP_A, writeAddr, buffer, len);
+        }
+        else
+        {
+            exflash_write(PARTITION_NAME_FW_APP_B, writeAddr, buffer, len);
+        }
+    }
+    else if (first_packet_received && (1 == fwType))
+    {
+        if(SECTIONA == Section_Flag)
+        {
+            exflash_write(PARTITION_NAME_FW_BOOT_A, writeAddr, buffer, len);
+        }
+        else
+        {
+            exflash_write(PARTITION_NAME_FW_BOOT_B, writeAddr, buffer, len);
+        }
+    }
+}
+
+static bool HttpGetSingeFrame(uint8_t blocknum, http_t *httppara)
+{
+    if((!EXFLASH_PAGE_SIZE % httppara->fileLen) || httppara->fileLen > EXFLASH_PAGE_SIZE)
+    {
+        ULOG_INFO("[ERROR] package size incorrect");
+        return false;
+    }
+    uint8_t pack_num = EXFLASH_PAGE_SIZE / httppara->fileLen;
+    ULOG_ALWAYS("frame index = %d",blocknum);
+    for(uint8_t i = 0; i < pack_num; i++)
+    {
+        httppara->BlockNum = pack_num * blocknum + i;
+        if(HttpCmdExecute(CMD_HTTPGET,httppara))
+        {
+            memcpy(framedata + (httppara->fileLen * i), httppara->fileData, httppara->fileLen);      
+        }
+        else
+        {
+            ULOG_INFO("[ERROR] http pack %u get failed",httppara->BlockNum);
+            return false; 
+        }
+        ULOG_INFO("Get HTTP Pakage : %d",httppara->BlockNum);
+    }
+    return true;
+}
+
+void HttpFlagClear(void)
+{
+    reset_flash_state();
+    memset(framedata,0,EXFLASH_PAGE_SIZE);
+    memset(&upgradeStorage,0,sizeof(upgradeStorage));
+}
+
+//http upgrade
+bool HttpUpdateProgram(http_t *httppara)
+{
+    uint16_t pre_crc16 = 0, cur_crc16 = 0;
+    uint16_t data_frame_index = 0, data_frame_number = 0;
+    //resue ymodem.buf
+    framedata = ymodem.buf;
+    memset(framedata, 0, EXFLASH_PAGE_SIZE);
+
+    //http connect
+    if(!HttpCmdExecute(CMD_HTTPCONNECT,NULL))
+    {
+        ULOG_INFO("[Error] http connect failed");
+        return false;
+    }
+    ULOG_INFO("http connect successfully,upgrade start...");
+
+    //get identifier
+    tImageIdentifer tempStorage;
+	uint8_t cnt = 0;
+    while (cnt < FRAME_GET_RETRY_TIMES)
+    {
+        if(user_debug_uart_is_len())
+        {
+            uint8_t ch;
+            debug_uart_read_byte(&ch);
+            if(ch == 'q')
+            {
+                ULOG_INFO("User stop upgrade");
+                HttpFlagClear();
+                return false;
+            }
+            else
+            {
+                debug_uart_rxclear();
+            }
+        }
+
+        if(!HttpGetSingeFrame(data_frame_index,httppara)) 
+        {
+            HttpFlagClear();
+            return false;
+        }
+        memcpy(&tempStorage, framedata, sizeof(tImageIdentifer));
+        pre_crc16 = tempStorage.crc16;
+        tempStorage.crc16 = 0;
+        cur_crc16 = HttpCrc16Caculate(&tempStorage,sizeof(tImageIdentifer));
+        ULOG_INFO("pre_crc16 = %04X, cur_crc16 = %04X",pre_crc16, cur_crc16);
+        if(pre_crc16 == cur_crc16) 
+        {
+            tempStorage.crc16 = cur_crc16;
+            if(!HttpFirstFrameParse(&tempStorage))
+            {
+                HttpFlagClear();
+                return false;
+            }
+            break;
+        }
+        //retry maximum
+        if(cnt == FRAME_GET_RETRY_TIMES - 1)
+        {
+            ULOG_INFO("[Error] frame %u crc16 mismatch",data_frame_index);
+            tempStorage.block_status[data_frame_index -1] = 0;
+            HttpFlagClear();
+            return false;
+        }
+        cnt++;
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+    }
+
+    //breakpoint check
+    if(!strncmp((const char *)upgradeStorage.identification,(const char *)tempStorage.identification,IMAGE_IDENTIFIER_CMP_LENGTH) &&
+        tempStorage.image_size == upgradeStorage.image_size &&
+        upgradeStorage.enabled == 0xFF &&
+        upgradeStorage.transfer_status ==  transferring &&
+        tempStorage.image_size == upgradeStorage.image_size &&
+        tempStorage.image_version == upgradeStorage.image_version)
+    {
+        //brakpoint find
+        uint16_t temp_index = 0;
+        while(upgradeStorage.block_status[temp_index]) temp_index++;
+        data_frame_index = temp_index;
+        ULOG_INFO("------------------------");
+        ULOG_INFO("breakpoint resume, breakpoint index = %d",data_frame_index);
+    }
+    else
+    {
+        //no brakpoint
+        HttpEraseFlash();
+        data_frame_index = 1;
+        ULOG_INFO("------------------------");
+        ULOG_INFO("a new download:");
+        memcpy(&upgradeStorage,&tempStorage,sizeof(tImageIdentifer));
+    }
+
+    //frame number caculate
+    data_frame_number = upgradeStorage.image_size;
+    ULOG_INFO("frame number = %d",data_frame_number);
+
+    //start get frame
+    upgradeStorage.transfer_status = transferring;
+    while(data_frame_index <= data_frame_number)
+    {
+        uint8_t cnt = 0;
+        Iwdg_reloader();
+        while (cnt < FRAME_GET_RETRY_TIMES)
+        {
+            if(user_debug_uart_is_len())
+            {
+                uint8_t ch;
+                debug_uart_read_byte(&ch);
+                if(ch == 'q')
+                {
+                    ULOG_INFO("User stop upgrade");
+                    HttpFlagClear();
+                    return false;
+                }
+                else
+                {
+                    debug_uart_rxclear();
+                }
+            }
+            if(!HttpGetSingeFrame(data_frame_index,httppara)) 
+            {
+                upgradeStorage.transfer_status = transfer_failed;
+                HttpFlagClear();
+                return false;
+            }
+            pre_crc16 = upgradeStorage.block_crc16[data_frame_index -1];
+            cur_crc16 = HttpCrc16Caculate(framedata,EXFLASH_PAGE_SIZE);
+            if(cur_crc16 == pre_crc16) 
+            {
+                upgradeStorage.block_status[data_frame_index -1] = 1;
+                HttpExFlashWrite((data_frame_index -1) * EXFLASH_PAGE_SIZE, framedata, EXFLASH_PAGE_SIZE);
+                break;
+            }
+            else
+            {
+                ULOG_INFO("crc16 incorrect, retry...");
+                ULOG_INFO("pre_crc16 = %04X, cur_crc16 = %04X",pre_crc16, cur_crc16);
+            }
+            //retry maximum
+            if(cnt == FRAME_GET_RETRY_TIMES - 1)
+            {
+                ULOG_INFO("[Error] frame %u crc16 mismatch",data_frame_index);
+                upgradeStorage.block_status[data_frame_index -1] = 0;
+                upgradeStorage.transfer_status = transfer_failed;
+                HttpFlagClear();
+                return false;
+            }
+			memset(framedata,0,EXFLASH_PAGE_SIZE);
+            cnt++;
+            MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+        }
+        upgradeStorage.enabled = 0xFF;
+        SaveIdentify();
+        memset(framedata,0,EXFLASH_PAGE_SIZE);
+        data_frame_index++;
+    }
+    Iwdg_reloader();
+    //receved over
+    upgradeStorage.enabled = PART_ENABLE;
+    upgradeStorage.transfer_status = transfer_successful;
+    UpgradeInfoPrint();
+    //bootloader transmission
+    if(fwType == 1)
+    {
+        ULOG_INFO("BootLoader upgrade start...");
+        BootLoaderDataTransfer();
+    }
+    else
+    {
+        //software reset
+        ULOG_INFO("HTTP transmission done, please restart to upgrade");
+    }
+    HttpFlagClear();
+    Iwdg_reloader();
+    HttpCmdExecute(CMD_HTTPCLOSE, httppara);
+    return true;
+}
+
+//identifer read
+void readUpdateIdendiferAddress(tImageIdentifer *identifier, const char *partitionIdent)
+{
+    exflash_read(partitionIdent, 0, (uint8_t*)identifier, sizeof(tImageIdentifer));
+}
+*/

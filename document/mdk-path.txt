@@ -306,6 +306,16 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\list\console\command_consoleAdapter.c</FilePath>
             </File>
+            <File>
+              <FileName>command_modbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\modbus\command_modbus.c</FilePath>
+            </File>
+            <File>
+              <FileName>command_modbusAdapter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\modbus\command_modbusAdapter.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -315,6 +325,21 @@
               <FileName>upgradeManager.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\upgrade\upgradeManager.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/thirdParty/rollDB</GroupName>
+          <Files>
+            <File>
+              <FileName>rollTs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\rollDB\core\rollTs.c</FilePath>
+            </File>
+            <File>
+              <FileName>rolldbPort.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\rollDB\rolldbPort.c</FilePath>
             </File>
           </Files>
         </Group>

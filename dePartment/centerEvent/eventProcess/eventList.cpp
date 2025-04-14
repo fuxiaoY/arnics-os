@@ -14,7 +14,7 @@ void led_action(void* argv)
     static int a = 0;
     a++;
     // 函数实现
-    ULOG_INFO("led_action");
+    // ULOG_INFO("led_action");
 
     dev_ctl(&led1_ds,IO_TOGGLE,NULL);
     if(a == 4)

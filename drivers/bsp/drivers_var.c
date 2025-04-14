@@ -49,8 +49,8 @@ uart_t uart1 =
 };
 io_t led0 = 
 {
-    .GPIOx = GPIOA,
-    .GPIO_InitStruct.Pin = GPIO_PIN_8,
+    .GPIOx = GPIOC,
+    .GPIO_InitStruct.Pin = GPIO_PIN_1,
     .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
     .GPIO_InitStruct.Pull = GPIO_NOPULL,
     .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
@@ -58,7 +58,7 @@ io_t led0 =
 };
 io_t led1 = 
 {
-    .GPIOx = GPIOD,
+    .GPIOx = GPIOC,
     .GPIO_InitStruct.Pin = GPIO_PIN_2,
     .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
     .GPIO_InitStruct.Pull = GPIO_NOPULL,
@@ -67,8 +67,8 @@ io_t led1 =
 };
 io_t w25q_cs = 
 {
-    .GPIOx = GPIOA,
-    .GPIO_InitStruct.Pin = GPIO_PIN_2,
+    .GPIOx = GPIOB,
+    .GPIO_InitStruct.Pin = GPIO_PIN_12,
     .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
     .GPIO_InitStruct.Pull  = GPIO_NOPULL,
     .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
@@ -76,7 +76,7 @@ io_t w25q_cs =
 };
 spi_t w25q_spi = 
 {
-    .hspi.Instance = SPI1,
+    .hspi.Instance = SPI2,
     .hspi.Init.Mode = SPI_MODE_MASTER,
     .hspi.Init.Direction = SPI_DIRECTION_2LINES,
     .hspi.Init.DataSize = SPI_DATASIZE_8BIT,
@@ -107,27 +107,41 @@ iwdg_t iwdg =
 rtc_t rtc = 
 {
     .hrtc.Instance = RTC,
-    .hrtc.Init.AsynchPrediv = RTC_AUTO_1_SECOND,
-    .hrtc.Init.OutPut = RTC_OUTPUTSOURCE_NONE
+    .hrtc.Init.HourFormat = RTC_HOURFORMAT_24,
+    .hrtc.Init.AsynchPrediv = 127,
+    .hrtc.Init.SynchPrediv = 255,
+    .hrtc.Init.OutPut = RTC_OUTPUT_DISABLE,
+    .hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE,
+    .hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH,
+    .hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN
 };
 
 adc_t adc1 = 
 {
     .hadc.Instance = ADC1,
-    .hadc.Init.ScanConvMode = ADC_SCAN_DISABLE, // 不启用扫描模式
-    .hadc.Init.ContinuousConvMode = DISABLE,    // 不启用连续转换模式
-    .hadc.Init.DiscontinuousConvMode = DISABLE, // 不启用不连续转换模式
-    .hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START, // 软件触发启动转换
-    .hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT,      // 数据右对齐
-    .hadc.Init.NbrOfConversion = 1,                  // 转换次数为1
-
-    /** Configure Regular Channel
-     */
-    .sConfig.Channel = ADC_CHANNEL_10,
+    .hadc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1,
+    .hadc.Init.Resolution = ADC_RESOLUTION_12B,
+    .hadc.Init.DataAlign = ADC_DATAALIGN_RIGHT,
+    .hadc.Init.ScanConvMode = ADC_SCAN_ENABLE,
+    .hadc.Init.EOCSelection = ADC_EOC_SINGLE_CONV,
+    .hadc.Init.LowPowerAutoWait = DISABLE,
+    .hadc.Init.ContinuousConvMode = DISABLE,
+    .hadc.Init.NbrOfConversion = 2,
+    .hadc.Init.DiscontinuousConvMode = DISABLE,
+    .hadc.Init.ExternalTrigConv = ADC_SOFTWARE_START,
+    .hadc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
+    .hadc.Init.DMAContinuousRequests = DISABLE,
+    .hadc.Init.Overrun = ADC_OVR_DATA_PRESERVED,
+    .hadc.Init.OversamplingMode = DISABLE,
+    /** Configure Regular Channel*/
+    
+    .sConfig.Channel = ADC_CHANNEL_3,
     .sConfig.Rank = ADC_REGULAR_RANK_1,
-    .sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5,
+    .sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5,
+    .sConfig.SingleDiff = ADC_SINGLE_ENDED,
+    .sConfig.OffsetNumber = ADC_OFFSET_NONE,
+    .sConfig.Offset = 0
 };
-
 iicSof_t iicsof1 = 
 {
     .SCL.GPIOx = GPIOC,

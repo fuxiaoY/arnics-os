@@ -14,6 +14,7 @@ extern "C" {
 #include "modContact/mctInclude.h"
 #include "Runonce/Runonce.h"
 #include "upgrade/upgradeManager.h"
+#include "rollDB/rolldbPort.h"
 
 extern void thirdPartyInit(void);
 #ifdef __cplusplus
