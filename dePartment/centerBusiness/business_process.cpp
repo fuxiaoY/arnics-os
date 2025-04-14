@@ -39,7 +39,7 @@ void business_init()
         test.message_deliver.test_req.b = 2;
         uint32_t id =SendEventCallToEventCenter(eventflag,&test,sizeof(MessageUnion),BLOCK_DELAY);
         GetResponseMessageFromEventCenter(id,BLOCK_DELAY,&test);
-        ULOG_INFO("%d,%d",test.message_deliver.test_rsp.a,test.message_deliver.test_rsp.b);
+        //ULOG_INFO("%d,%d",test.message_deliver.test_rsp.a,test.message_deliver.test_rsp.b);
         
         rtosThreadDelay(1000);
     }
