@@ -7,40 +7,40 @@
 uint8_t READ_SDA(device_t *self)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
-    return bsp_gpio_get(&iicSofInstance->SDA_IN);
+    return bsp_gpio_get(&(iicSofInstance->SDA_IN));
 }
 
 // 初始化主IIC 引脚
 void SDA_IN(device_t *self)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
-    bsp_gpio_init(&iicSofInstance->SDA_IN);
+    bsp_gpio_init(&(iicSofInstance->SDA_IN));
 }
 
 void SDA_OUT(device_t *self)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
     // 修改为开漏输出模式
-    bsp_gpio_init(&iicSofInstance->SDA_OUT); 
+    bsp_gpio_init(&(iicSofInstance->SDA_OUT)); 
 }
 // I2C基本输出
 void IIC_SCL(device_t *self, uint8_t level)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
-    bsp_gpio_set(&iicSofInstance->SCL, level);
+    bsp_gpio_set(&(iicSofInstance->SCL), level);
 }
 
 void IIC_SDA(device_t *self, uint8_t level)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
-    bsp_gpio_set(&iicSofInstance->SDA_OUT, level);
+    bsp_gpio_set(&(iicSofInstance->SDA_OUT), level);
 }
 
 int IIC_Init(device_t *self)
 {
     iicSof_t *iicSofInstance = (iicSof_t *)self->device;
-    bsp_gpio_init(&iicSofInstance->SCL);
-    bsp_gpio_init(&iicSofInstance->SDA_OUT);
+    bsp_gpio_init(&(iicSofInstance->SCL));
+    bsp_gpio_init(&(iicSofInstance->SDA_OUT));
 
     IIC_SCL(self, 1);
     IIC_SDA(self, 1);
@@ -207,12 +207,12 @@ void IIC_Send7bitAddress(device_t *self,uint8_t Address, uint8_t Direction)
     IIC_Send_Byte(self,Address);
 }
 
-int IIC_Write(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data, uint32_t TimeOut)
+int IIC_Write(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *buf, uint16_t len,uint32_t timeout)
 {
     int Ret = 0;
 
     // 步骤1：等待I2C总线恢复空闲
-    Ret = IIC_WaitForIdle(self,TimeOut);
+    Ret = IIC_WaitForIdle(self, timeout); //  timeout
     if (Ret != 0)
     {
         return Ret;
@@ -223,18 +223,15 @@ int IIC_Write(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data, uin
 
     // 步骤3：发送寻址，类似于发送广播要求访问指定的EEPROM
     // 发完之后阻塞等待ACK
-    IIC_Send7bitAddress(self,devAddr, I2C_Direction_Transmitter); // 发送设备地址，写模式
+    IIC_Send7bitAddress(self, devAddr, I2C_Direction_Transmitter); // 发送设备地址，写模式
     if (IIC_Wait_Ack(self))
     {
         IIC_Stop(self);
         return -13;
     }
 
-    // 步骤4：发送存储地址（或者应该理解为EEPROM芯片的寄存器地址）
-    // 发完之后阻塞等待ACK
-    // 对于不同的EEPROM芯片，存储地址字长不同，对于多字节来表示地址的芯片，需要按大端字序依次发送地址值的每一个字节
-    // 例如AT24C1024，地址字长为3字节，访问0x012345地址，则需要依次发送0x01，0x23，0x45，每发一个字节都要等一次ACK
-    IIC_Send_Byte(self,regAddr);
+    // 步骤4：发送寄存器地址
+    IIC_Send_Byte(self, regAddr);
     if (IIC_Wait_Ack(self))
     {
         IIC_Stop(self);
@@ -242,11 +239,14 @@ int IIC_Write(device_t *self,uint8_t devAddr, uint8_t regAddr, uint8_t data, uin
     }
 
     // 步骤5：发送待写入的字节，然后阻塞等待ACK
-    IIC_Send_Byte(self,data);
-    if (IIC_Wait_Ack(self))
+    for (uint16_t i = 0; i < len; ++i)
     {
-        IIC_Stop(self);
-        return -15;
+        IIC_Send_Byte(self, buf[i]);
+        if (IIC_Wait_Ack(self))
+        {
+            IIC_Stop(self);
+            return -15;
+        }
     }
 
     // 步骤6：产生停止信号
@@ -345,16 +345,17 @@ int iic_ctl(device_t *self, int cmd,va_list ap)
     {
         case IIC_WRITE:
         {
-            uint8_t Writedata = (uint8_t)va_arg(ap, int);
-            uint32_t TimeOut = (uint32_t)va_arg(ap, int);    
-            return IIC_Write(self->device,devAddr,regAddr,Writedata,TimeOut);
+            uint8_t *Writedata = (uint8_t*)va_arg(ap, int);
+            uint32_t WriteLen = (uint32_t)va_arg(ap, int); 
+            uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
+            return IIC_Write(self,devAddr,regAddr,Writedata,WriteLen,TimeOut);
         }
         case IIC_READ:
         {
             uint8_t* ReadBuf = va_arg(ap, uint8_t*);
             uint32_t ReadLen = (uint32_t)va_arg(ap, int); 
             uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
-            return IIC_Read(self->device,devAddr,regAddr,ReadBuf,ReadLen,TimeOut);   
+            return IIC_Read(self,devAddr,regAddr,ReadBuf,ReadLen,TimeOut);   
         }
         default: return -1;
 

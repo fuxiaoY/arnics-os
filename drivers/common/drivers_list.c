@@ -160,6 +160,7 @@ const device_type_map_t device_type_maps[] = {
     {"iwdg_t", iwdg_param_map, sizeof(iwdg_param_map) / sizeof(param_map_t),&iwdg_ops},
     {"rtc_t", rtc_param_map, sizeof(rtc_param_map) / sizeof(param_map_t),&rtc_ops},
     {"adc_t", adc_param_map, sizeof(adc_param_map) / sizeof(param_map_t),&adc_ops},
+    {"iicSof_t", iicsof_param_map, sizeof(iicsof_param_map) / sizeof(param_map_t),&iicsof_ops},
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);
