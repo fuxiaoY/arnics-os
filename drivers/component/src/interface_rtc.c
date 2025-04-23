@@ -14,7 +14,7 @@ int rtc_open(device_t *self)
     return 0;
 }
 
-extern int rtc_close(device_t *self)
+int rtc_close(device_t *self)
 {
     if(self->ds == 0)
     {
@@ -24,7 +24,7 @@ extern int rtc_close(device_t *self)
     return 0;
 }
 
-extern int rtc_ctl(device_t *self, int cmd, va_list ap)
+int rtc_ctl(device_t *self, int cmd, va_list ap)
 {
     void* arg1 = va_arg(ap, void*);
     if(self->ds == 0)

@@ -91,10 +91,70 @@ void bsp_gpio_init(io_t *io)
   {
       // 处理未知的 GPIO 端口
   }
-
   HAL_GPIO_Init(io->GPIOx, &io->GPIO_InitStruct);
 
-  HAL_GPIO_WritePin(io->GPIOx, io->GPIO_InitStruct.Pin, io->PinState);
+  // 根据模式决定是否需要设置引脚电平
+  if(io->GPIO_InitStruct.Mode == GPIO_MODE_OUTPUT_PP
+    || io->GPIO_InitStruct.Mode == GPIO_MODE_OUTPUT_OD)
+  {
+      HAL_GPIO_WritePin(io->GPIOx, io->GPIO_InitStruct.Pin, io->PinState);
+  }
+
+  // 是否配置为IO中断
+  if(io->GPIO_InitStruct.Mode == GPIO_MODE_IT_RISING
+  || io->GPIO_InitStruct.Mode == GPIO_MODE_IT_FALLING
+  || io->GPIO_InitStruct.Mode == GPIO_MODE_IT_RISING_FALLING)
+  {
+      if(io->GPIO_InitStruct.Pin == GPIO_PIN_0)
+      {
+          HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+      }
+      else if(io->GPIO_InitStruct.Pin == GPIO_PIN_1)
+      {
+          HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+      }
+      else if(io->GPIO_InitStruct.Pin == GPIO_PIN_2)
+      {
+          HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+      }
+      else if(io->GPIO_InitStruct.Pin == GPIO_PIN_3)
+      {
+          HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+      }
+      else if(io->GPIO_InitStruct.Pin == GPIO_PIN_4)
+      {
+          HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+      }
+      else if(io->GPIO_InitStruct.Pin == GPIO_PIN_5
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_6
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_7
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_8
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_9)
+      {
+          HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+      }
+      else if(io->GPIO_InitStruct.Pin == GPIO_PIN_10
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_11
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_12
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_13
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_14
+           || io->GPIO_InitStruct.Pin == GPIO_PIN_15)
+      {
+          HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+          HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+      }
+  }
+
+
+
+
+
 
 }
 void bsp_gpio_close(io_t *io)

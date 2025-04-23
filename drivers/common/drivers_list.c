@@ -133,7 +133,7 @@ dev_operations adc_ops = {
 
 /* Lists--- -----------------------------------------------------------*/
 /* Lists--- -----------------------------------------------------------*/
-// 使用 X-macro 生成 adc 参数映射表
+// 使用 X-macro 生成 iicsof 参数映射表
 const param_map_t iicsof_param_map[] = {
     #define X(name, struct_type, field, field_type) \
         {name, offsetof(struct_type, field), sizeof(field_type)},
@@ -150,6 +150,26 @@ dev_operations iicsof_ops = {
                         iic_ctl,
                         NULL};
 
+
+/* Lists--- -----------------------------------------------------------*/
+/* Lists--- -----------------------------------------------------------*/
+// 使用 X-macro 生成 rng 参数映射表
+const param_map_t rng_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    RNG_PARAM_MAP_X
+    #undef X
+};
+const size_t rng_param_map_size = sizeof(rng_param_map) / sizeof(param_map_t);
+
+dev_operations rng_ops = {
+                        rng_open,
+                        rng_close,
+                        rng_read,
+                        NULL,
+                        NULL,
+                        NULL};
+
 /* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
@@ -161,6 +181,7 @@ const device_type_map_t device_type_maps[] = {
     {"rtc_t", rtc_param_map, sizeof(rtc_param_map) / sizeof(param_map_t),&rtc_ops},
     {"adc_t", adc_param_map, sizeof(adc_param_map) / sizeof(param_map_t),&adc_ops},
     {"iicSof_t", iicsof_param_map, sizeof(iicsof_param_map) / sizeof(param_map_t),&iicsof_ops},
+    {"rng_t", rng_param_map, sizeof(rng_param_map) / sizeof(param_map_t),&rng_ops},
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);

@@ -396,6 +396,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_iicSof.c</FilePath>
             </File>
+            <File>
+              <FileName>interface_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_rng.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

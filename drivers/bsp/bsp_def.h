@@ -354,6 +354,17 @@ typedef struct
     X("SCL", iicSof_t, SCL, io_t) \
     X("SDA_OUT", iicSof_t, SDA_OUT, io_t) \
     X("SDA_IN", iicSof_t, SDA_IN, io_t)
+
+typedef struct 
+{
+    RNG_HandleTypeDef hrng;
+
+}rng_t;
+#define RNG_PARAM_MAP_X \
+    X("hrng", rng_t, hrng, RNG_HandleTypeDef) \
+
+
+
 #endif
 #ifdef __cplusplus
 }

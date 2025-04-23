@@ -22,31 +22,6 @@
 
 /* USER CODE BEGIN 0 */
 
-/* USER CODE END 0 */
-
-RNG_HandleTypeDef hrng;
-
-/* RNG init function */
-void MX_RNG_Init(void)
-{
-
-  /* USER CODE BEGIN RNG_Init 0 */
-
-  /* USER CODE END RNG_Init 0 */
-
-  /* USER CODE BEGIN RNG_Init 1 */
-
-  /* USER CODE END RNG_Init 1 */
-  hrng.Instance = RNG;
-  if (HAL_RNG_Init(&hrng) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN RNG_Init 2 */
-
-  /* USER CODE END RNG_Init 2 */
-
-}
 
 void HAL_RNG_MspInit(RNG_HandleTypeDef* rngHandle)
 {
@@ -99,5 +74,31 @@ void HAL_RNG_MspDeInit(RNG_HandleTypeDef* rngHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void bsp_rng_init(rng_t *dev)
+{
+  if (HAL_RNG_Init(&dev->hrng) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+void bsp_rng_deinit(rng_t *dev)
+{
+  if (HAL_RNG_DeInit(&dev->hrng) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
 
+int bsp_rng_read(rng_t *dev, uint32_t *buf, size_t count)
+{
+  for(uint32_t i = 0; i < count; i++)
+  {
+    if (HAL_RNG_GenerateRandomNumber(&dev->hrng, &buf[i]) != HAL_OK) 
+    {
+        Error_Handler(); // 生成失败处理
+        return -1;
+    }
+  }
+  return 0;
+}
 /* USER CODE END 1 */

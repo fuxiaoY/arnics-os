@@ -32,14 +32,16 @@ extern "C" {
 
 /* USER CODE END Includes */
 
-extern RNG_HandleTypeDef hrng;
 
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
 void MX_RNG_Init(void);
-
+extern void bsp_rng_init(rng_t *dev);
+extern void bsp_rng_deinit(rng_t *dev);
+extern int bsp_rng_read(rng_t *dev, uint32_t *buf, size_t count);
 /* USER CODE BEGIN Prototypes */
 
 /* USER CODE END Prototypes */

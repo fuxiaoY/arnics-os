@@ -73,6 +73,10 @@ extern dev_operations adc_ops;
 extern const param_map_t iicsof_param_map[];
 extern const size_t iicsof_param_map_size ;
 extern dev_operations iicsof_ops;
+
+extern const param_map_t rng_param_map[];
+extern const size_t rng_param_map_size ;
+extern dev_operations rng_ops;
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];
