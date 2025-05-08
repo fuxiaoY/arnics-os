@@ -227,7 +227,14 @@ static bool rollts_switch_sector(rollts_sys_t *sys_handle)
     // 仅当被擦除的扇区是 log_data_start 所在扇区时，更新 log_data_start 先更新起始地址，再擦除
     if ((LOG_SECTOR_START_ADDR + sys_handle->log_current_sector * SINGLE_SECTOR_SIZE) == sys_handle->log_data_start) 
     {
-        sys_handle->log_data_start = LOG_SECTOR_START_ADDR + (sys_handle->log_current_sector + 1) * SINGLE_SECTOR_SIZE; // 更新 log_data_start 为下一个扇区的起始地址
+        if(sys_handle->log_current_sector + 1 < LOG_SECTOR_NUM) //在扇区范围内
+        {
+            sys_handle->log_data_start = LOG_SECTOR_START_ADDR + (sys_handle->log_current_sector + 1) * SINGLE_SECTOR_SIZE; // 更新 log_data_start 为下一个扇区的起始地址
+        }
+        else
+        {
+            sys_handle->log_data_start = LOG_SECTOR_START_ADDR; // 如果当前扇区是最后一个扇区，则将 log_data_start 重置为第一个扇区的起始地址
+        }
         log_debug(" new:sys_handle->log_data_start:%x", sys_handle->log_data_start); 
     }
 
