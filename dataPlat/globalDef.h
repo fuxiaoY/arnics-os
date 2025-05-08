@@ -38,26 +38,31 @@ typedef struct
 {
     uint8_t a;
     uint8_t b;
-} test_req_t;
+} led0_toggle_t;
 
 
 typedef struct 
 {
-    uint32_t a;
-    uint32_t b;
-} test_rsp_t;
+    uint32_t total_blink_count;
+} led1_action_t;
 
 
 typedef union 
 {
-    /* test员工函数 */
-    test_req_t test_req;
-    test_rsp_t test_rsp;
-
-    /* check员工函数 */
-    uint8_t check_req;
-    uint32_t check_rsp;
-
+    /*--------------------*/
+    /* led0_toggle员工函数 */
+    /*req*/
+    led0_toggle_t led0_toggle_req;
+    /*rsp*/
+    led0_toggle_t led0_toggle_rsp;
+    /*--------------------*/
+    /*--------------------*/
+    /* led1_actionk员工函数 */
+    /*req*/
+    uint32_t req_blink_count;
+    /*rsp*/
+    led1_action_t led1_action_rsp;
+    /*--------------------*/
 } messge_deliver_t;
 typedef struct 
 {

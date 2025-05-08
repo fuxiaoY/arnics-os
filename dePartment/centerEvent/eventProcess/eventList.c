@@ -8,45 +8,44 @@ extern Message_t mesg_cache;//事件应用消息
 
 
 // 定义函数
-void led_action(void* argv) 
+
+void led0_toggle(void* argv) 
 {
     EVET_START
-    static int a = 0;
-    a++;
-    // 函数实现
-    // ULOG_INFO("led_action");
 
-    dev_ctl(&led1_ds,IO_TOGGLE,NULL);
-    if(a == 4)
-    {
-        GPIO_PinState new_pin_state = GPIO_PIN_SET;
-        uint32_t new_pin_mode = GPIO_MODE_OUTPUT_OD;
-
-        // 使用宏
-        DEV_PARAMS_SET(&led1_ds,
-            {"PinState", &new_pin_state},
-            {"GPIO_Mode", &new_pin_mode}
-        );
-
-        dev_open(&led1_ds);
-    }
-    MessageUnion messageReq = {0};
-    memcpy(&messageReq,argv,sizeof(MessageUnion));
-    MessageUnion* rsp = (MessageUnion*)argv;
-
-    rsp->message_deliver.test_rsp.a = messageReq.message_deliver.test_req.a;
-    rsp->message_deliver.test_rsp.b = messageReq.message_deliver.test_req.b;
-    EVET_END
-}
-
-void battery_check(void* argv) 
-{
-    EVET_START
+    // 切换led0_ds的IO状态
     dev_ctl(&led0_ds,IO_TOGGLE,NULL);
     EVET_DELAY(1000);
-    // 函数实现
+
     EVET_END
 }
+
+void led1_action(void* argv) 
+{
+    EVET_START
+    if(NULL == argv)
+    {
+        dev_ctl(&led1_ds,IO_TOGGLE,NULL);  
+    }
+    else
+    {
+        static uint32_t total_blink_count = 0;
+        MessageUnion messageReq;
+        memcpy(&messageReq,argv,sizeof(MessageUnion));
+        MessageUnion* rsp = (MessageUnion*)argv;
+
+        for(uint8_t i = rsp->message_deliver.req_blink_count; i > 0; i--)
+        {
+            dev_ctl(&led1_ds,IO_TOGGLE,NULL);  
+            total_blink_count++;
+            EVET_DELAY(500);
+        } 
+        rsp->message_deliver.led1_action_rsp.total_blink_count = total_blink_count;
+    }
+    EVET_END
+}
+
+
 
 
 

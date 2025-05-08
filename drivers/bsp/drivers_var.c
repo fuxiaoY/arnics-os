@@ -15,17 +15,17 @@ unsigned char debug_txbuf[DEBUG_UART_TXBUF_SIZE]; /*发送缓冲区 ------------
 ring_buf_t debug_rbsend, debug_rbrecv;            /*收发缓冲区管理 --------*/
 
 // 驱动映射
-device_t led0_ds; // led0
-device_t led1_ds; // led1
-device_t debug_ds; // debug串口
-device_t w25q_cs_ds; // w25q cs
+device_t led0_ds;     // led0
+device_t led1_ds;     // led1
+device_t debug_ds;    // debug串口
+device_t w25q_cs_ds;  // w25q cs
 device_t w25q_spi_ds; // w25q
 device_t mcuflash_ds; // mcuflash
-device_t iwdg_ds; // 独立看门狗
-device_t rtc_ds; // rtc
-device_t adc1_ds;
-device_t iicsof1_ds;
-device_t mct_ds;
+device_t iwdg_ds;     // 独立看门狗
+device_t rtc_ds;      // rtc
+device_t adc1_ds;     // adc1
+device_t iicsof1_ds;  // iic sof1
+
 
 
 // 驱动实例默认值

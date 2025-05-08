@@ -25,16 +25,17 @@ extern ring_buf_t debug_rbsend;
 extern ring_buf_t debug_rbrecv;
 
 // 驱动映射
-extern device_t led0_ds; // led0
-extern device_t led1_ds; // led1
-extern device_t w25q_cs_ds;
+extern device_t led0_ds;     // led0
+extern device_t led1_ds;     // led1
+extern device_t w25q_cs_ds;  // w25q cs
 extern device_t w25q_spi_ds; // w25q
-extern device_t debug_ds; // debug串口
+extern device_t debug_ds;    // debug串口
 extern device_t mcuflash_ds; // mcu flash
-extern device_t iwdg_ds; // 独立看门狗
-extern device_t rtc_ds; // rtc
-extern device_t adc1_ds;
-extern device_t mct_ds;
+extern device_t iwdg_ds;     // 独立看门狗
+extern device_t rtc_ds;      // rtc
+extern device_t adc1_ds;     // adc1
+extern device_t iicsof1_ds;  // iic sof
+
 // 驱动实例
 extern uart_t uart1;
 extern io_t led0;
