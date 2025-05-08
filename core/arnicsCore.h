@@ -7,8 +7,8 @@
   * 该文件定义了核心功能的宏定义、数据类型和函数声明。
   * 主要用于初始化和注册各种功能模块。
   * 
-  * @version        : 1.0.0
-  * @date           : 2023-10-01
+  * @version        : 1.0.1
+  * @date           : 2025-05-08
   ******************************************************************************
   * @attention
   *
@@ -30,6 +30,14 @@ extern "C" {
 
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
+/*----------------------------------------------------------------------
+ * MACROS AND DEFINITIONS
+ *--------------------------------------------------------------------*/
+
+ #define ARNICS_CORE_VERSION_NUMBER "V1.0.1"
+ #define ARNICS_CORE_VERSION_MAJOR 1
+ #define ARNICS_CORE_VERSION_MINOR 0
+ #define ARNICS_CORE_VERSION_BUILD 1
 
 /* typedef -----------------------------------------------------------*/
 #define TASK_FUNC(func)   {func}
