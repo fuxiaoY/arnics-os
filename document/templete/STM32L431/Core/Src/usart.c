@@ -180,7 +180,7 @@ void bsp_usart_init(uart_t *dev)
 }
 void bsp_usart_close(uart_t *dev)
 {
-  HAL_UART_MspDeInit(&dev->huart);
+  HAL_UART_DeInit(&dev->huart);
 }
 void bsp_uart_IT_enable(uart_t *dev)
 {

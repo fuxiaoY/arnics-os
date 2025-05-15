@@ -1,0 +1,35 @@
+
+
+// .h file
+
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
+
+extern void bsp_iwdg_init(iwdg_t *dev);
+extern void bsp_iwdg_deinit(iwdg_t *dev);
+extern void bsp_iwdg_refresh(iwdg_t *dev);
+
+// .c file
+
+void bsp_iwdg_init(iwdg_t *dev)
+{
+  if (HAL_IWDG_Init(&dev->hiwdg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+void bsp_iwdg_deinit(iwdg_t *dev)
+{
+    if (dev != NULL) {
+        // 关闭独立看门狗
+        IWDG_DISABLE_WRITE_ACCESS(&dev->hiwdg);
+    }
+}
+
+void bsp_iwdg_refresh(iwdg_t *dev)
+{
+    if (dev != NULL) {
+        // 喂狗操作
+        __HAL_IWDG_RELOAD_COUNTER(&dev->hiwdg);
+    }
+}

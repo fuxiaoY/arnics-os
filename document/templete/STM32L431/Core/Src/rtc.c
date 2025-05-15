@@ -139,7 +139,7 @@ void bsp_rtc_init(rtc_t *dev)
 }
 void bsp_rtc_deinit(rtc_t *dev)
 {
-  HAL_RTC_MspDeInit(&dev->hrtc);
+  HAL_RTC_DeInit(&dev->hrtc);
 }
 
 int bsp_rtc_get_datetime(rtc_t *dev,rtcTimeDateTypeDef_t* dt)
