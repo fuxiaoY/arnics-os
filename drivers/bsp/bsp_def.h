@@ -39,6 +39,15 @@ extern "C" {
 #include "../thirdParty/thirdPartyInclude.h"
 #include "../port/arnicsPort.h"
 #ifdef MCU_STM32F1
+#define DRIVERS_ENABLE_UART
+#define DRIVERS_ENABLE_GPIO
+#define DRIVERS_ENABLE_SPI
+#define DRIVERS_ENABLE_FLASH
+#define DRIVERS_ENABLE_IWDG
+#define DRIVERS_ENABLE_RTC
+#define DRIVERS_ENABLE_ADC
+#define DRIVERS_ENABLE_IICSOF
+
 /* typedef -----------------------------------------------------------*/
 // I/O 结构体
 typedef struct
@@ -198,6 +207,15 @@ typedef struct
     X("SDA_OUT", iicSof_t, SDA_OUT, io_t) \
     X("SDA_IN", iicSof_t, SDA_IN, io_t)
 #elif defined(MCU_STM32L4)
+#define DRIVERS_ENABLE_UART
+#define DRIVERS_ENABLE_GPIO
+#define DRIVERS_ENABLE_SPI
+#define DRIVERS_ENABLE_FLASH
+#define DRIVERS_ENABLE_IWDG
+#define DRIVERS_ENABLE_RTC
+#define DRIVERS_ENABLE_ADC
+#define DRIVERS_ENABLE_IICSOF
+#define DRIVERS_ENABLE_RNG
 /* typedef -----------------------------------------------------------*/
 // I/O 结构体
 typedef struct

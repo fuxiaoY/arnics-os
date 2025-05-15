@@ -2,6 +2,7 @@
 #include "drivers_list.h"
 #include "../component/inc/interface_Include.h"
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_UART
 // 使用 X-macro 生成 UART 参数映射表
 const param_map_t uart_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -17,8 +18,9 @@ dev_operations uart_ops = {
                         uart_write,
                         uart_ctl,
                         uart_irq};
-               
+#endif               
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_GPIO
 // 使用 X-macro 生成 IO 参数映射表
 const param_map_t io_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -35,8 +37,9 @@ dev_operations io_ops = {
                         NULL,
                         gpio_ctl,
                         gpio_irq};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_SPI
 // 使用 X-macro 生成 SPI 参数映射表
 const param_map_t spi_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -53,10 +56,9 @@ dev_operations spi_ops = {
                         spi_write,
                         spi_ctl,
                         NULL};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
-
-/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_FLASH
 // 使用 X-macro 生成 flash 参数映射表
 const param_map_t flash_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -73,9 +75,9 @@ dev_operations flash_ops = {
                         flash_write,
                         flash_ctl,
                         NULL};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
-/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_IWDG
 // 使用 X-macro 生成 独立看门狗 参数映射表
 const param_map_t iwdg_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -92,9 +94,9 @@ dev_operations iwdg_ops = {
                         NULL,
                         iwdg_ctl,
                         NULL};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
-/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_RTC
 // 使用 X-macro 生成 rtc 参数映射表
 const param_map_t rtc_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -111,9 +113,9 @@ dev_operations rtc_ops = {
                         NULL,
                         rtc_ctl,
                         NULL};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
-/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_ADC
 // 使用 X-macro 生成 adc 参数映射表
 const param_map_t adc_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -130,9 +132,9 @@ dev_operations adc_ops = {
                         NULL,
                         NULL,
                         NULL};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
-/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_IICSOF
 // 使用 X-macro 生成 iicsof 参数映射表
 const param_map_t iicsof_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -150,9 +152,9 @@ dev_operations iicsof_ops = {
                         iic_ctl,
                         NULL};
 
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
-/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_RNG
 // 使用 X-macro 生成 rng 参数映射表
 const param_map_t rng_param_map[] = {
     #define X(name, struct_type, field, field_type) \
@@ -169,19 +171,37 @@ dev_operations rng_ops = {
                         NULL,
                         NULL,
                         NULL};
-
+#endif
 /* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
+#ifdef DRIVERS_ENABLE_UART
     {"uart_t", uart_param_map, sizeof(uart_param_map) / sizeof(param_map_t),&uart_ops},
+#endif
+#ifdef DRIVERS_ENABLE_GPIO
     {"io_t", io_param_map, sizeof(io_param_map) / sizeof(param_map_t),&io_ops},
+#endif
+#ifdef DRIVERS_ENABLE_SPI
     {"spi_t", spi_param_map, sizeof(spi_param_map) / sizeof(param_map_t),&spi_ops},
+#endif
+#ifdef DRIVERS_ENABLE_FLASH
     {"flash_t", flash_param_map, sizeof(flash_param_map) / sizeof(param_map_t),&flash_ops},
+#endif
+#ifdef DRIVERS_ENABLE_IWDG
     {"iwdg_t", iwdg_param_map, sizeof(iwdg_param_map) / sizeof(param_map_t),&iwdg_ops},
+#endif
+#ifdef DRIVERS_ENABLE_RTC
     {"rtc_t", rtc_param_map, sizeof(rtc_param_map) / sizeof(param_map_t),&rtc_ops},
+#endif
+#ifdef DRIVERS_ENABLE_ADC
     {"adc_t", adc_param_map, sizeof(adc_param_map) / sizeof(param_map_t),&adc_ops},
+#endif
+#ifdef DRIVERS_ENABLE_IICSOF
     {"iicSof_t", iicsof_param_map, sizeof(iicsof_param_map) / sizeof(param_map_t),&iicsof_ops},
+#endif
+#ifdef DRIVERS_ENABLE_RNG
     {"rng_t", rng_param_map, sizeof(rng_param_map) / sizeof(param_map_t),&rng_ops},
+#endif
     // 可以添加更多设备类型
 };
 const size_t device_type_maps_size = sizeof(device_type_maps) / sizeof(device_type_map_t);
