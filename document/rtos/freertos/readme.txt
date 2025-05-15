@@ -1,0 +1,1 @@
+Tickless模式下，需要累加freertos和hal中相关时间计数变量
