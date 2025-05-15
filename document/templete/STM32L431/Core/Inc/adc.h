@@ -21,6 +21,7 @@ extern "C" {
 
 void MX_ADC1_Init(void);
 extern void bsp_adc_init(adc_t *adcx);
+extern void bsp_adc_close(adc_t *adcx);
 extern int bsp_adc_read(adc_t *adcx,uint16_t *buf, size_t count);
 /* USER CODE BEGIN Prototypes */
 

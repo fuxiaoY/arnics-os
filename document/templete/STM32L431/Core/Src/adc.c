@@ -168,7 +168,13 @@ void bsp_adc_init(adc_t *adcx)
     Error_Handler();
   }
 }
-
+void bsp_adc_close(adc_t *adcx)
+{
+  if (HAL_ADC_DeInit(&adcx->hadc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
 int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
 {
     if (count == 0)

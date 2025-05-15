@@ -13,6 +13,7 @@ int adc_open(device_t *self)
 }
 int adc_close(device_t *self)
 {
+    bsp_adc_close(self->device);
     return 0;
 }
 
