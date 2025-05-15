@@ -13,6 +13,7 @@ static uint32_t EVENT_FLAG = 0; // 外部事件标志
 static uint32_t MSG_FLAG = 0; // 外部消息标志
 static Message_t mesg_cache = {0};//事件应用消息
 
+
 #undef X
 #define X(func, priority, needRsp) + 1
 #define COUNT_TOTAL_ENTRIES (0 REGISTER_ENTRIES)
@@ -46,6 +47,8 @@ REGISTER_ENTRIES
 
 
 
+static uint32_t events[COUNT_TOTAL_ENTRIES];
+static uint32_t event_num = 0;
 // 计算组合数 C(n, k)
 uint32_t combination(uint32_t n, uint32_t k)
 {
@@ -233,12 +236,13 @@ void event_init(void)
 
 void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
 {
-    uint32_t events[COUNT_TOTAL_ENTRIES];
-    uint32_t event_num = 0;
-    id_to_event_combination(event_flag, events, &event_num);
-
     uint32_t msgs[COUNT_TOTAL_ENTRIES];
     uint32_t msg_num = 0;
+    memset(events,0,sizeof(events));
+    memset(msgs,0,sizeof(msgs));
+    event_num = 0;
+    msg_num = 0;
+    id_to_event_combination(event_flag, events, &event_num);
     id_to_event_combination(msg_flag, msgs, &msg_num);   
     bool ismsg = false;
     //外部员工执行
@@ -408,16 +412,23 @@ _WEAK void eventAction()
 _WEAK void onResetState()
 {
     bool needRsp = false;
-
-    for (size_t i = 0; i < getRegisterTableNum(); i++)
+    for(size_t j = 0; j < event_num; j++)
     {
-        if (EVENT_FLAG ==  eventBitMapping[i].event_bit)
+        uint32_t single_event = events[j];
+        for (size_t i = 0; i < getRegisterTableNum(); i++)
         {
-            if (true == registerTable[i].needRsp)
+            if (single_event ==  eventBitMapping[i].event_bit)
             {
-                needRsp = true;
-                break;
+                if (true == registerTable[i].needRsp)
+                {
+                    needRsp = true;
+                    break;
+                }
             }
+        }
+        if(needRsp)
+        {
+            break;
         }
     }
     CLR_EVENT_FLAG_ALL(EVENT_FLAG);
