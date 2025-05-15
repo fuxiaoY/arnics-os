@@ -8,31 +8,208 @@
 DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 3);
 _SECTION("._entry_event_api")
 
-EVENT_STATE event_state = OnWattingOutMsg;
-uint32_t EVENT_FLAG = 0; // 外部事件标志
-Message_t mesg_cache = {0};//事件应用消息
+static EVENT_STATE event_state = OnWattingOutMsg;
+static uint32_t EVENT_FLAG = 0; // 外部事件标志
+static uint32_t MSG_FLAG = 0; // 外部消息标志
+static Message_t mesg_cache = {0};//事件应用消息
 
+#undef X
+#define X(func, priority, needRsp) + 1
+#define COUNT_TOTAL_ENTRIES (0 REGISTER_ENTRIES)
 // 定义事件位映射表
-EventBitMapping eventBitMapping[EVENT_MAX_NUM];
+static EventBitMapping eventBitMapping[COUNT_TOTAL_ENTRIES];
+static uint32_t getRegisterTableNum()
+{
+    return (COUNT_TOTAL_ENTRIES);
+}
+#undef X
+// 定义 X 宏
+#define X(func, priority, needRsp) \
+    {#func, func, priority, needRsp},
+
 // 用户事件
-RegisterEntry registerTable[] = 
+static RegisterEntry registerTable[] = 
 {
     REGISTER_ENTRIES
 };
-static uint32_t getRegisterTableNum()
-{
-    return (sizeof(registerTable) / sizeof(RegisterEntry));
-}
 
 
 #undef X
-
 // 定义 X 宏来调用 ARNICS_REGISTER
 #define X(func, priority, needRsp) \
     ARNICS_REGISTER(#func, func, EVENT_TAG, priority);
 // 调用 X 宏
 REGISTER_ENTRIES
+
 #undef X
+#define X(func, priority, needRsp) + 1
+
+
+
+// 计算组合数 C(n, k)
+uint32_t combination(uint32_t n, uint32_t k)
+{
+    if (k > n) return 0;
+    if (k == 0 || k == n) return 1;
+
+    // 优化计算：C(n, k) = C(n, n-k)
+    if (k > n / 2) 
+    {
+        k = n - k;
+    }
+
+    uint32_t result = 1;
+    for (uint32_t i = 1; i <= k; ++i) 
+    {
+        result = result * (n - k + i) / i;
+    }
+    return result;
+}
+// 根据已有ID和新增事件，生成新的组合ID
+uint32_t update_combination_id(uint32_t event_num, uint32_t current_id)
+{
+    // 参数校验
+    if (event_num == 0 || event_num > COUNT_TOTAL_ENTRIES) {
+        return current_id; // 无效事件编号
+    }
+
+    // 如果是空组合，直接返回事件编号作为ID
+    if (current_id == 0) {
+        return event_num;
+    }
+
+    // 最大支持组合数量检查
+    if (current_id > ((1 << COUNT_TOTAL_ENTRIES) - 1)) {
+        return current_id; // 超出支持范围
+    }
+
+    // 存储当前组合中的事件
+    uint32_t current_events[COUNT_TOTAL_ENTRIES] = {0};
+    memset(current_events, 0, sizeof(current_events));
+    uint32_t current_count = 0;
+
+    // 解码当前ID对应的事件组合
+    uint32_t id = current_id;
+
+    // 判断当前ID是否在单事件范围内
+    if (id <= COUNT_TOTAL_ENTRIES) 
+    {
+        current_events[0] = id;
+        current_count = 1;
+    } else 
+    {
+        // 否则使用逆向解码函数还原事件组合
+        uint32_t k = 1;
+        while (combination(COUNT_TOTAL_ENTRIES, k) < id) {
+            id -= combination(COUNT_TOTAL_ENTRIES, k++);
+        }
+
+        uint32_t last = 0;
+        for (uint32_t i = 1; i <= k; ++i) {
+            uint32_t v = last + 1;
+            while (combination(COUNT_TOTAL_ENTRIES - v, k - i) < id) {
+                id -= combination(COUNT_TOTAL_ENTRIES - v++, k - i);
+            }
+            current_events[current_count++] = v;
+            last = v;
+        }
+    }
+
+    // 检查新事件是否已存在
+    for (uint32_t i = 0; i < current_count; ++i) 
+    {
+        if (current_events[i] == event_num) 
+        {
+            return current_id; // 已存在，返回原ID
+        }
+    }
+
+    // 创建新组合
+    uint32_t new_events[COUNT_TOTAL_ENTRIES];
+    // 添加越界检查
+    if (current_count >= COUNT_TOTAL_ENTRIES) 
+    {
+        return current_id; // 组合已满，避免越界访问
+    }
+    for (size_t i = 0; i < current_count; ++i) 
+    {
+        new_events[i] = current_events[i];
+    }
+    new_events[current_count++] = event_num;
+
+    // 排序
+    for (uint32_t i = 0; i < current_count; ++i) 
+    {
+        for (uint32_t j = i + 1; j < current_count; ++j) 
+        {
+            if (new_events[j] < new_events[i]) 
+            {
+                uint32_t temp = new_events[i];
+                new_events[i] = new_events[j];
+                new_events[j] = temp;
+            }
+        }
+    }
+
+    // 计算新组合的ID
+    uint32_t new_id = 0;
+
+    // 加上前面所有组合长度小于 current_count 的组合数量
+    for (uint32_t k = 1; k < current_count; ++k) 
+    {
+        new_id += combination(COUNT_TOTAL_ENTRIES, k);
+    }
+
+    // 对于当前长度的组合，找出它是第几个字典序
+    uint32_t prev = 0;
+    for (uint32_t i = 0; i < current_count; ++i) 
+    {
+        uint32_t current = new_events[i];
+
+        for (uint32_t v = prev + 1; v < current; ++v) 
+        {
+            new_id += combination(COUNT_TOTAL_ENTRIES - v, current_count - i - 1);
+        }
+
+        // 如果找到目标事件
+        if (current == event_num && i == current_count - 1) 
+        {
+            break;
+        }
+
+        prev = current;
+    }
+
+    // 增加1以表示这是该位置的新组合
+    return new_id + 1;
+}
+
+// 将ID转换为事件组合数组
+void id_to_event_combination(uint32_t id, uint32_t* output, uint32_t* count)
+{
+    if (id == 0 || id > ((1 << COUNT_TOTAL_ENTRIES) - 1) || output == NULL || count == NULL) {
+        *count = 0;
+        return;
+    }
+
+    *count = 0;
+    uint8_t k = 1;
+    
+    // 找出组合长度
+    while (combination(COUNT_TOTAL_ENTRIES, k) < id) {
+        id -= combination(COUNT_TOTAL_ENTRIES, k++);
+    }
+
+    uint8_t last = 0;
+    for (uint8_t i = 1; i <= k; ++i) {
+        uint8_t v = last + 1;
+        while (combination(COUNT_TOTAL_ENTRIES - v, k - i) < id) {
+            id -= combination(COUNT_TOTAL_ENTRIES - v++, k - i);
+        }
+        output[(*count)++] = v;
+        last = v;
+    }
+}
 /*--------------------------------------------------------*/
 // event core
 
@@ -50,36 +227,91 @@ void event_list_register()
 void event_init(void)
 {
     CLR_EVENT_FLAG_ALL(EVENT_FLAG);
+    CLR_EVENT_FLAG_ALL(MSG_FLAG);
     event_list_register();
 }
 
-void event_exec(uint32_t event_flag,void *argv)
+void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
 {
+    uint32_t events[COUNT_TOTAL_ENTRIES];
+    uint32_t event_num = 0;
+    id_to_event_combination(event_flag, events, &event_num);
 
-    // 遍历查找匹配的 event_bit
-    for (size_t i = 0; i < getRegisterTableNum(); i++)
+    uint32_t msgs[COUNT_TOTAL_ENTRIES];
+    uint32_t msg_num = 0;
+    id_to_event_combination(msg_flag, msgs, &msg_num);   
+    bool ismsg = false;
+    //外部员工执行
+    for (size_t i = 0; i < event_num; i++)
     {
-        if (event_flag ==  eventBitMapping[i].event_bit)
+        // 遍历查找匹配的 event_bit
+        for (size_t j = 0; j < getRegisterTableNum(); j++)
         {
-            // 找到匹配的 event_bit，执行对应的函数
-            EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_EXTERNAL_EMPLOY,argv);
+            if (events[i] ==  eventBitMapping[j].event_bit)
+            {
+                ismsg = false;
+                for (size_t k = 0; k < msg_num; k++)
+                {
+                    if (msgs[k] ==  eventBitMapping[j].event_bit)
+                    {
+                        // 有消息传递
+                        ismsg = true;
+                        break;
+                    }
+                }
+                if(ismsg)
+                {
+                    // 找到匹配的 event_bit，执行对应的函数
+                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_EXTERNAL_EMPLOY,argv);
+                }
+                else
+                {
+                    // 找到匹配的 event_bit，执行对应的函数
+                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_EXTERNAL_EMPLOY,NULL);
+                }
+            }
         }
     }
+    //内部员工执行
+    for (size_t i = 0; i < event_num; i++)
+    {
+        // 遍历查找匹配的 event_bit
+        for (size_t j = 0; j < getRegisterTableNum(); j++)
+        {
+            if (events[i] ==  eventBitMapping[j].event_bit)
+            {
+                ismsg = false;
+                for (size_t k = 0; k < msg_num; k++)
+                {
+                    if (msgs[k] ==  eventBitMapping[j].event_bit)
+                    {
+                        // 有消息传递
+                        ismsg = true;
+                        break;
+                    }
+                }
+                if(ismsg)
+                {
+                    // 找到匹配的 event_bit，执行对应的函数
+                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_INTERNAL_EMPLOY,argv);
+                }
+                else
+                {
+                    // 找到匹配的 event_bit，执行对应的函数
+                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_INTERNAL_EMPLOY,NULL);
+                }
+            }
+        }
+    }
+            
 }
 
-void event_internal_exec(uint32_t event_flag,void *argv)
+void event_internal_exec()
 {
     // 遍历查找匹配的 event_bit
     for (size_t i = 0; i < getRegisterTableNum(); i++)
     {
-        if (event_flag ==  eventBitMapping[i].event_bit)
-        {
-            EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,argv);
-        }
-        else
-        {
-            EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,NULL);
-        }
+        EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[i].name,EVENT_INTERNAL_EMPLOY,NULL);
     }
 }
 
@@ -95,10 +327,7 @@ static int getRegisterEntryIndex(const char *name)
     }
     return -1; // 未找到
 }
-
-
-// 用于设置事件标志 
-bool set_event_flag(uint32_t *eventflag, const char *name) 
+bool add_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) 
 {
     int index = getRegisterEntryIndex(name);
     if (index == -1) {
@@ -106,7 +335,29 @@ bool set_event_flag(uint32_t *eventflag, const char *name)
     }
 
     // 设置 eventflag 中对应位置的位
-    *eventflag  = (uint32_t)index;
+    eventflag->event_flag = update_combination_id((uint32_t)index, eventflag->event_flag);
+    if(ismsg)
+    {
+        eventflag->msg_flag = update_combination_id((uint32_t)index, eventflag->msg_flag);
+    }
+    return true;
+}
+
+// 用于设置事件标志 
+bool set_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) 
+{
+    int index = getRegisterEntryIndex(name);
+    if (index == -1) {
+        return false; // 未找到对应的 name
+    }
+    CLR_EVENT_FLAG_ALL(eventflag->event_flag);
+    CLR_EVENT_FLAG_ALL(eventflag->msg_flag);
+    // 设置 eventflag 中对应位置的位
+    eventflag->event_flag = update_combination_id((uint32_t)index, eventflag->event_flag);
+    if(ismsg)
+    {
+        eventflag->msg_flag = update_combination_id((uint32_t)index, eventflag->msg_flag);
+    }
     return true;
 }
 /*-------------------------------------------------------------------------------------*/
@@ -125,7 +376,9 @@ _WEAK void onWaittingOutMessage()
             eventosWantSleep = FALSE; // 撤销休眠申请
             // 清除分析缓存，并存入外部消息
             CLR_EVENT_FLAG_ALL(EVENT_FLAG);
+            CLR_EVENT_FLAG_ALL(MSG_FLAG);
             EVENT_FLAG = mesg_cache.eventflag;
+            MSG_FLAG = mesg_cache.msgflag;
             // 处理接收到的消息
             ULOG_DEBUG("-----------------START----------------------");
             ULOG_DEBUG("ON_Waitting_OUT_Message::Got Message! ID=%d", mesg_cache.ID_Ts);
@@ -134,7 +387,7 @@ _WEAK void onWaittingOutMessage()
         }
         else
         {
-            event_internal_exec(EVENT_FLAG,NULL);
+            event_internal_exec();
         }
         rtosThreadDelay(100);
     }
@@ -144,8 +397,7 @@ _WEAK void eventAction()
 {
     while (1)
     {
-        event_internal_exec(EVENT_FLAG,mesg_cache.buf); // 此处将里面的每一项需求分析出来，并分发任务
-        event_exec(EVENT_FLAG,mesg_cache.buf);          // 此处将里面的每一项需求分析出来，并分发任务
+        event_exec(EVENT_FLAG,MSG_FLAG,mesg_cache.buf);          // 此处将里面的每一项需求分析出来，并分发任务
         ULOG_DEBUG("eventCenter: analyzeSampleNeed Done!");
         rtosThreadDelay(100);
         event_state = SendingRspMsg; // 进入发送响应消息状态
@@ -168,6 +420,8 @@ _WEAK void onResetState()
             }
         }
     }
+    CLR_EVENT_FLAG_ALL(EVENT_FLAG);
+    CLR_EVENT_FLAG_ALL(MSG_FLAG);
     while (1)
     {
         if (needRsp)
@@ -177,21 +431,20 @@ _WEAK void onResetState()
                 // 发送成功 一个状态结束
                 ULOG_DEBUG("Message sent eventosRspQueue succeed! ID=%d", mesg_cache.ID_Ts);
                 memset(&mesg_cache, 0, sizeof(Message_t));
-                CLR_EVENT_FLAG_ALL(EVENT_FLAG);
+
                 event_state = OnWattingOutMsg; // 进入等待消息状态
                 break;
             }
             else
             {
                 ULOG_DEBUG("Retry sendding!!");
-                event_internal_exec(EVENT_FLAG,NULL);
+                event_internal_exec();
                 rtosThreadDelay(100);
             }
             rtosThreadDelay(100);
         }
         else
         {
-            CLR_EVENT_FLAG_ALL(EVENT_FLAG);
             event_state = OnWattingOutMsg; // 进入等待消息状态
             break;
         }
@@ -209,7 +462,7 @@ static unsigned long global_id_counter = 0;
  * @param  无
  * @retval 
  */
-uint32_t SendEventCallToEventCenter(uint32_t eventflag,void *argv,size_t len, time_t wait)
+uint32_t SendEventCallToEventCenter(EventFlag_t eventflag, time_t wait)
 {
     // 发送消息到事件队列
     // 创建消息
@@ -222,9 +475,19 @@ uint32_t SendEventCallToEventCenter(uint32_t eventflag,void *argv,size_t len, ti
         // 释放互斥信号量
         ReleaseEventosMutex();
     }
-    msg.eventflag = eventflag;
-    msg.length = len;
-    memcpy(msg.buf, argv, len);
+    msg.eventflag = eventflag.event_flag;
+    msg.msgflag = eventflag.msg_flag;
+    if( 0 != eventflag.msg_len)
+    {
+        memcpy(msg.buf, &eventflag.msg, eventflag.msg_len);
+        msg.length = eventflag.msg_len;
+    }
+    else
+    {
+        memset(msg.buf, 0, sizeof(msg.buf));
+        msg.length = 0;
+    }
+
     // 等待时间为wait
     if (rtosDeliverMsgToEventos(&msg, wait) == true)
     {

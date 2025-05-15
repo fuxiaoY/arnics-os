@@ -9,8 +9,8 @@
   * 该文件定义了事件核心的相关宏定义、结构体和函数声明。
   * 主要用于事件的管理和处理。
   * 
-  * @version        : 1.0.0
-  * @date           : 2023-10-01
+  * @version        : 1.0.1
+  * @date           : 2025-05-15
   ******************************************************************************
   * @attention
   *
@@ -38,7 +38,7 @@ extern "C" {
 #include "../../../Common/commonInclude.h"
 
 /* define ------------------------------------------------------------*/
-#define EVENT_MAX_NUM 32
+
 
 // 宏定义，用于清除事件标志 表示将处理过的所有事件无效化
 #define CLR_EVENT_FLAG_ALL(pEvent_) \
@@ -89,15 +89,48 @@ typedef enum
     }						\
   } while(0)
 #define _OUT_IF_TRUE(pt, cond)  EV_WAIT_UNTIL((pt), !(cond))
-
+// 事件延时只允许在内部员工中使用，外部员工使用将直接退出
 #define EVET_DELAY(ms)  _OUT_IF_TRUE(ppt, (uint32_t)(arnics_getTick() - _delay_start_) < (ms)); 
 
 /* variables ---------------------------------------------------------*/
 extern Message_t mesg_cache;               //事件应用消息
 /* function declaration ---------------------------------------------*/
-extern uint32_t SendEventCallToEventCenter(uint32_t eventflag,void *argv,size_t len, time_t wait);
+extern uint32_t SendEventCallToEventCenter(EventFlag_t eventflag,time_t wait);
 extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv);
-extern bool set_event_flag(uint32_t *eventflag, const char *name) ;
+/**
+ * @brief  设置事件标志为指定的事件，清除之前所有事件。
+ *
+ *         根据事件名称查找对应的索引，并将 eventflag 设置为仅包含该事件。
+ *         如果 `ismsg` 为 true，则同时设置 msg_flag。
+ *
+ * @param[in,out] eventflag  指向事件标志结构体的指针。
+ * @param[in]     name       要设置的事件名称（必须存在于注册表中）。
+ * @param[in]     ismsg      是否将该事件标记为需要消息传递。
+ *
+ * @return bool              成功设置事件返回 true；
+ *                           如果未找到对应事件或参数无效则返回 false。
+ *
+ * @note   清空 eventflag 和 msg_flag，然后仅设置指定的事件。
+ *
+ */
+extern bool add_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) ;
+/**
+ * @brief  向指定的事件标志中添加一个事件。
+ *
+ *         根据事件名称查找对应的索引，并将其添加到 eventflag 中。
+ *         如果 `ismsg` 为 true，则同时将该事件标记为需要消息传递。
+ *
+ * @param[in,out] eventflag  指向事件标志结构体的指针。
+ * @param[in]     name       要添加的事件名称（必须存在于注册表中）。
+ * @param[in]     ismsg      是否将该事件标记为需要消息传递。
+ *
+ * @return bool              成功添加事件返回 true；
+ *                           如果未找到对应事件或参数无效则返回 false。
+ *
+ * @note   该函数不会清除原有的事件标志，仅在原有基础上添加新事件。
+ *
+ */
+extern bool set_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) ;
 extern void event_process();
 
 

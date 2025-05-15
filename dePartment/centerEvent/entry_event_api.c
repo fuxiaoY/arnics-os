@@ -4,6 +4,7 @@
 #undef event_process
 #undef SendEventCallToEventCenter
 #undef GetResponseMessageFromEventCenter
+#undef add_event_flag
 #undef set_event_flag
 
 #include "eventProcess/eventCore.h"
@@ -16,6 +17,8 @@ const tEVENTEntry entry_event_list =
     INIT_MEMBER(SendEventCallToEventCenter),
     #undef GetResponseMessageFromEventCenter
     INIT_MEMBER(GetResponseMessageFromEventCenter),
+    #undef add_event_flag
+    INIT_MEMBER(add_event_flag),
     #undef set_event_flag
     INIT_MEMBER(set_event_flag),
 };
