@@ -86,7 +86,6 @@ typedef struct{
   uint32_t event_flag;
   uint32_t msg_flag;
   MessageUnion msg;
-  uint32_t msg_len;
 }EventFlag_t;
 
 #define SET_MESSAGE(para,lambda)  para.msg.message_deliver.lambda; 

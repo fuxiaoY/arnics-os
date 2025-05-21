@@ -46,7 +46,10 @@ extern "C" {
     {                               \
         (pEvent_)= 0x00;     \
     } while (0)
-
+    
+// 判断事件标志是否清除
+#define IS_EVENT_FLAG_CLR(pEvent_) \
+    ((pEvent_ == 0x00) ? true : false) 
 /* typedef -----------------------------------------------------------*/
 typedef struct {
     const char* name;

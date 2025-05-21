@@ -478,6 +478,7 @@ uint32_t SendEventCallToEventCenter(EventFlag_t eventflag, time_t wait)
     // 发送消息到事件队列
     // 创建消息
     Message_t msg = {0};
+    memset(&msg, 0, sizeof(msg));
     // 获取互斥信号量
     if (TakeEventosMutex(wait))
     {
@@ -488,15 +489,10 @@ uint32_t SendEventCallToEventCenter(EventFlag_t eventflag, time_t wait)
     }
     msg.eventflag = eventflag.event_flag;
     msg.msgflag = eventflag.msg_flag;
-    if( 0 != eventflag.msg_len)
+    if(!IS_EVENT_FLAG_CLR(msg.msgflag))
     {
-        memcpy(msg.buf, &eventflag.msg, eventflag.msg_len);
-        msg.length = eventflag.msg_len;
-    }
-    else
-    {
-        memset(msg.buf, 0, sizeof(msg.buf));
-        msg.length = 0;
+        memcpy(msg.buf, &eventflag.msg, sizeof(MessageUnion));
+        msg.length = sizeof(MessageUnion);
     }
 
     // 等待时间为wait
