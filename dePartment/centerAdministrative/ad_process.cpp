@@ -39,7 +39,7 @@ static uint32_t global_ad_id_counter = 0;
 bool readAdReq(adMessage_t *msg, time_t wait)
 {
     // 检查队列是否为空
-    if (CheckAdqueueSpacesAvailable() == 0) {
+    if (CheckAdRspMesgNum() == 0) {
         return false;
     }
 
