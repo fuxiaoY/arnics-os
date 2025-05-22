@@ -146,12 +146,15 @@ bool CheckAdqueueSpacesAvailable(void)
 {
     return uxQueueSpacesAvailable(adReqQueue);
 }
-
 uint32_t  CheckAdRspMesgNum(void)
 {
     return (uint32_t)uxQueueMessagesWaiting(adRspQueue);
 }
 
+uint32_t  CheckAdReqMesgNum(void)
+{
+    return (uint32_t)uxQueueMessagesWaiting(adReqQueue);
+}
 bool  PeekAdRspMesg(void *receivedMsg)
 {
     // 使用队列的Peek功能查看消息而不取出
@@ -266,12 +269,17 @@ void ReleaseMediaMsgQueueMutex(void)
 
 uint32_t  CheckMediaRspMesgNum(void)
 {
+    return (uint32_t)uxQueueMessagesWaiting(MediaRspQueue);
+}
+
+uint32_t  CheckMediaReqMesgNum(void)
+{
     return (uint32_t)uxQueueMessagesWaiting(MediaReqQueue);
 }
 bool  PeekMediaRspMesg(void *receivedMsg)
 {
     // 使用队列的Peek功能查看消息而不取出
-    return  (uint32_t)xQueuePeek(MediaReqQueue, receivedMsg, 0)== pdTRUE;
+    return  (uint32_t)xQueuePeek(MediaRspQueue, receivedMsg, 0)== pdTRUE;
 }
 // 检查请求队列中是否有可用空间
 bool CheckMediaQueueSpacesAvailable(void)

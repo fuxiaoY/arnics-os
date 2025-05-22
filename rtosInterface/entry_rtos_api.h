@@ -21,6 +21,7 @@ typedef bool     (T_TYPEDEF(TakeAdMsgQueueMutex))(time_t waitTime);
 typedef void     (T_TYPEDEF(ReleaseAdMsgQueueMutex))(void);
 typedef bool     (T_TYPEDEF(CheckAdqueueSpacesAvailable))(void);
 typedef uint32_t (T_TYPEDEF(CheckAdRspMesgNum))(void);
+typedef uint32_t (T_TYPEDEF(CheckAdReqMesgNum))(void);
 typedef bool     (T_TYPEDEF(PeekAdRspMesg))(void *receivedMsg);
 typedef bool     (T_TYPEDEF(CheckAdQueueSpacesAvailable))(void);
 
@@ -43,6 +44,7 @@ typedef bool     (T_TYPEDEF(rtosDeliverMsgToMedia))(void *msg, uint32_t delay);
 typedef bool     (T_TYPEDEF(TakeMediaMutex))(time_t waitTime);
 typedef void     (T_TYPEDEF(ReleaseMediaMsgQueueMutex))(void);
 typedef uint32_t (T_TYPEDEF(CheckMediaRspMesgNum))(void);
+typedef uint32_t (T_TYPEDEF(CheckMediaReqMesgNum))(void);
 typedef bool     (T_TYPEDEF(PeekMediaRspMesg))(void *receivedMsg);
 typedef bool     (T_TYPEDEF(CheckMediaQueueSpacesAvailable))(void);
 
@@ -63,6 +65,7 @@ typedef struct
     T_STRUCT_MEMBER(ReleaseAdMsgQueueMutex);
     T_STRUCT_MEMBER(CheckAdqueueSpacesAvailable);
     T_STRUCT_MEMBER(CheckAdRspMesgNum);
+    T_STRUCT_MEMBER(CheckAdReqMesgNum);
     T_STRUCT_MEMBER(PeekAdRspMesg);
     T_STRUCT_MEMBER(CheckAdQueueSpacesAvailable);
 
@@ -85,6 +88,7 @@ typedef struct
     T_STRUCT_MEMBER(TakeMediaMutex);
     T_STRUCT_MEMBER(ReleaseMediaMsgQueueMutex);
     T_STRUCT_MEMBER(CheckMediaRspMesgNum);
+    T_STRUCT_MEMBER(CheckMediaReqMesgNum);
     T_STRUCT_MEMBER(PeekMediaRspMesg);
     T_STRUCT_MEMBER(CheckMediaQueueSpacesAvailable);
 } tRTOSEntry;
@@ -109,6 +113,7 @@ extern const tRTOSEntry entry_rtos_list;
 #define ReleaseAdMsgQueueMutex                    RTOS_MICRODEF(ReleaseAdMsgQueueMutex)
 #define CheckAdqueueSpacesAvailable               RTOS_MICRODEF(CheckAdqueueSpacesAvailable)
 #define CheckAdRspMesgNum                         RTOS_MICRODEF(CheckAdRspMesgNum)
+#define CheckAdReqMesgNum                         RTOS_MICRODEF(CheckAdReqMesgNum)
 #define PeekAdRspMesg                             RTOS_MICRODEF(PeekAdRspMesg)
 #define CheckAdQueueSpacesAvailable               RTOS_MICRODEF(CheckAdQueueSpacesAvailable)
 
@@ -131,6 +136,7 @@ extern const tRTOSEntry entry_rtos_list;
 #define TakeMediaMutex                            RTOS_MICRODEF(TakeMediaMutex)
 #define ReleaseMediaMsgQueueMutex                 RTOS_MICRODEF(ReleaseMediaMsgQueueMutex)
 #define CheckMediaRspMesgNum                      RTOS_MICRODEF(CheckMediaRspMesgNum)
+#define CheckMediaReqMesgNum                      RTOS_MICRODEF(CheckMediaReqMesgNum)
 #define PeekMediaRspMesg                          RTOS_MICRODEF(PeekMediaRspMesg)
 #define CheckMediaQueueSpacesAvailable            RTOS_MICRODEF(CheckMediaQueueSpacesAvailable)
 

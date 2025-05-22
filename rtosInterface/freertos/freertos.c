@@ -159,7 +159,7 @@ void initQueue()
     MediaRspQueue = xQueueCreate(3, sizeof(MediaMessage_t));     // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列  
 
     adReqQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
-    adReqQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
+    adRspQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
 }
 /**
   * @brief  FreeRTOS initialization

@@ -38,6 +38,7 @@ extern void ReleaseAdMsgQueueMutex(void);
 // 检查请求队列中是否有可用空间
 extern bool CheckAdqueueSpacesAvailable(void);
 extern uint32_t  CheckAdRspMesgNum(void);
+extern uint32_t  CheckAdReqMesgNum(void);
 extern bool  PeekAdRspMesg(void *receivedMsg);
 // 检查请求队列中是否有可用空间
 extern bool CheckAdQueueSpacesAvailable(void);
@@ -74,6 +75,7 @@ extern bool TakeMediaMutex(time_t waitTime);
 // 释放读队列互斥信号量
 extern void ReleaseMediaMsgQueueMutex(void);
 extern uint32_t  CheckMediaRspMesgNum(void);
+extern uint32_t  CheckMediaReqMesgNum(void);
 extern bool  PeekMediaRspMesg(void *receivedMsg);
 // 检查请求队列中是否有可用空间
 extern bool CheckMediaQueueSpacesAvailable(void);

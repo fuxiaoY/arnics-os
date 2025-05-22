@@ -31,7 +31,7 @@ static uint32_t global_media_id_counter = 0;
 bool readMediaReq(MediaMessage_t *msg, time_t wait)
 {
     // 检查队列是否为空
-    if (CheckMediaRspMesgNum() == 0) {
+    if (CheckMediaReqMesgNum() == 0) {
         return false;
     }
 

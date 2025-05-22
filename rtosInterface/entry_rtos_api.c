@@ -15,6 +15,7 @@
 #undef ReleaseAdMsgQueueMutex
 #undef CheckAdqueueSpacesAvailable
 #undef CheckAdRspMesgNum
+#undef CheckAdReqMesgNum
 #undef PeekAdRspMesg
 #undef CheckAdQueueSpacesAvailable
 
@@ -37,6 +38,7 @@
 #undef TakeMediaMutex
 #undef ReleaseMediaMsgQueueMutex
 #undef CheckMediaRspMesgNum
+#undef CheckMediaReqMesgNum
 #undef PeekMediaRspMesg
 #undef CheckMediaQueueSpacesAvailable
 #include "rtosPort.h"
@@ -70,6 +72,8 @@ const tRTOSEntry entry_rtos_list =
     INIT_MEMBER(CheckAdqueueSpacesAvailable),
     #undef CheckAdRspMesgNum
     INIT_MEMBER(CheckAdRspMesgNum),
+    #undef CheckAdReqMesgNum
+    INIT_MEMBER(CheckAdReqMesgNum),     
     #undef PeekAdRspMesg
     INIT_MEMBER(PeekAdRspMesg),
     #undef CheckAdQueueSpacesAvailable
