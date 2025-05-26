@@ -1,3 +1,24 @@
+/**
+  ******************************************************************************
+  * @file           : mctLib.h
+  * @brief          : modContact Algorithm header file
+  * 
+  * 
+  * 
+  * @version        : 1.0.1
+  * @date           : 2025-05-26
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 arong.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 #ifndef __MCTLIB_H__
 #define __MCTLIB_H__
 

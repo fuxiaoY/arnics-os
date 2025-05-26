@@ -17,12 +17,14 @@
  */
 #ifndef __COMMAND_Y7025_H__
 #define __COMMAND_Y7025_H__
-#include "../../common/mctProcesser.h"
-#include "../../common/mctLib.h"
-#include "../../dataplat/mctStruct.h"
-#include "../mctList.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "../../core/mctCore.h"
+#include "../../common/mctStruct.h"
+#include "../../dataPlat/dataLink.h"
 #include "../../port/mctDriver.h"
-#include "Global_def.h"
+
 #define CMD_Y7025_ID_BASE                           (uint16_t)0
 
 #define CMD_Y7025_IMEI_GET                          (uint16_t)(CMD_Y7025_ID_BASE +  1)
@@ -135,6 +137,9 @@ typedef struct
 {
     char* Serverip;
     uint16_t ServerPort;
+    char* ProductKey;
+    char* DeviceName;
+    char* DeviceSecret;
     uint16_t ConnectTimeOut;
     uint16_t KeepAlive;
 }mqttConnet_t;
@@ -145,14 +150,14 @@ typedef enum
     topic_Command,			//下行订阅主题
     topic_ConfigDn,		//下行配置主题
 }MqTType;
-struct tWanData
+typedef struct 
 {
     uint8_t   RevCmdValidFlag; //接收命令是否有效
     MqTType mqttType; //MQTT类型
     uint16_t  RevCmdLen; //接收命令长度
     char   RevCmd[256]; //数据缓存
     MqttPulish_t mqttPub; //发布数据
-};
+}tWanData;
 
 typedef struct
 {
@@ -171,10 +176,17 @@ typedef struct
     uint16_t port;
 }httpURL;
 
+typedef struct
+{
+    uint16_t BlockNum;
+    uint32_t fileLen;
+    char UpdatePath[128];			//远程刷机绝对地址
+    uint8_t *fileData;
+} http_t;
 
-typedef struct tWanData *ptWanData;
-typedef struct tWanControl *ptWanControl;
 extern tCmd const *CMD_Y7025CmdGet(void);
 extern uint16_t CMD_Y7025CmdNumGet(void);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

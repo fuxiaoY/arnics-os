@@ -8,6 +8,7 @@ extern "C" {
 #include "../../rtosInterface/entry_rtos_api.h"
 #include "../../dataPlat/dataPlatInclude.h"
 #include "../centerEvent/entry_event_api.h"
+#include "../../drivers/driversInclude.h"
 
 extern void business_process(void);
 extern void business_init();

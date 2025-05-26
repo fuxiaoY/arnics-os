@@ -14,21 +14,52 @@ unsigned char debug_rxbuf[DEBUG_UART_RXBUF_SIZE]; /*接收缓冲区 ------------
 unsigned char debug_txbuf[DEBUG_UART_TXBUF_SIZE]; /*发送缓冲区 ------------*/
 ring_buf_t debug_rbsend, debug_rbrecv;            /*收发缓冲区管理 --------*/
 
+unsigned char modem_rxbuf[MODEM_UART_RXBUF_SIZE]; /*接收缓冲区 ------------*/
+unsigned char modem_txbuf[MODEM_UART_TXBUF_SIZE]; /*发送缓冲区 ------------*/
+ring_buf_t modem_rbsend, modem_rbrecv;            /*收发缓冲区管理 --------*/
 // 驱动映射
-device_t led0_ds;     // led0
-device_t led1_ds;     // led1
-device_t debug_ds;    // debug串口
-device_t w25q_cs_ds;  // w25q cs
+device_t led0_ds; // led0
+device_t led1_ds; // led1
+device_t debug_ds; // debug串口
+device_t w25q_cs_ds; // w25q cs
 device_t w25q_spi_ds; // w25q
 device_t mcuflash_ds; // mcuflash
-device_t iwdg_ds;     // 独立看门狗
-device_t rtc_ds;      // rtc
-device_t adc1_ds;     // adc1
-device_t iicsof1_ds;  // iic sof1
+device_t iwdg_ds; // 独立看门狗
+device_t rtc_ds; // rtc
+device_t adc1_ds;
+device_t iicsof1_ds;
+device_t rng_ds;
 
 
+device_t wan_uart_ds;// wan uart 
+device_t cat1_pen_ds; // cat1 pen
+device_t cat1_pwrkey_ds; // cat1 pwr 硬件已逻辑反向
+device_t cat1_dtr_ds; // cat1 dtr 硬件已逻辑反向
+device_t cat1_rst_ds; // cat1 rst
 
+device_t nb_pen_ds; 
+device_t nb_dtr_ds;  //  硬件已逻辑反向
+device_t nb_rst_ds; 
 // 驱动实例默认值
+uart_t lpuart1 = 
+{
+    .huart.Instance = LPUART1,
+    .huart.Init.BaudRate = 115200,
+    .huart.Init.WordLength = UART_WORDLENGTH_8B,
+    .huart.Init.StopBits = UART_STOPBITS_1,
+    .huart.Init.Parity = UART_PARITY_NONE,
+    .huart.Init.Mode = UART_MODE_TX_RX,
+    .huart.Init.HwFlowCtl = UART_HWCONTROL_NONE,
+    .huart.Init.OverSampling = UART_OVERSAMPLING_16,
+    .dma_mode = 0,
+    .ring_rx = &debug_rbrecv,
+    .ring_tx = &debug_rbsend,
+    .rx_buf = debug_rxbuf,
+    .tx_buf = debug_txbuf,
+    .rx_buf_size = DEBUG_UART_RXBUF_SIZE,
+    .tx_buf_size = DEBUG_UART_TXBUF_SIZE
+};
+
 uart_t uart1 = 
 {
     .huart.Instance = USART1,
@@ -45,6 +76,24 @@ uart_t uart1 =
     .rx_buf = debug_rxbuf,
     .tx_buf = debug_txbuf,
     .rx_buf_size = DEBUG_UART_RXBUF_SIZE,
+    .tx_buf_size = DEBUG_UART_TXBUF_SIZE
+};
+uart_t uart2 = 
+{
+    .huart.Instance = USART2,
+    .huart.Init.BaudRate = 9600,
+    .huart.Init.WordLength = UART_WORDLENGTH_8B,
+    .huart.Init.StopBits = UART_STOPBITS_1,
+    .huart.Init.Parity = UART_PARITY_NONE,
+    .huart.Init.Mode = UART_MODE_TX_RX,
+    .huart.Init.HwFlowCtl = UART_HWCONTROL_NONE,
+    .huart.Init.OverSampling = UART_OVERSAMPLING_16,
+    .dma_mode = 0,
+    .ring_rx = &modem_rbrecv,
+    .ring_tx = &modem_rbsend,
+    .rx_buf = modem_rxbuf,
+    .tx_buf = modem_txbuf,
+    .rx_buf_size = MODEM_UART_RXBUF_SIZE,
     .tx_buf_size = DEBUG_UART_TXBUF_SIZE
 };
 io_t led0 = 
@@ -100,7 +149,8 @@ iwdg_t iwdg =
 {
   .hiwdg.Instance = IWDG,
   .hiwdg.Init.Prescaler = IWDG_PRESCALER_256,
-  .hiwdg.Init.Reload = 4095
+  .hiwdg.Init.Reload = 4095,
+  .hiwdg.Init.Window = 4095
 };
 
 
@@ -165,3 +215,42 @@ iicSof_t iicsof1 =
 	
 	
 };
+
+rng_t hrng = 
+{
+    .hrng.Instance = RNG,
+};
+
+
+
+
+io_t cat1_pen = 
+{
+    .GPIOx = GPIOC,
+    .GPIO_InitStruct.Pin = GPIO_PIN_3,
+    .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+    .PinState = GPIO_PIN_SET
+};
+
+io_t cat1_pwrkey = 
+{
+    .GPIOx = GPIOA,
+    .GPIO_InitStruct.Pin = GPIO_PIN_0,
+    .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+    .PinState = GPIO_PIN_SET
+};
+io_t cat1_dtr = 
+{
+    .GPIOx = GPIOC,
+    .GPIO_InitStruct.Pin = GPIO_PIN_4,
+    .GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP,
+    .GPIO_InitStruct.Pull  = GPIO_NOPULL,
+    .GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH,
+    .PinState = GPIO_PIN_SET
+};
+
+

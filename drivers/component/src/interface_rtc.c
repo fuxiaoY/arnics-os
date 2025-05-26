@@ -43,3 +43,12 @@ int rtc_ctl(device_t *self, int cmd, va_list ap)
         
     }
 }
+
+void rtc_irq(device_t *self)
+{
+    if(self->ds == 0)
+    {
+        return;
+    }
+    bsp_rtc_irq(self->device);
+}

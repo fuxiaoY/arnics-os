@@ -19,6 +19,3 @@ bool ALLOWSLEEP = false;
 /*运行与配置参数------------------------------------------------------------------------*/
  SytemCfg   global_cfg = {0};         // 全局配置参数
  SytemState global_state = {0};       // 全局运行参数
-
-
-

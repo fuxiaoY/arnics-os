@@ -112,7 +112,7 @@ dev_operations rtc_ops = {
                         NULL,
                         NULL,
                         rtc_ctl,
-                        NULL};
+                        rtc_irq};
 #endif
 /* Lists--- -----------------------------------------------------------*/
 #ifdef DRIVERS_ENABLE_ADC

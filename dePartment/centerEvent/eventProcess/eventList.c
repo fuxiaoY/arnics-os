@@ -15,15 +15,13 @@ void led0_toggle(void* argv)
 
     if(NULL != argv)
     {
-        
+        MessageUnion messageReq;
+        memcpy(&messageReq,argv,sizeof(MessageUnion));
+        ULOG_INFO("led0_toggle:req a =  %d",messageReq.message_deliver.led0_toggle_msg.led0_toggle_req.a);
     }
     else
     {
-        EVET_START
-        // 切换led0_ds的IO状态
         dev_ctl(&led0_ds,IO_TOGGLE,NULL);
-        EVET_DELAY(1000);
-        EVET_END
     }
 
 }
@@ -34,15 +32,18 @@ void led1_action(void* argv)
     {
         static uint32_t total_blink_count = 0;
         MessageUnion* rsp = (MessageUnion*)argv;
+        ULOG_INFO("led1_action:req blink_count =  %d",rsp->message_deliver.led1_action_msg.req_blink_count);
         for(uint8_t i = rsp->message_deliver.led1_action_msg.req_blink_count; i > 0; i--)
         {
             dev_ctl(&led1_ds,IO_TOGGLE,NULL);  
             total_blink_count++;
             rtosThreadDelay(500);
         } 
+        rsp->message_deliver.led1_action_msg.led1_action_rsp.total_blink_count = rsp->message_deliver.led1_action_msg.req_blink_count;
     }
     else
     {
+        ULOG_INFO("led1_action:no argv");
         dev_ctl(&led1_ds,IO_TOGGLE,NULL);  
     }
 }

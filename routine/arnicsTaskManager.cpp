@@ -11,6 +11,9 @@ const tTaskFunc initTaskList[] =
 const tTaskFunc preloadTaskList[] =
 {
     TASK_FUNC(third_init),
+    TASK_FUNC(global_all_read),
+    TASK_FUNC(MQTopicConfig),
+    
 };
 
 /*外挂设备初始化*/
@@ -65,11 +68,14 @@ COMPONENT_INIT("component", deviceInit);
 
 void driver_init(void)
 {
+    dev_reg("rng",&rng_ds);
+    dev_open(&rng_ds);
     dev_reg("led0",&led0_ds);
     dev_open(&led0_ds);
     
     dev_reg("led1",&led1_ds);
     dev_open(&led1_ds);
+
     dev_reg("uart1",&debug_ds);
     dev_open(&debug_ds);
     dev_reg("iwdg",&iwdg_ds);
@@ -79,7 +85,8 @@ void driver_init(void)
     dev_open(&rtc_ds);
     rtcTimeDateTypeDef_t rtc_time;
     dev_ctl(&rtc_ds,RTC_GETDATETIME,&rtc_time);
-    
+
+
 }
 void third_init(void)
 {

@@ -1,5 +1,4 @@
 #include "command_console.h"
-#include "../../common/mctLib.h"
 #include "../../../ulog/ulogDef.h"
 #include "../../../../port/portInclude.h"
 #include "../../../../dataPlat/dataPlatInclude.h"

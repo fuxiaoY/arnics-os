@@ -16,7 +16,8 @@
  *******************************************************************************
  */
 #include "command_A7680CAdapter.h"
-#include "../../../../dataPlat/dataPlatInclude.h"
+#include "../../../ulog/ulogDef.h"
+
 static bool cmd_EchoClose(MctInstance *inst, void *para)
 {
     uint8_t MAX_RETRIES = 3;
@@ -26,12 +27,12 @@ static bool cmd_EchoClose(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst, CMD_A7680C_ECHO_SWITCH, &echo_state) == true)
         {
-            //printf("ECHO disable successfully!\r\n");
+            //ULOG_INFO("ECHO disable successfully!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("ECHO disable failed!\r\n");
+            ULOG_INFO("ECHO disable failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -67,12 +68,12 @@ static bool cmd_apnConfig(MctInstance *inst, void *para)
         if ((NULL != hexhex((uint8_t *)pdp_read.PDP_type, (uint8_t *)string_ip,sizeof(pdp_read.PDP_type),strlen(string_ip))))
 
         {
-            printf("Match successfully, PDP_type = %s, APN = %s\r\n", pdp_read.PDP_type, pdp_read.APN);
+            ULOG_INFO("Match successfully, PDP_type = %s, APN = %s\r\n", pdp_read.PDP_type, pdp_read.APN);
         }
         else
         {
             // AT+CGDCONT=1,"IP","cmnet"
-            printf("Match failed, reconfigure PDP...\r\n");
+            ULOG_INFO("Match failed, reconfigure PDP...\r\n");
             PDP_Context_set pdp_set;
             pdp_set.cid = 1;
             pdp_set.PDP_type = string_ip;
@@ -81,12 +82,12 @@ static bool cmd_apnConfig(MctInstance *inst, void *para)
             {
                 if (mct_a7680c_execute(inst,  CMD_A7680C_PDP_CONFIG, &pdp_set) == true)
                 {
-                    printf("Reconfigure PDP done\r\n");
+                    ULOG_INFO("Reconfigure PDP done\r\n");
                     break;
                 }
                 if (i == MAX_RETRIES - 1)
                 {
-                    printf("PDP config failed!\n");
+                    ULOG_INFO("PDP config failed!\n");
                     return false;
                 }
                 MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -110,12 +111,12 @@ static bool cmd_PDP_IPConfig(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst, CMD_A7680C_PDP_IPSET, &pdpip_auth) == true)
         {
-            //printf("PDP-IP set successfully!\r\n");
+            //ULOG_INFO("PDP-IP set successfully!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("PDP-IP set failed!\r\n");
+            ULOG_INFO("PDP-IP set failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -131,12 +132,12 @@ static bool cmd_CSQ_AutoReportOff(MctInstance *inst, void *para)
 
     if (mct_a7680c_execute(inst,  CMD_A7680C_CSQ_AUTO_REPORT, &csq_rep) == true)
     {
-        //printf("CSQ auto report autodisable successfully!\r\n");
+        //ULOG_INFO("CSQ auto report autodisable successfully!\r\n");
 
     }
     else
     {
-        printf("CSQ auto report disable failed!\r\n");
+        ULOG_INFO("CSQ auto report disable failed!\r\n");
         //return false; 允许失败
     }
 
@@ -152,12 +153,12 @@ static bool cmd_checkPinReady(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_CPIN_READ, &sim_ready) == true)
         {
-            //printf("SIM is ready!\r\n");
+            //ULOG_INFO("SIM is ready!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("SIM is not ready!\r\n");
+            ULOG_INFO("SIM is not ready!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -175,12 +176,12 @@ static bool cmd_UpdateZonNITZ(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_NITZ_TIMEUPDATE_SWITCH, &nitz_state) == true)
         {
-            //printf("NITZ enable successfully!\r\n");
+            //ULOG_INFO("NITZ enable successfully!\r\n");
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("NITZ enable failed!\r\n");
+            ULOG_INFO("NITZ enable failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -197,12 +198,12 @@ static bool cmd_ReadIMSI(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_IMSI_READ, &IMSI_code) == true)
         {
-            printf("IMSI number : %s\r\n", IMSI_code);
+            ULOG_INFO("IMSI number : %s\r\n", IMSI_code);
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("IMSI read failed!\r\n");
+            ULOG_INFO("IMSI read failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -219,12 +220,12 @@ static bool cmd_SnNumberRead(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_SN_READ, &SN_code) == true)
         {
-            printf("Serial number : %s\r\n", SN_code);
+            ULOG_INFO("Serial number : %s\r\n", SN_code);
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("Serial number read failed!\r\n");
+            ULOG_INFO("Serial number read failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -241,12 +242,12 @@ static bool cmd_ICCIDRead(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_ICCID_READ, &ICCD_code) == true)
         {
-            printf("ICCD number : %s\r\n", ICCD_code);
+            ULOG_INFO("ICCD number : %s\r\n", ICCD_code);
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("ICCD number read failed!\r\n");
+            ULOG_INFO("ICCD number read failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -263,12 +264,12 @@ static bool cmd_CGMMRead(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_MODEL_ID_READ, &Model_id) == true)
         {
-            printf("Model id : %s\r\n", Model_id);
+            ULOG_INFO("Model id : %s\r\n", Model_id);
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("Model id read failed!\r\n");
+            ULOG_INFO("Model id read failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -285,12 +286,12 @@ static bool cmd_CGMRRead(MctInstance *inst, void *para)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_FWVERSION_READ, &FWversion_id) == true)
         {
-            printf("FW version id : %s\r\n", FWversion_id);
+            ULOG_INFO("FW version id : %s\r\n", FWversion_id);
             break;
         }
         if (i == MAX_RETRIES - 1)
         {
-            printf("FW version id read failed!\r\n");
+            ULOG_INFO("FW version id read failed!\r\n");
             return false;
         }
         MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
@@ -381,7 +382,7 @@ static bool cmd_ModemUpdateSignal(MctInstance *inst, void *para)
     }
     else
     {
-        printf("rssi : %u  ber : %u\r\n", signal.rssi, signal.ber);
+        ULOG_INFO("rssi : %u  ber : %u\r\n", signal.rssi, signal.ber);
         NetworkPara_t* networkPara = (NetworkPara_t*)para;
         networkPara->SignalStrength = signal.rssi;
     }
@@ -400,7 +401,7 @@ static bool cmd_CheckCEREG(MctInstance *inst, void *para)
     }
     else
     {
-        printf("net_info.stat : %d\r\n", net_info.stat);
+        ULOG_INFO("net_info.stat : %d\r\n", net_info.stat);
         NetworkPara_t* networkPara = (NetworkPara_t*)para;
         networkPara->REGstatus = (eRegStatus)net_info.stat;
     }
@@ -423,13 +424,13 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     // start
     if (mct_a7680c_execute(inst,  CMD_A7680C_CMMQTT_START, (void *)NULL) == false)
     {
-        printf("MQTT Service Start Failed!\r\n");
+        ULOG_INFO("MQTT Service Start Failed!\r\n");
         return false;
     }
     // accq
     MqttAccq_Info accq_test;
     char client_id[128] = {0};
-    sprintf(client_id, "%s.%s|securemode=3,signmethod=hmacsha1|", global_cfg.ProductKey,global_cfg.DevName);
+    sprintf(client_id, "%s.%s|securemode=3,signmethod=hmacsha1|",(char*)MCT_PTR(mqttProductKey),(char*)MCT_PTR(devName));
 
     accq_test.client_index = MQTT_CLIENT_INDEX;
     accq_test.clientID = client_id;
@@ -445,18 +446,19 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     */
    
     //网络连接参数
-
     char server_addr[100] = {0};
     char user_name[100] = {0};
-    snprintf(server_addr, sizeof(server_addr), "%s:%u", global_cfg.ServerURL, global_cfg.ServerPort);
-    snprintf(user_name, sizeof(user_name), "%s&%s", global_cfg.DevName, global_cfg.ProductKey);
+    uint16_t serverPort = 0;
+    MCT_GET(serverPort,&serverPort, sizeof(serverPort));
+    snprintf(server_addr, sizeof(server_addr), "tcp://%s:%u", (char*)MCT_PTR(serverURL),serverPort);
+    snprintf(user_name, sizeof(user_name), "%s&%s",(char*)MCT_PTR(devName), (char*)MCT_PTR(mqttProductKey));
     MqttConnect_Info connect_info;
     connect_info.client_index = MQTT_CLIENT_INDEX;
     connect_info.server_addr = server_addr;
-    connect_info.keepalive_time = global_cfg.KeepAlive;
+    MCT_GET(mqttKeepAlive, &connect_info.keepalive_time, sizeof(connect_info.keepalive_time));
     connect_info.clean_session = 1;
     connect_info.user_name = user_name;
-    connect_info.pass_word = global_cfg.DevSecret;
+    connect_info.pass_word = (char*)MCT_PTR(mqttDevSecret);
     if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_CONNECT, (void *)&connect_info) == false)
     {
         return false;
@@ -494,7 +496,7 @@ static bool cmd_mqttSubscribe(MctInstance *inst, void *para)
 }
 static bool cmd_mqttflow(MctInstance *inst, void *para)
 {
-    //printf("cmd_mqttflow start----------------------\r\n");
+    //ULOG_INFO("cmd_mqttflow start----------------------\r\n");
     // connect
     if(!cmd_mqttConnect(inst, para))
     {

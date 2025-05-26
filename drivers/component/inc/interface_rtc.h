@@ -20,7 +20,7 @@ extern int rtc_open(device_t *self);
 extern int rtc_close(device_t *self);
 
 extern int rtc_ctl(device_t *self, int cmd, va_list ap);
-
+extern void rtc_irq(device_t *self);
 
 #ifdef __cplusplus
 }

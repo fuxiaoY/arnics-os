@@ -6,9 +6,7 @@
 extern "C" {
 #endif
 #include "command_modbus.h"
-#include "../../common/mctProcesser.h"
-#include "../../dataplat/mctDefinition.h"
-#include "../mctList.h"
+
 
 
 

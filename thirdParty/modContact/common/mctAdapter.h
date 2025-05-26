@@ -1,11 +1,33 @@
+/**
+  ******************************************************************************
+  * @file           : mctAdapter.h
+  * @brief          : modContact adapter layer header file
+  * 
+  * 
+  * 
+  * @version        : 1.0.2
+  * @date           : 2025-05-26
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 arong.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 #ifndef __MCTADAPTER_H__
 #define __MCTADAPTER_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "mctProcesser.h"
-
+#include "../core/mctCore.h"
+#include "../list/mctList.h"
+#include "../port/mctDriver.h"
 /**
  * @fn mct_reg
  * @brief 接口注册
@@ -30,12 +52,7 @@ extern void mct_init(MctInstance* pInstance,uint8_t *Cmd_cache,size_t cmd_max_si
                                     uint8_t* Payload_cahe,size_t payload_max_size, \
                                     int (*write_callback)(void *file, uint16_t len), \
                                     uint32_t (*read_callback)(uint8_t *buf, uint16_t maxlen));
-/**
- * @fn mct_init
- * @brief 将mct数据重置
- * 
- */
-extern void mct_data_reset(MctInstance* pInstance);
+
 #ifdef __cplusplus
 }
 #endif

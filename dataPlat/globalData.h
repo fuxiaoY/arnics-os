@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 #include "globalDef.h"
-
+#include "../thirdParty/modContact/mctInclude.h"
 /*-------------------------------------------------------------------------------------*/
 
 /*系统参数-----------------------------------------------------------------------------*/
@@ -24,7 +24,11 @@ extern bool ALLOWSLEEP;
 /*运行与配置参数------------------------------------------------------------------------*/
 extern SytemCfg global_cfg;       // 全局配置参数
 extern SytemState global_state;   // 全局运行参数
-
+extern ST_MQTopic g_MQTopic;	  // MQTT主题集
+extern NetworkPara_t networkPara; // 媒体中心网络参数
+extern char mqttWanBuf[256];       // MQTT远程帧缓冲区
+extern bool mqttWanBufReady;
+extern MqttPulish_t mqttWanPub;
 
 #ifdef __cplusplus
 }

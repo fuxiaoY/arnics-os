@@ -17,11 +17,12 @@
  */
 #ifndef __COMMAND_A7680C_H__
 #define __COMMAND_A7680C_H__
-#include "../../common/mctProcesser.h"
-#include "../../common/mctLib.h"
-#include "../../dataplat/mctStruct.h"
-#include "../mctList.h"
-#include "../../../ulog/ulogDef.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "../../core/mctCore.h"
+#include "../../common/mctStruct.h"
+#include "../../dataPlat/dataLink.h"
 #include "../../port/mctDriver.h"
 #define CMD_A7680C_ID_BASE                      (int32_t)0
 
@@ -270,5 +271,7 @@ typedef struct
 
 extern tCmd const *CMD_A7680CCmdGet(void);
 extern uint16_t CMD_A7680CCmdNumGet(void);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

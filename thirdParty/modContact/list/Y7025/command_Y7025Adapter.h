@@ -17,7 +17,9 @@
  */
 #ifndef __COMMAND_Y7025ADAPTER_H__
 #define __COMMAND_Y7025ADAPTER_H__
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "command_Y7025.h"
 
 
@@ -28,5 +30,7 @@
 
 
 extern tCmdApi const *CMD_Y7025ApiGet(void);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

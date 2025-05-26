@@ -16,8 +16,8 @@
  *******************************************************************************
  */
 #include "command_Y7025.h"
-
-
+#include "GlobalData.h"
+#include "GlobalDataManager.h"
 static bool cmd_PackEchoOff(uint8_t* buf, size_t* len, void *para)
 {
     *len = sprintf((char*)buf, "ATE0\r\n");
@@ -119,7 +119,6 @@ static bool cmd_AnalyzeVersionGet(uint8_t* buf, size_t len, void *para)
 {
     char *ver = (char *)para;
     uint8_t *ptr = (uint8_t *)buf;
-    ptr+= 2;// \r\n
     // 拷贝后续到字符串
     memcpy(ver,ptr, 12);
     return true;
@@ -226,7 +225,7 @@ static bool cmd_AnalyzeWorklockSet(uint8_t* buf, size_t len, void *para)
 static bool cmd_PackCPSMSSet(uint8_t* buf, size_t* len, void *para)
 {
     // 设置PSM参数，此处将T3412设置为60小时，意思是只要在60小时内至少有一次上报，就不用重新注网。T3324设置为2秒，意思是解除DTR休眠锁后延迟2秒进入PSM休眠
-    *len = sprintf((char*)buf, "AT+CPSMS=1,,,00000000,00000100\r\n");
+    *len = sprintf((char*)buf, "AT+CPSMS=1,,,00100100,01000011\r\n");
     return true;
 }
 
@@ -462,19 +461,17 @@ static bool cmd_AnalyzeMqttNew(uint8_t* buf, size_t len, void *para)
 
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t* len, void *para)
 {
- mqttConnet_t *mqttConnetpara = (mqttConnet_t *)para;
+
     // mqtt链接id  //客户端ID 字符串  //keepalive  //用户名  //密码
-    *len = sprintf((char*)buf, "AT+MQCON=%u,4,\"%s%s\",%u,0,0,,,,,,\"%s\",\"%s\"\r\n",
+    *len = sprintf((char*)buf, "AT+MQCON=%u,4,\"%s\",%u,1,0,,,,,,\"%s\",\"%s\"\r\n",
                          MQTT_ID,
-                         mqttConnetpara->ProductKey,
-                         mqttConnetpara->DeviceName,
-                         mqttConnetpara->KeepAlive,
-                         mqttConnetpara->DeviceName,
-                         mqttConnetpara->DeviceSecret);
+                         g_RTCfg.ProductKey,
+                         g_RTCfg.KeepAlive,
+                         g_RTCfg.DevName,
+                         g_RTCfg.DevSecret);
 
     return true;
 }
-
 //+MQCONNACK:0,0
 static bool cmd_AnalyzeMqttConnect(uint8_t* buf, size_t len, void *para)
 {
@@ -529,7 +526,7 @@ return false;
 static bool cmd_PackMqttSubscrib(uint8_t* buf, size_t* len, void *para)
 {
     char *Topic = (char *)para;
-    uint8_t QOS = 0;
+    uint8_t QOS = 1;
     *len = sprintf((char*)buf, "AT+MQSUB=%u,\"%s\",%d\r\n", MQTT_ID, Topic, QOS);
     return true;
 }
@@ -737,32 +734,30 @@ static bool cmd_PackMqttReceive(uint8_t* buf, size_t* len, void *para)
 {
     *len = 0;    //不打包，只接受数据
     tWanData *WanData = &g_WanData;
-    bool mqttWanBuf_Ready = false;
+
     if (1 == WanData->RevCmdValidFlag)
     {
         printf("\nwan:\r\n"); 
         printf("%.*s\n",256,(char *)WanData->RevCmd);
+     
         switch(WanData->mqttType)
         {
             case topic_ConfigDn:
             {
                 //拿走数据，此处不做打包处理，防止栈溢出
-                memcpy(MCT_PTR(mqttWanBuf), WanData->RevCmd, strlen(WanData->RevCmd));
-                mqttWanBuf_Ready = true;
-                MCT_SET(mqttWanBufReady,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->Topic = MCT_PTR(mqttCfgUpTopic);
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->QOS = 1;
-
+                memcpy(g_mqttWanBuf, WanData->RevCmd, strlen(WanData->RevCmd));
+                g_mqttWanBuf_Ready = true;
+                mqttWanPub.Topic = g_MQTopic.ConfigUp;
+                mqttWanPub.QOS = 1;
             }
             break;
             case topic_Command:
             {
                 //拿走数据，此处不做打包处理，防止栈溢出
-                memcpy(MCT_PTR(mqttWanBuf), WanData->RevCmd, strlen(WanData->RevCmd));
-                mqttWanBuf_Ready = true;
-                MCT_SET(mqttWanBufReady,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->Topic = MCT_PTR(mqttRspTopic);
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->QOS = 1;
+                memcpy(g_mqttWanBuf, WanData->RevCmd, strlen(WanData->RevCmd));
+                g_mqttWanBuf_Ready = true;
+                mqttWanPub.Topic = g_MQTopic.Resp;
+                mqttWanPub.QOS = 1;
             }
             break;
             default:
@@ -898,327 +893,6 @@ static bool cmd_AnalyzeMqttReceive(uint8_t* buf, size_t len, void *para)
     WanData->RevCmdValidFlag = 1; // 标记接收命令有效
     return true;
 }
-
-static bool cmd_PackMqttClose(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+MQDISCON=%d\r\n",MQTT_ID);
-    return true;
-}
-//
-static bool cmd_AnalyzeMqttClose(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-//HTTPCREATE
-static bool cmd_PackHTTPCREATE(uint8_t* buf, size_t* len, void *para)
-{
-    httpURL *httpurL = (httpURL *)para;
-    *len = sprintf((char*)buf, "AT+HTTPCREATE=%s:%d\r\n", httpurL->ip,httpurL->port);
-    return true;
-}
-static bool cmd_AnalyzeHTTPCREATE(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-//HTTPHEADGET
-static bool cmd_PackHTTPHEADGET(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+HTTPHEADER=0\r\n");
-    return true;
-}
-static bool cmd_AnalyzeHTTPHEADGET(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-//HTTPHEADSET
-static bool cmd_PackHTTPHEADSET(uint8_t* buf, size_t* len, void *para)
-{
-    //*len = sprintf((char*)buf, "AT+HTTPHEADER=0,%s,0\r\n", (char*)para);
-    //return true;
-
-    const char* headerPrefix = "AT+HTTPHEADER=0,";
-    const char* headerSuffix = ",1\r\n";
-    const char* hexChars = "0123456789abcdef";
-
-    size_t prefixLen = strlen(headerPrefix);
-    size_t suffixLen = strlen(headerSuffix);
-    size_t paraLen = strlen((const char*)para);
-
-    // Calculate total length needed
-    size_t totalLen = prefixLen + (paraLen * 2) + suffixLen;
-    
-    // Copy prefix
-    memcpy(buf, headerPrefix, prefixLen);
-    uint8_t* ptr = buf + prefixLen;
-
-    // Convert and append the data as hexadecimal
-    for (size_t i = 0; i < paraLen; ++i) {
-        unsigned char byte = ((unsigned char*)para)[i];
-        *ptr++ = hexChars[byte >> 4];
-        *ptr++ = hexChars[byte & 0x0f];
-    }
-
-    // Copy suffix
-    memcpy(ptr, headerSuffix, suffixLen);
-
-    *len = totalLen;
-    return true;
-}
-static bool cmd_AnalyzeHTTPHEADSET(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-//HTTPCONTENTSET
-static bool cmd_PackHTTPCONTENTSET(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+HTTPCONTENT=0,%s,0\r\n", (char*)para);
-    return true;
-}
-static bool cmd_AnalyzeHTTPCONTENTSET(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-//HTTPSEND
-static bool cmd_PackHTTPSEND(uint8_t* buf, size_t* len, void *para)
-{
-    http_t *http = (http_t *)para;
-    *len = sprintf((char*)buf, "AT+HTTPSEND=0,0,\"%s\"\r\n", http->UpdatePath);
-    return true;
-}
-static bool cmd_AnalyzeHTTPSEND(uint8_t* buf, size_t len, void *para)
-{
-    http_t *http = (http_t *)para;
-
-    uint8_t *ptr = (uint8_t *)buf;
-    // 找到 "+MQPUB:" 的位置
-    ptr = hexhex((uint8_t *)buf, (uint8_t *)"+HTTPNMIC:", len, strlen("+HTTPNMIC:"));
-    // 找到hex位置
-    ptr = hexhex((uint8_t *)ptr, (uint8_t *)"\r\n", len, strlen("\r\n"));
-    ptr += strlen("\r\n");
-    http->fileData = ptr;
-
-    return true;
-}
-//close
-static bool cmd_PackHTTPCLOSE(uint8_t* buf, size_t* len, void *para)
-{
-    http_t *http = (http_t *)para;
-    *len = sprintf((char*)buf, "AT+HTTPCLOSE=0,0,\"%s\"\r\n", http->UpdatePath);
-    return true;
-}
-static bool cmd_AnalyzeHTTPCLOSE(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-static bool cmd_PackHTTPCFG(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+HTTPCFG=0,8,1\r\n");
-	   return true;
-}
-static bool cmd_AnalyzeHTTPCFG(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-static bool cmd_PackDNS(uint8_t* buf, size_t* len, void *para)
-{
-    char *host = (char *)para;
-    *len = sprintf((char*)buf, "AT+XDNS=%s\r\n",host);
-	    return true;
-}
-static bool cmd_AnalyzeDNS(uint8_t* buf, size_t len, void *para)
-{
-    char *ip = (char *)para;
-    uint8_t *ptr = (uint8_t *)buf;
-    // 找到 "\\"" 的位置
-    ptr = hexhex((uint8_t *)buf, (uint8_t *)"\"", len, strlen("\""));
-    uint8_t *ptr_end = hexhex((uint8_t *)buf, (uint8_t *)"\"", len, strlen("\""));
-    memset(ip, 0, strlen(ip)); // 清空字符串
-    memcpy(ip, ptr, ptr_end - ptr); // 复制字符串
-    return true;
-}
-
-static bool cmd_PackTCP_NEW(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+NSOCR=STREAM,6,0,1,AF_INET\r\n");
-	    return true;
-}
-static bool cmd_AnalyzeTCP_NEW(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-static bool cmd_PackTCP_CONNCET(uint8_t* buf, size_t* len, void *para)
-{
-    httpURL *httpurL = (httpURL *)para;
-    *len = sprintf((char*)buf, "AT+NSOCO=0,%s,%d\r\n",httpurL->ip,httpurL->port);
-	    return true;
-}
-static bool cmd_AnalyzeTCP_CONNCET(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-
-//AT+NSOSD=0,2,"3132",0x200,1
-static bool cmd_PackTCP_SEND(uint8_t* buf, size_t* len, void *para)
-{
-
-    char headerPerfix[20] = {0};
-    sprintf(headerPerfix,"AT+NSOSD=0,%d,\"",strlen((const char*)para));
-
-    const char* headerSuffix = "\",0x200,1\r\n";
-    const char* hexChars = "0123456789abcdef";
-
-    size_t prefixLen = strlen(headerPerfix);
-    size_t suffixLen = strlen(headerSuffix);
-    size_t paraLen = strlen((const char*)para);
-
-    // Calculate total length needed
-    size_t totalLen = prefixLen + (paraLen * 2) + suffixLen;
-    
-    // Copy prefix
-    memcpy(buf, headerPerfix, prefixLen);
-    uint8_t* ptr = buf + prefixLen;
-
-    // Convert and append the data as hexadecimal
-    for (size_t i = 0; i < paraLen; ++i) {
-        unsigned char byte = ((unsigned char*)para)[i];
-        *ptr++ = hexChars[byte >> 4];
-        *ptr++ = hexChars[byte & 0x0f];
-    }
-
-    // Copy suffix
-    memcpy(ptr, headerSuffix, suffixLen);
-
-    *len = totalLen;
-    return true;
-}
-static bool cmd_AnalyzeTCP_SEND(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-//AT+NSOCL=0
-
-static bool cmd_PackTCP_CLOSE(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+NSOCL=0\r\n");
-	    return true;
-}
-static bool cmd_AnalyzeTCP_CLOSE(uint8_t* buf, size_t len, void *para)
-{
-    return true;
-}
-
-static bool cmd_PackCMNTP(uint8_t* buf, size_t* len, void *para)
-{
-    *len = sprintf((char*)buf, "AT+CMNTP=cn.ntp.org.cn,,1,10\r\n");
-	    return true;
-}
-// 解析 +CMNTP: 0,"20/07/15,20:29:20+32"
-static bool cmd_AnalyzeCMNTP(uint8_t* buf, size_t len, void *para)
-{
-    tWanClock *clock = (tWanClock *)para;
-    uint8_t *ptr = (uint8_t *)buf;
-    uint8_t *str = NULL;
-    int tep[7];
-
-    // 清空 tep 数组
-    memset(tep, 0, sizeof(int) * 7);
-
-    // 找到 "\"" 的位置
-    ptr = hexhex((uint8_t *)buf, (uint8_t *)"\"", len, strlen("\""));
-    if (ptr == NULL)
-    {
-        return false;
-    }
-
-    // 移动指针到 "\"" 之后的位置
-    ptr += strlen("\"");
-
-    // 获取日期和时间字符串
-    if (cmd_TokenNextStr(&ptr, &str) < 0)
-    {
-        return false;
-    }
-
-    // 解析日期和时间字符串
-    char *date_time_str = (char *)str;
-    int year, month, day, hour, minute, second, zone;
-
-    // 解析年份
-    sscanf(date_time_str, "%02d", &year);
-    date_time_str += 3; // 跳过 "/"
-
-    // 解析月份
-    sscanf(date_time_str, "%02d", &month);
-    date_time_str += 3; // 跳过 "/"
-
-    // 解析日
-    sscanf(date_time_str, "%02d", &day);
-    date_time_str += 3; // 跳过 ","
-
-    // 解析小时
-    sscanf(date_time_str, "%02d", &hour);
-    date_time_str += 3; // 跳过 ":"
-
-    // 解析分钟
-    sscanf(date_time_str, "%02d", &minute);
-    date_time_str += 3; // 跳过 ":"
-
-    // 解析秒
-    sscanf(date_time_str, "%02d", &second);
-    date_time_str += 3; // 跳过 "+"
-
-    // 解析时区
-    sscanf(date_time_str, "%d", &zone);
-
-    // 检查各个字段是否在合理范围内
-    if (year < 0 || year > 99) return false;
-    if (month < 1 || month > 12) return false;
-    if (day < 1 || day > 31) return false;
-    if (hour < 0 || hour > 23) return false;
-    if (minute < 0 || minute > 59) return false;
-    if (second < 0 || second > 59) return false;
-
-
-    // 设置时间数据
-    clock->clock.year_h = (year / 100); // 年份高位
-    clock->clock.year_l = (year % 100); // 年份低位
-    clock->clock.month = (uint8_t)month;
-    clock->clock.day = (uint8_t)day;
-    clock->clock.week = 0xFF; // 星期暂不处理
-    clock->clock.hour = (uint8_t)hour + 8;//+8时区
-    clock->clock.min = (uint8_t)minute;
-    clock->clock.sec = (uint8_t)second;
-    clock->clock.hund = 0xFF; // 百分之一秒暂不处理
-    clock->clock.dev_h = 0x80;
-    clock->clock.dev_l = 0x00;
-    clock->clock.status = 0x00;
-    clock->zone = zone;
-
-    return true;
-}
-
-static bool cmd_PackMQTTDISCON(uint8_t* buf, size_t* len, void *para)
-{
-    *len = 0;
-    return true;
-}
-//
-static bool cmd_AnalyzeMQTTDISCON(uint8_t* buf, size_t len, void *para)
-{
-    eRegStatus status = resistering;
-    MCT_SET(netStatus,&status,sizeof(eRegStatus));
-    return true;
-}
-
-
-
-
 // 从buf指针头部开始匹配 顺序： errorPhase匹配->rightPhase匹配->SubRightPhase匹配->analyze解析指令是否成功
 //                                            rightPhase    SubRightPhase  errorPhase
 static const tCmd cmdList[] =
@@ -1227,39 +901,22 @@ static const tCmd cmdList[] =
     CMD_ADD(CMD_Y7025_IMEI_GET,             5,  "+CGSN:",     "\r\n",        "ERROR",     SendRev,       ImeiGet), //imsi
     CMD_ADD(CMD_Y7025_IMSI_GET,             5,  "+CIMI:",     "\r\n",        "ERROR",     SendRev,       ImsiGet), //imei
     CMD_ADD(CMD_Y7025_NCCID,                5,  "+NCCID:",    "\r\n",        "ERROR",     SendRev,       ICCIDGet), //iCCID
-    CMD_ADD(CMD_Y7025_VERSION_GET,          5,  "\r\n",      "OK",        "ERROR",     SendRev,       VersionGet),
+    CMD_ADD(CMD_Y7025_VERSION_GET,          5,  NULL,          NULL,        "ERROR",     SendRev,       VersionGet),
     CMD_ADD(CMD_Y7025_PINCODE_INQUIRE,      5,  "CPIN:READY",  NULL,         "ERROR",     SendRev,       PincodeInquire),//检查SIM卡的PIN码是否锁定
     CMD_ADD(CMD_Y7025_PINCODE_SET,          5,  "OK",          "\r\n",       "ERROR",     SendRev,       PincodeSet), //设置SIM卡的PIN码
     CMD_ADD(CMD_Y7025_WORKLOCK,             5,  "OK",          NULL,         "ERROR",     SendRev,       WorklockSet),//芯片工作锁
     CMD_ADD(CMD_Y7025_CPSMS,                5,  "OK",          NULL,         "ERROR",     SendRev,       CPSMSSet),  //在PSM模式下，终端设备会减少与网络的交互，从而降低功耗
     CMD_ADD(CMD_Y7025_CEREG,                5,  "OK",          NULL,         "ERROR",     SendRev,       CEREGSet),   //CEREG主动上报网络注册消息
-    CMD_ADD(CMD_Y7025_DATA_REGISTER,        5,  "+CEREG:",    "\r\n",       "ERROR",     SendRev,       Register),   //网络注册情况
-    CMD_ADD(CMD_Y7025_SIGNAL_GET,           5,  "+CSQ:",     "\r\n",       "ERROR",     SendRev,       SignalGet),  //rssi
+    CMD_ADD(CMD_Y7025_DATA_REGISTER,        5,  NULL,          NULL,         "ERROR",     SendRev,       Register),   //网络注册情况
+    CMD_ADD(CMD_Y7025_SIGNAL_GET,           5,  NULL,          NULL,         "ERROR",     SendRev,       SignalGet),  //rssi
     CMD_ADD(CMD_Y7025_POWER_OFF,            5,  NULL,          NULL,         "ERROR",     SendRev,       PowerOff),  //休眠
     CMD_ADD(CMD_Y7025_CLOCK_GET,            5, "CCLK:",        NULL,         "ERROR",     SendRev,       ClockGet),  //获取基站时钟
     CMD_ADD(CMD_Y7025_MQTTNEW,              10, "+MQNEW:",     NULL,         "ERROR",     SendRev,       MqttNew),  //MQTT
     CMD_ADD(CMD_Y7025_MQTTCON,              10, "+MQCONNACK:", "\r\n",       "ERROR",     SendRev,       MqttConnect),  //MQTT
     CMD_ADD(CMD_Y7025_MQTTSUB,              10, "+MQSUBACK:",  "\r\n",       "ERROR",     SendRev,       MqttSubscrib),  //MQTT
     CMD_ADD(CMD_Y7025_MQTTPUB,              10, "+MQPUBACK:",  "\r\n",       "ERROR",     SendRev,       MqttPublish),  //MQTT
-    CMD_ADD(CMD_Y7025_MQTTCLOSE,            5, "OK",         "\r\n",         NULL,        SendRev,      MqttClose),  //MQTT关闭
-
     CMD_ADD(CMD_Y7025_MQTTREV,              1,  "+MQPUB:",     "\r\n",       NULL,        RecvSend,      MqttReceive),  //MQTT接收
 
-    CMD_ADD(CMD_Y7025_HTTPCREATE,           10,"OK",           "\r\n",       "ERROR",        SendRev,      HTTPCREATE),  //HTTP建立
-    CMD_ADD(CMD_Y7025_HTTPHEADSET,          10,"OK",           "\r\n",       "ERROR",        SendRev,      HTTPHEADSET),  //HTTPHEADSET
-    CMD_ADD(CMD_Y7025_HTTPHEADGET,          10,"OK",           "\r\n",       "ERROR",        SendRev,      HTTPHEADGET),  //HTTPHEADGET
-    CMD_ADD(CMD_Y7025_HTTPCONTENTSET,       10,"OK",           "\r\n",       "ERROR",        SendRev,      HTTPCONTENTSET),  //HTTPCONTENTSET
-    CMD_ADD(CMD_Y7025_HTTPSEND,             60,"+HTTPNMIC:",  "\r\n",       "+BADREQUEST",   SendRev,       HTTPSEND),  //HTTPCONTENTSET
-    CMD_ADD(CMD_Y7025_HTTPCLOSE,            10,"OK",           "\r\n",       "ERROR",        SendRev,      HTTPCLOSE), //HTTP关闭   
-    CMD_ADD(CMD_Y7025_HTTPCFG,              10,"OK",           "\r\n",       "ERROR",        SendRev,      HTTPCFG), //HTTP关闭   
-    CMD_ADD(CMD_Y7025_TCP_NEW,              10,"OK",           "\r\n",       "ERROR",        SendRev,      TCP_NEW),
-    CMD_ADD(CMD_Y7025_DNS,                  10,"+XDNS:",        "OK",       "ERROR",          SendRev,     DNS),
-    CMD_ADD(CMD_Y7025_TCP_CONNECT,          10,"OK",           "\r\n",       "ERROR",        SendRev,      TCP_CONNCET),
-    CMD_ADD(CMD_Y7025_TCP_SEND,             10,"+NSOSTR:",     "\r\n",       "ERROR",        SendRev,      TCP_SEND),
-    CMD_ADD(CMD_Y7025_TCP_CLOSE,            10,"OK",           "\r\n",       "ERROR",        SendRev,      TCP_CLOSE),
-
-    CMD_ADD(CMD_Y7025_CMNTP,                20,"+CMNTP:",      "+",          "ERROR",        SendRev,      CMNTP),
-    CMD_ADD(CMD_Y7025_MQTTDSICON,           1,"+MQDISCON:",   "\r\n",        "ERROR",       RecvSend,      MQTTDISCON),
 };
 
 
