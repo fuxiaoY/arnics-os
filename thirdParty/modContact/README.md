@@ -1,3 +1,5 @@
+中文 | [English Documentation](readme.en.md)
+
 # modContact
 
 ## 简介：
