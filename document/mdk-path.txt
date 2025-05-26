@@ -262,19 +262,9 @@
           <GroupName>arnics/thirdParty/modContact</GroupName>
           <Files>
             <File>
-              <FileName>mctprocesser.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\common\mctprocesser.c</FilePath>
-            </File>
-            <File>
               <FileName>mctDriver.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\port\mctDriver.c</FilePath>
-            </File>
-            <File>
-              <FileName>mctLib.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\common\mctLib.c</FilePath>
             </File>
             <File>
               <FileName>mctAdapter.c</FileName>
@@ -286,11 +276,26 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\list\mctList.c</FilePath>
             </File>
+            <File>
+              <FileName>mctCore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\core\mctCore.c</FilePath>
+            </File>
+            <File>
+              <FileName>mctLib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\common\mctLib.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>arnics/thirdParty/modContact/list</GroupName>
           <Files>
+            <File>
+              <FileName>dataLink.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\dataPlat\dataLink.c</FilePath>
+            </File>
             <File>
               <FileName>command_console.c</FileName>
               <FileType>1</FileType>
@@ -300,6 +305,26 @@
               <FileName>command_consoleAdapter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\list\console\command_consoleAdapter.c</FilePath>
+            </File>
+            <File>
+              <FileName>command_A7680C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\A7680C\command_A7680C.c</FilePath>
+            </File>
+            <File>
+              <FileName>command_A7680CAdapter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\A7680C\command_A7680CAdapter.c</FilePath>
+            </File>
+            <File>
+              <FileName>command_Y7025.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\Y7025\command_Y7025.c</FilePath>
+            </File>
+            <File>
+              <FileName>command_Y7025Adapter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\list\Y7025\command_Y7025Adapter.c</FilePath>
             </File>
             <File>
               <FileName>command_modbus.c</FileName>
