@@ -28,7 +28,7 @@ static uint32_t global_media_id_counter = 0;
  * @param wait 等待信号量的时间
  * @retval 如果成功读取消息返回 TRUE，否则返回 FALSE
  */
-bool readMediaReq(MediaMessage_t *msg, time_t wait)
+bool readMediaReq(mediaMessage_t *msg, time_t wait)
 {
     // 检查队列是否为空
     if (CheckMediaReqMesgNum() == 0) {
@@ -56,7 +56,7 @@ bool readMediaReq(MediaMessage_t *msg, time_t wait)
  * @retval
  * @attention
  */
-void SendMsgToMediaCenter(MediaMessage_t *message)
+void SendMsgToMediaCenter(mediaMessage_t *message)
 {
     // 获取互斥信号量，确保同一时间只有一个线程可以操作消息队列
     if (TakeMediaMutex(BLOCK_DELAY) == true)
@@ -65,7 +65,7 @@ void SendMsgToMediaCenter(MediaMessage_t *message)
         if (CheckMediaQueueSpacesAvailable() == 0)
         {
             // 如果队列已满，则先接收一条消息
-            MediaMessage_t oldMessage;
+            mediaMessage_t oldMessage;
             rtosMediaGetMsg(&oldMessage, 0);
         }
         // 生成唯一ID

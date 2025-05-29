@@ -29,7 +29,7 @@ void SleepControl(uint32_t sleepTime_ms)
 
 	/*---------------------------------------------------*/
 	/*业务层---------------------------------------------*/
-	if (FALSE == BusinessWantSleep)
+	if (FALSE == business_want_sleep)
 	{
 		// ULOG_ALWAYS(" Business  working! Reject!");
 		//  休眠条件不满足，继续等待
@@ -37,7 +37,7 @@ void SleepControl(uint32_t sleepTime_ms)
 	}
 	/*---------------------------------------------------*/
 	/*媒体中心--------------------------------------------*/
-	if (FALSE == MediaWantSleep)
+	if (FALSE == media_want_sleep)
 	{
 		// ULOG_ALWAYS("Meida  working! Reject!");
 		//  休眠条件不满足，继续等待
@@ -51,7 +51,7 @@ void SleepControl(uint32_t sleepTime_ms)
 	}
 	/*---------------------------------------------------*/
 	/*消息中心--------------------------------------------*/
-	if (FALSE == eventosWantSleep)
+	if (FALSE == eventos_want_sleep)
 	{
 		// ULOG_ALWAYS("evntOS  working! Reject!");
 		//  休眠条件不满足，继续等待
@@ -66,7 +66,7 @@ void SleepControl(uint32_t sleepTime_ms)
 	}
 	/*---------------------------------------------------*/
 	/*控制台--------------------------------------------*/
-	if (FALSE == ConsoleWantSleep)
+	if (FALSE == console_want_sleep)
 	{
 		// ULOG_ALWAYS("Console  working! Reject!");
 		//  休眠条件不满足，继续等待
@@ -75,7 +75,7 @@ void SleepControl(uint32_t sleepTime_ms)
 	/*---------------------------------------------------*/
 	/*督查中心--------------------------------------------*/
 
-	if (FALSE == GuardWantSleep)
+	if (FALSE == guard_want_sleep)
 	{
 		// ULOG_ALWAYS("Guard  working! Reject!");
 		//  休眠条件不满足，继续等待
@@ -84,7 +84,7 @@ void SleepControl(uint32_t sleepTime_ms)
 	/*---------------------------------------------------*/
 	/*开始休眠--------------------------------------------*/
 	uint32_t xSleepTime = sleepTime_ms;
-	if (xSleepTime >= 1000 && ALLOWSLEEP) // 只支持大于1s的休眠
+	if (xSleepTime >= 1000 && sys_allow_sleep) // 只支持大于1s的休眠
 	{
 		// 进入低功耗模式休眠
 		rtosTaskSuspendAll();

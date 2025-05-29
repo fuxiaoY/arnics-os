@@ -11,7 +11,7 @@ static void DEBUG_logger(ulog_level_t severity, char *msg)
   dev_ctl(&rtc_ds,RTC_GETDATETIME,&DT);
   char timeStr[32] ={0};
   CurrentTimeToString(&DT, timeStr, sizeof(timeStr));
-  if(VirtualEnvironment)
+  if(virtual_environment)
   {
     printf("[Vir] [%s] [%s]: %s\r\n",
           timeStr, 

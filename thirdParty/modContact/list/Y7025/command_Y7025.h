@@ -136,12 +136,12 @@ typedef struct
 typedef struct
 {
     char* Serverip;
-    uint16_t ServerPort;
-    char* ProductKey;
+    uint16_t server_port;
+    char* mqtt_key;
     char* DeviceName;
     char* DeviceSecret;
-    uint16_t ConnectTimeOut;
-    uint16_t KeepAlive;
+    uint16_t mqtt_connect_timeout;
+    uint16_t mqtt_keep_alive;
 }mqttConnet_t;
 
 typedef enum

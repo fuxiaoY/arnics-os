@@ -219,7 +219,7 @@ static bool modbus_Handle01_ReadCoil(uint8_t* buf, ModbusFrame* frame)
     // 解析线圈地址（2字节）
     frame->fun_params.read_coil_01.coil_addr = (buf[2] << 8) | buf[3];
     frame->fun_params.read_reg_03.num = (buf[4] << 8) | buf[5];
-    return (frame->fun_params.read_reg_03.num >= 0x0000 && frame->fun_params.read_reg_03.num <= 0x007D); //小于等于125个线圈
+    return (frame->fun_params.read_reg_03.num <= 0x007D); //小于等于125个线圈
 }
 static bool modbus_Handle01_ReadCoil_pack(uint8_t* buf, size_t *len,ModbusFrame* frame)
 {
@@ -275,7 +275,7 @@ static bool modbus_Handle03_ReadReg(uint8_t* buf, ModbusFrame* frame)
     // 处理03/04功能码（读保持/输入寄存器）
     frame->fun_params.read_reg_03.start_addr = (buf[2] << 8) | buf[3];
     frame->fun_params.read_reg_03.num = (buf[4] << 8) | buf[5];
-    return (frame->fun_params.read_reg_03.num >= 0x0000 && frame->fun_params.read_reg_03.num <= 0x007D); //小于等于125个寄存器
+    return (frame->fun_params.read_reg_03.num <= 0x007D); //小于等于125个寄存器
 }
 
 static bool modbus_Handle03_ReadReg_pack(uint8_t* buf, size_t *len,ModbusFrame* frame)
@@ -527,8 +527,6 @@ static bool cmd_AnalyzeSlaveFow(uint8_t* buf, size_t len, void *para)
         default:
             return false;
     }
-
-    return false;
 }
 /*-----------------------------------------------------------------------------*/
 

@@ -418,7 +418,7 @@ static bool cmd_PackMqttNew(uint8_t* buf, size_t* len, void *para)
     // AT+MQNEW=mqtt.ctwing.cn,1883,5000,200
     uint16_t buffersize = 1000;
     mqttConnet_t *mqttConnetpara = (mqttConnet_t *)para;
-    *len = sprintf((char*)buf, "AT+MQNEW=%s,%u,%u,%u\r\n", mqttConnetpara->Serverip, mqttConnetpara->ServerPort, mqttConnetpara->ConnectTimeOut, buffersize);
+    *len = sprintf((char*)buf, "AT+MQNEW=%s,%u,%u,%u\r\n", mqttConnetpara->Serverip, mqttConnetpara->server_port, mqttConnetpara->mqtt_connect_timeout, buffersize);
     return true;
 }
 
@@ -466,9 +466,9 @@ static bool cmd_PackMqttConnect(uint8_t* buf, size_t* len, void *para)
     // mqtt链接id  //客户端ID 字符串  //keepalive  //用户名  //密码
     *len = sprintf((char*)buf, "AT+MQCON=%u,4,\"%s%s\",%u,0,0,,,,,,\"%s\",\"%s\"\r\n",
                          MQTT_ID,
-                         mqttConnetpara->ProductKey,
+                         mqttConnetpara->mqtt_key,
                          mqttConnetpara->DeviceName,
-                         mqttConnetpara->KeepAlive,
+                         mqttConnetpara->mqtt_keep_alive,
                          mqttConnetpara->DeviceName,
                          mqttConnetpara->DeviceSecret);
 
@@ -747,22 +747,22 @@ static bool cmd_PackMqttReceive(uint8_t* buf, size_t* len, void *para)
             case topic_ConfigDn:
             {
                 //拿走数据，此处不做打包处理，防止栈溢出
-                memcpy(MCT_PTR(mqttWanBuf), WanData->RevCmd, strlen(WanData->RevCmd));
+                memcpy(MCT_PTR(g_mqtt_wan_buf), WanData->RevCmd, strlen(WanData->RevCmd));
                 mqttWanBuf_Ready = true;
-                MCT_SET(mqttWanBufReady,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->Topic = MCT_PTR(mqttCfgUpTopic);
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->QOS = 1;
+                MCT_SET(is_mqtt_wan_buf_ready,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
+                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->Topic = MCT_PTR(mqtt_config_up_topic);
+                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->QOS = 1;
 
             }
             break;
             case topic_Command:
             {
                 //拿走数据，此处不做打包处理，防止栈溢出
-                memcpy(MCT_PTR(mqttWanBuf), WanData->RevCmd, strlen(WanData->RevCmd));
+                memcpy(MCT_PTR(g_mqtt_wan_buf), WanData->RevCmd, strlen(WanData->RevCmd));
                 mqttWanBuf_Ready = true;
-                MCT_SET(mqttWanBufReady,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->Topic = MCT_PTR(mqttRspTopic);
-                ((MqttPulish_t *)MCT_PTR(mqttWanPub))->QOS = 1;
+                MCT_SET(is_mqtt_wan_buf_ready,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
+                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->Topic = MCT_PTR(mqtt_response_topic);
+                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->QOS = 1;
             }
             break;
             default:
@@ -1212,7 +1212,7 @@ static bool cmd_PackMQTTDISCON(uint8_t* buf, size_t* len, void *para)
 static bool cmd_AnalyzeMQTTDISCON(uint8_t* buf, size_t len, void *para)
 {
     eRegStatus status = resistering;
-    MCT_SET(netStatus,&status,sizeof(eRegStatus));
+    MCT_SET(REGstatus,&status,sizeof(eRegStatus));
     return true;
 }
 

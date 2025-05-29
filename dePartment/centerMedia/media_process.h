@@ -15,8 +15,8 @@ extern "C" {
 
 
 extern void media_process(void);
-extern bool readMediaReq(MediaMessage_t *msg,time_t wait);
-extern void SendMsgToMediaCenter(MediaMessage_t *message);
+extern bool readMediaReq(mediaMessage_t *msg,time_t wait);
+extern void SendMsgToMediaCenter(mediaMessage_t *message);
 
 #ifdef __cplusplus
 }

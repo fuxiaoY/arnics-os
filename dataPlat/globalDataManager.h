@@ -35,24 +35,23 @@ extern "C"
 /*---------------------------------------------------------------------*/
 /*-系统参数------------------------------------------------------------*/
 /*---------------------------------------------------------------------*/
-#define Unity_System_START 0
-#define Unity_System_usr_systick (1 + Unity_System_START) // 用户系统滴答计数
+#define unity_system_START 0
+#define unity_system_usr_systick        (1 + unity_system_START)                 // 用户系统滴答计数
 
 /*---------------------------------------------------------------------*/
-/*-global_state--------------------------------------------------------*/
+/*-g_system_status--------------------------------------------------------*/
 /*---------------------------------------------------------------------*/
-#define Unity_global_state_START 0
-#define Unity_global_state_SaveTs (1 + Unity_global_state_START) // 保存时间戳
-#define Unity_global_cfg_WorkStat (1 + Unity_global_state_SaveTs)
-#define Unity_global_cfg_PreWorkStat (1 + Unity_global_cfg_WorkStat)
-#define Unity_global_state_MAX_ID (1 + Unity_global_cfg_PreWorkStat) // 最大ID
+#define unity_global_state_START 0
+#define unity_global_state_save_ts        (1 + unity_global_state_START)         // 保存时间戳
+#define unity_global_state_work_status    (1 + unity_global_state_save_ts)
+#define unity_global_state_prework_status (1 + unity_global_state_work_status)
+#define unity_global_state_MAX_ID         (1 + unity_global_state_prework_status) // 最大ID
 /*---------------------------------------------------------------------*/
-/*-global_cfg----------------------------------------------------------*/
+/*-g_system_cfg----------------------------------------------------------*/
 /*---------------------------------------------------------------------*/
-#define Unity_global_cfg_START 0
-#define Unity_global_cfg_SaveTs (1 + Unity_global_cfg_START) // 保存时间戳
-
-#define Unity_global_cfg_MAX_ID (1 + Unity_global_cfg_SaveTs) // 最大ID
+#define unity_global_cfg_START 0
+#define unity_global_cfg_save_ts         (1 + unity_global_cfg_START)              // 保存时间戳
+#define unity_global_cfg_MAX_ID          (1 + unity_global_cfg_save_ts)            // 最大ID
 
 /* define ------------------------------------------------------------*/
 #define RW_MASK(x) ((uint32_t)0x00000001 << (x))
@@ -65,7 +64,7 @@ typedef enum
 {
     FORMAT = 0,
     UNFORMAT,
-} JsonFomat;
+} jsonFomat_e;
 typedef enum
 {
     NULL_TYPE = 0,
@@ -77,14 +76,14 @@ typedef enum
     FLOAT_TYPE,
     STRING_TYPE,
     ARRAY_TYPE
-} FieldType;
+} fieldType_e;
 
 typedef struct
 {
     uint32_t access;
     uint16_t id;
-    FieldType type;
-    FieldType subType;
+    fieldType_e type;
+    fieldType_e subType;
     void *addr;
     uint16_t len;
     const char *key;

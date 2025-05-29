@@ -7,8 +7,8 @@
 
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(media_process))(void);
-typedef bool (T_TYPEDEF(readMediaReq))(MediaMessage_t *msg,time_t wait);
-typedef void (T_TYPEDEF(SendMsgToMediaCenter))(MediaMessage_t *message);
+typedef bool (T_TYPEDEF(readMediaReq))(mediaMessage_t *msg,time_t wait);
+typedef void (T_TYPEDEF(SendMsgToMediaCenter))(mediaMessage_t *message);
 
 // 输出函数接口结构体
 typedef struct

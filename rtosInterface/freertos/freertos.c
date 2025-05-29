@@ -152,11 +152,11 @@ void initSemaphore()
 
 void initQueue() 
 {
-    eventosReqQueue = xQueueCreate(3, sizeof(Message_t));  // 创建一个可以存储 3 个 Message_t 类型消息的队列
-    eventosRspQueue = xQueueCreate(3, sizeof(Message_t));     // 创建一个可以存储 3 个 Message_t 类型消息的队列
+    eventosReqQueue = xQueueCreate(3, sizeof(message_t));  // 创建一个可以存储 3 个 message_t 类型消息的队列
+    eventosRspQueue = xQueueCreate(3, sizeof(message_t));     // 创建一个可以存储 3 个 message_t 类型消息的队列
 
-    MediaReqQueue = xQueueCreate(3, sizeof(MediaMessage_t));  // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列
-    MediaRspQueue = xQueueCreate(3, sizeof(MediaMessage_t));     // 创建一个可以存储 3 个 MediaMessage_t 类型消息的队列  
+    MediaReqQueue = xQueueCreate(3, sizeof(mediaMessage_t));  // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列
+    MediaRspQueue = xQueueCreate(3, sizeof(mediaMessage_t));     // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列  
 
     adReqQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
     adRspQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列

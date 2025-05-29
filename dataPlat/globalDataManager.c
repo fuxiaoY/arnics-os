@@ -6,38 +6,38 @@
 _SECTION( "._entry_dataPlat_api")
 
 // S权限由督查中心开机后自动更新存取
-static const unityParaList_t unity_system_ParaList[] = 
+static const unityParaList_t unity_system_paralist[] = 
 {
-    {R|W,  Unity_System_usr_systick,               UINT32_TYPE, NULL_TYPE,   (void*)&arnics_systick,                       sizeof(uint32_t),       "arnics_systick"}
+    {R|W,  unity_system_usr_systick,                   UINT32_TYPE, NULL_TYPE,   (void*)&arnics_systick,                       sizeof(uint32_t),       "arnics_systick"}
 };
 
-static const unityParaList_t unity_GlobalCfg_ParaList[] = 
+static const unityParaList_t unity_global_cfg_paralist[] = 
 {
-    {R|W, Unity_global_cfg_SaveTs,                      UINT32_TYPE, NULL_TYPE,   &global_cfg.SaveTs,                      sizeof(uint32_t),  "SaveTs"}
+    {R|W, unity_global_cfg_save_ts,                   UINT32_TYPE, NULL_TYPE,   &g_system_cfg.save_ts,                      sizeof(uint32_t),  "save_ts"}
 };
 
-static const unityParaList_t unity_GlobalStat_ParaList[] = 
+static const unityParaList_t unity_global_status_paralist[] = 
 {
-    {R|W,  Unity_global_state_SaveTs,            UINT32_TYPE,NULL_TYPE, &global_state.SaveTs,             sizeof(uint32_t),  "SaveTs"},
-    {R,    Unity_global_cfg_WorkStat,            UINT8_TYPE, NULL_TYPE, &global_state.WorkStat,           sizeof(uint8_t),  "WorkStat"},
-    {R,    Unity_global_cfg_PreWorkStat,         UINT8_TYPE, NULL_TYPE, &global_state.PreWorkStat,        sizeof(uint8_t),  "PreWorkStat"}
+    {R|W,  unity_global_state_save_ts,                UINT32_TYPE,NULL_TYPE, &g_system_status.save_ts,             sizeof(uint32_t),  "save_ts"},
+    {R,    unity_global_state_work_status,            UINT8_TYPE, NULL_TYPE, &g_system_status.work_status,           sizeof(uint8_t),  "work_status"},
+    {R,    unity_global_state_prework_status,         UINT8_TYPE, NULL_TYPE, &g_system_status.prework_status,        sizeof(uint8_t),  "prework_status"}
 };
 
 
-static uint16_t Unity_systemParaNumGet(void)
+static uint16_t unity_systemParaNumGet(void)
 {
-    return (sizeof(unity_system_ParaList) / sizeof(unityParaList_t));
+    return (sizeof(unity_system_paralist) / sizeof(unityParaList_t));
 }
 
 
-static uint16_t Unity_GlobalCfgParaNumGet(void)
+static uint16_t unity_GlobalCfgParaNumGet(void)
 {
-    return (sizeof(unity_GlobalCfg_ParaList) / sizeof(unityParaList_t));
+    return (sizeof(unity_global_cfg_paralist) / sizeof(unityParaList_t));
 }
 
-static uint16_t Unity_GlobalStatParaNumGet(void)
+static uint16_t unity_GlobalStatParaNumGet(void)
 {
-    return (sizeof(unity_GlobalStat_ParaList) / sizeof(unityParaList_t));
+    return (sizeof(unity_global_status_paralist) / sizeof(unityParaList_t));
 }
 
 // 设置参数并更新 JSON
@@ -343,7 +343,7 @@ static cJSON *jsonMethod(const char *ArgReq, const unityParaList_t *unityPara, u
     return json_obj;
 }
 
-char *UnityParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityPara, uint16_t len,JsonFomat format)
+char *UnityParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityPara, uint16_t len,jsonFomat_e format)
 {
     // 转换为 JSON
     cJSON *json = jsonMethod(ArgReq, unityPara, len);
@@ -378,11 +378,11 @@ void UnitySystemInterface(const char *ArgReq)
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
     {
-        JsonOut = UnityParaInterfaceGetSet("all", unity_system_ParaList, Unity_systemParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet("all", unity_system_paralist, unity_systemParaNumGet(),FORMAT);
     }
     else if (ArgReq != NULL)
     {
-        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_system_ParaList, Unity_systemParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_system_paralist, unity_systemParaNumGet(),FORMAT);
     }
     printf("%s\r\n", JsonOut);
     arnicsFree(JsonOut);
@@ -393,11 +393,11 @@ void UnityGlobalStatInterface(const char *ArgReq)
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
     {
-        JsonOut = UnityParaInterfaceGetSet("all", unity_GlobalStat_ParaList, Unity_GlobalStatParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet("all", unity_global_status_paralist, unity_GlobalStatParaNumGet(),FORMAT);
     }
     else if (ArgReq != NULL)
     {
-        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_GlobalStat_ParaList, Unity_GlobalStatParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_global_status_paralist, unity_GlobalStatParaNumGet(),FORMAT);
     }
     printf("%s\r\n", JsonOut);
     arnicsFree(JsonOut);
@@ -408,11 +408,11 @@ void UnityGlobalCfgInterface(const char *ArgReq)
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
     {
-        JsonOut = UnityParaInterfaceGetSet("all", unity_GlobalCfg_ParaList, Unity_GlobalCfgParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet("all", unity_global_cfg_paralist, unity_GlobalCfgParaNumGet(),FORMAT);
     }
     else if (ArgReq != NULL)
     {
-        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_GlobalCfg_ParaList, Unity_GlobalCfgParaNumGet(),FORMAT);
+        JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_global_cfg_paralist, unity_GlobalCfgParaNumGet(),FORMAT);
     }
     printf("%s\r\n", JsonOut);
     arnicsFree(JsonOut);

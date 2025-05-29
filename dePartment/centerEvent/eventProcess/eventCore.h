@@ -96,9 +96,9 @@ typedef enum
 #define EVET_DELAY(ms)  _OUT_IF_TRUE(ppt, (uint32_t)(arnics_getTick() - _delay_start_) < (ms)); 
 
 /* variables ---------------------------------------------------------*/
-extern Message_t mesg_cache;               //事件应用消息
+extern message_t mesg_cache;               //事件应用消息
 /* function declaration ---------------------------------------------*/
-extern uint32_t SendEventCallToEventCenter(EventFlag_t eventflag,time_t wait);
+extern uint32_t SendEventCallToEventCenter(eventFlag_t eventflag,time_t wait);
 extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv);
 /**
  * @brief  设置事件标志为指定的事件，清除之前所有事件。
@@ -116,7 +116,7 @@ extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
  * @note   清空 eventflag 和 msg_flag，然后仅设置指定的事件。
  *
  */
-extern bool add_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) ;
+extern bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) ;
 /**
  * @brief  向指定的事件标志中添加一个事件。
  *
@@ -133,7 +133,7 @@ extern bool add_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) 
  * @note   该函数不会清除原有的事件标志，仅在原有基础上添加新事件。
  *
  */
-extern bool set_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) ;
+extern bool set_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) ;
 extern void event_process();
 
 

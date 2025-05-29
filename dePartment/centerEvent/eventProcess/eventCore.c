@@ -11,7 +11,7 @@ _SECTION("._entry_event_api")
 static EVENT_STATE event_state = OnWattingOutMsg;
 static uint32_t EVENT_FLAG = 0; // 外部事件标志
 static uint32_t MSG_FLAG = 0; // 外部消息标志
-static Message_t mesg_cache = {0};//事件应用消息
+static message_t mesg_cache = {0};//事件应用消息
 
 
 #undef X
@@ -331,7 +331,7 @@ static int getRegisterEntryIndex(const char *name)
     }
     return -1; // 未找到
 }
-bool add_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) 
+bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) 
 {
     int index = getRegisterEntryIndex(name);
     if (index == -1) {
@@ -348,7 +348,7 @@ bool add_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg)
 }
 
 // 用于设置事件标志 
-bool set_event_flag(EventFlag_t *eventflag, const char *name,bool ismsg) 
+bool set_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) 
 {
     int index = getRegisterEntryIndex(name);
     if (index == -1) {
@@ -371,13 +371,13 @@ _WEAK void onWaittingOutMessage()
 {
     while (1)
     {
-        memset(&mesg_cache,0,sizeof(Message_t));
-        eventosWantSleep = TRUE; // 现在提休眠申请
+        memset(&mesg_cache,0,sizeof(message_t));
+        eventos_want_sleep = TRUE; // 现在提休眠申请
         ULOG_DEBUG("eventCenter:Waiting for Message...");
         ULOG_DEBUG("-----------------END------------------------");
         if (true == rtosEventosGetMsg(&mesg_cache,100))
         {
-            eventosWantSleep = FALSE; // 撤销休眠申请
+            eventos_want_sleep = FALSE; // 撤销休眠申请
             // 清除分析缓存，并存入外部消息
             CLR_EVENT_FLAG_ALL(EVENT_FLAG);
             CLR_EVENT_FLAG_ALL(MSG_FLAG);
@@ -441,7 +441,7 @@ _WEAK void onResetState()
             {
                 // 发送成功 一个状态结束
                 ULOG_DEBUG("Message sent eventosRspQueue succeed! ID=%d", mesg_cache.ID_Ts);
-                memset(&mesg_cache, 0, sizeof(Message_t));
+                memset(&mesg_cache, 0, sizeof(message_t));
 
                 event_state = OnWattingOutMsg; // 进入等待消息状态
                 break;
@@ -473,11 +473,11 @@ static unsigned long global_id_counter = 0;
  * @param  无
  * @retval 
  */
-uint32_t SendEventCallToEventCenter(EventFlag_t eventflag, time_t wait)
+uint32_t SendEventCallToEventCenter(eventFlag_t eventflag, time_t wait)
 {
     // 发送消息到事件队列
     // 创建消息
-    Message_t msg = {0};
+    message_t msg = {0};
     memset(&msg, 0, sizeof(msg));
     // 获取互斥信号量
     if (TakeEventosMutex(wait))
@@ -491,8 +491,8 @@ uint32_t SendEventCallToEventCenter(EventFlag_t eventflag, time_t wait)
     msg.msgflag = eventflag.msg_flag;
     if(!IS_EVENT_FLAG_CLR(msg.msgflag))
     {
-        memcpy(msg.buf, &eventflag.msg, sizeof(MessageUnion));
-        msg.length = sizeof(MessageUnion);
+        memcpy(msg.buf, &eventflag.msg, sizeof(messageUnion_u));
+        msg.length = sizeof(messageUnion_u);
     }
 
     // 等待时间为wait
@@ -516,7 +516,7 @@ uint32_t SendEventCallToEventCenter(EventFlag_t eventflag, time_t wait)
  */
 bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
 {
-    Message_t receivedMsg;
+    message_t receivedMsg;
     uint32_t numMessages;
     bool receiveStatus;
     bool foundMessage = FALSE;

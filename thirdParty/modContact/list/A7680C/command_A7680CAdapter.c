@@ -430,7 +430,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     // accq
     MqttAccq_Info accq_test;
     char client_id[128] = {0};
-    sprintf(client_id, "%s.%s|securemode=3,signmethod=hmacsha1|",(char*)MCT_PTR(mqttProductKey),(char*)MCT_PTR(devName));
+    sprintf(client_id, "%s.%s|securemode=3,signmethod=hmacsha1|",(char*)MCT_PTR(mqtt_key),(char*)MCT_PTR(device_name));
 
     accq_test.client_index = MQTT_CLIENT_INDEX;
     accq_test.clientID = client_id;
@@ -448,17 +448,17 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     //网络连接参数
     char server_addr[100] = {0};
     char user_name[100] = {0};
-    uint16_t serverPort = 0;
-    MCT_GET(serverPort,&serverPort, sizeof(serverPort));
-    snprintf(server_addr, sizeof(server_addr), "tcp://%s:%u", (char*)MCT_PTR(serverURL),serverPort);
-    snprintf(user_name, sizeof(user_name), "%s&%s",(char*)MCT_PTR(devName), (char*)MCT_PTR(mqttProductKey));
+    uint16_t server_port = 0;
+    MCT_GET(server_port,&server_port, sizeof(server_port));
+    snprintf(server_addr, sizeof(server_addr), "tcp://%s:%u", (char*)MCT_PTR(server_url),server_port);
+    snprintf(user_name, sizeof(user_name), "%s&%s",(char*)MCT_PTR(device_name), (char*)MCT_PTR(mqtt_key));
     MqttConnect_Info connect_info;
     connect_info.client_index = MQTT_CLIENT_INDEX;
     connect_info.server_addr = server_addr;
-    MCT_GET(mqttKeepAlive, &connect_info.keepalive_time, sizeof(connect_info.keepalive_time));
+    MCT_GET(mqtt_keep_alive, &connect_info.keepalive_time, sizeof(connect_info.keepalive_time));
     connect_info.clean_session = 1;
     connect_info.user_name = user_name;
-    connect_info.pass_word = (char*)MCT_PTR(mqttDevSecret);
+    connect_info.pass_word = (char*)MCT_PTR(mqtt_secret);
     if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_CONNECT, (void *)&connect_info) == false)
     {
         return false;
@@ -472,22 +472,22 @@ static bool cmd_mqttSubscribe(MctInstance *inst, void *para)
     // subscribe
     MqttSub_Info subinfo;
     subinfo.client_index = MQTT_CLIENT_INDEX;
-    subinfo.reqLength = strlen(g_MQTopic.Resp);
+    subinfo.reqLength = strlen(MCT_PTR(mqtt_response_topic));
     subinfo.qos = 1;
     if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_SUBSCRIBE, (void *)&subinfo) == false)
     {
         return false;
     }
-    if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_SUB_SEND, &g_MQTopic.Resp) == false)
+    if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_SUB_SEND, MCT_PTR(mqtt_response_topic)) == false)
     {
         return false;
     }
-    subinfo.reqLength = strlen(g_MQTopic.ConfigDn);
+    subinfo.reqLength = strlen(MCT_PTR(mqtt_config_down_topic));
     if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_SUBSCRIBE, (void *)&subinfo) == false)
     {
         return false;
     }
-    if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_SUB_SEND, &g_MQTopic.ConfigDn) == false)
+    if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_SUB_SEND, MCT_PTR(mqtt_config_down_topic)) == false)
     {
         return false;
     }

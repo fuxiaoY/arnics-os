@@ -80,13 +80,13 @@ typedef struct
 typedef struct 
 {
     SMALLOC(messge_deliver_t, message_deliver, MAX_MESSAGE_LENGTH);
-} MessageUnion;
+} messageUnion_u;
 
 typedef struct{
   uint32_t event_flag;
   uint32_t msg_flag;
-  MessageUnion msg;
-}EventFlag_t;
+  messageUnion_u msg;
+}eventFlag_t;
 
 #define SET_MESSAGE(para,lambda)  para.msg.message_deliver.lambda; 
 
@@ -97,7 +97,7 @@ typedef struct
     uint32_t msgflag;                    //消息
     char buf[MAX_MESSAGE_LENGTH];         // 可以根据需要添加更多的字段
     int length;                           // 数据长度
-} Message_t;
+} message_t;
 
 /*---------------------------------------------------------------------------------------*/
 
@@ -106,8 +106,20 @@ typedef struct {
     time_t ID_Ts;                         //消息ID，可用于检查区分消息传送
     char buf[20];                         // 可以根据需要添加更多的字段
     int length;                           // 数据长度
-} MediaMessage_t;
+} mediaMessage_t;
 
+
+//MQTT主题
+typedef struct 
+{
+  char upload[128];             //上行推送主题，最长不得超过128字节
+  
+  char command[128];            //下行订阅主题，最长不得超过128字节
+  char response[128];           //上行应答主题，最长不得超过128字节
+  
+  char config_up[128];          //上行配置主题，最长不得超过128字节
+  char config_down[128];        //下行配置主题，最长不得超过128字节
+}mqttTopic_t;
 /*---------------------------------------------------------------------------------------*/
 
 /*----------------------------------------决策层------------------------------------------*/
@@ -115,7 +127,7 @@ typedef struct {
 // 设备运行状态
 typedef enum 
 {
-  WORKSTAT_INIT = 0,                     // 上电初始化
+  WORK_STATUS_INIT = 0,                     // 上电初始化
 }wisdomStackPart_t;
 
 
@@ -125,24 +137,25 @@ typedef enum
 //设备运行参数集，存放于片上Flash，同步一份到内存中常驻
 typedef struct 
 {
-  uint32_t SaveTs;                       //保存时间戳，同时也用于判定Flash上保存的参数集是否有效
+  uint32_t save_ts;                       //保存时间戳，同时也用于判定Flash上保存的参数集是否有效
   uint16_t crc;                          //校验位
 
-}SytemCfg;
-#define SytemCfg_SIZE	sizeof(SytemCfg)
+}systemCfg_t;
+#define SYS_CFG_SIZE	sizeof(systemCfg_t)
 /*---------------------------------------------------------------------------------------*/
 
 /*-----------------------------------------运行数据----------------------------------------*/
 //设备运行状态记录集，常驻内存中，同步存放一份到片上Flash，复位重启后读回来作为缺省状态
 typedef struct 
 {
-  uint32_t SaveTs;				        //保存时间戳
-  wisdomStackPart_t WorkStat;			//当前运行状态 
-  wisdomStackPart_t PreWorkStat;		//上次的运行状态
+
+  uint32_t save_ts;				            //保存时间戳
+  wisdomStackPart_t work_status;			//当前运行状态 
+  wisdomStackPart_t prework_status;		//上次的运行状态
   uint16_t crc;                         //校验位
 
-}SytemState;
-#define SytemState_SIZE		sizeof(SytemState)
+}systemStatus_t;
+#define SYS_STATUS_SIZE		sizeof(systemStatus_t)
 
 #ifdef __cplusplus
 }

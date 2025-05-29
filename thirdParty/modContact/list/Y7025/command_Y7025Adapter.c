@@ -57,42 +57,42 @@ static bool cmd_EchoClose(MctInstance* inst,void *para)
 static bool cmd_ModemInfoGet(MctInstance* inst,void *para)
 {
 
-    memset(MCT_PTR(imei), 0, sizeof(MCT_PTR(imei)));
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_IMEI_GET, MCT_PTR(imei)))
+    memset(MCT_PTR(wan_imei), 0, sizeof(MCT_PTR(wan_imei)));
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_IMEI_GET, MCT_PTR(wan_imei)))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
     else
     {
-        ULOG_INFO("Y7025: IMEI:%s", MCT_PTR(imei));
+        ULOG_INFO("Y7025: IMEI:%s", MCT_PTR(wan_imei));
     }
 
-    memset(MCT_PTR(imsi), 0, sizeof(MCT_PTR(imsi)));
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_IMSI_GET, MCT_PTR(imsi)))
+    memset(MCT_PTR(wan_imsi), 0, sizeof(MCT_PTR(wan_imsi)));
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_IMSI_GET, MCT_PTR(wan_imsi)))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
     else
     {
-        ULOG_INFO("Y7025: IMSI:%s", MCT_PTR(imsi));
+        ULOG_INFO("Y7025: IMSI:%s", MCT_PTR(wan_imsi));
     }
-    memset(MCT_PTR(ver), 0, sizeof(MCT_PTR(ver)));
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_VERSION_GET, MCT_PTR(ver)))
+    memset(MCT_PTR(wan_ver), 0, sizeof(MCT_PTR(wan_ver)));
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_VERSION_GET, MCT_PTR(wan_ver)))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
     else
     {
-        ULOG_INFO("Y7025: ver:%s", MCT_PTR(ver));
+        ULOG_INFO("Y7025: ver:%s", MCT_PTR(wan_ver));
     }
-    memset(MCT_PTR(iccid), 0, sizeof(MCT_PTR(iccid)));
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_NCCID, MCT_PTR(iccid)))
+    memset(MCT_PTR(wan_iccid), 0, sizeof(MCT_PTR(wan_iccid)));
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_NCCID, MCT_PTR(wan_iccid)))
     {
         ULOG_INFO("Y7025: CMD_Y7025_IMEI_GET failed:");
     }
     else
     {
-        ULOG_INFO("Y7025: nccid:%s", MCT_PTR(iccid));
+        ULOG_INFO("Y7025: nccid:%s", MCT_PTR(wan_iccid));
     }
     return true;
 }
@@ -301,13 +301,13 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
 {
     mqttConnet_t mqttConnetpara;
     memset(&mqttConnetpara, 0, sizeof(mqttConnet_t));
-    mqttConnetpara.Serverip = MCT_PTR(serverURL);
-    MCT_GET(serverPort,&mqttConnetpara.ServerPort,sizeof(mqttConnetpara.ServerPort));
-    mqttConnetpara.ProductKey = MCT_PTR(mqttProductKey);
-    mqttConnetpara.DeviceName = MCT_PTR(devName);
-    mqttConnetpara.DeviceSecret = MCT_PTR(mqttDevSecret);
-    MCT_GET(mqttConnectTimeout,&mqttConnetpara.ConnectTimeOut,sizeof(mqttConnetpara.ConnectTimeOut));
-    MCT_GET(mqttKeepAlive,&mqttConnetpara.KeepAlive,sizeof(mqttConnetpara.KeepAlive));
+    mqttConnetpara.Serverip = MCT_PTR(server_url);
+    MCT_GET(server_port,&mqttConnetpara.server_port,sizeof(mqttConnetpara.server_port));
+    mqttConnetpara.mqtt_key = MCT_PTR(mqtt_key);
+    mqttConnetpara.DeviceName = MCT_PTR(device_name);
+    mqttConnetpara.DeviceSecret = MCT_PTR(mqtt_secret);
+    MCT_GET(mqtt_connect_timeout,&mqttConnetpara.mqtt_connect_timeout,sizeof(mqttConnetpara.mqtt_connect_timeout));
+    MCT_GET(mqtt_keep_alive,&mqttConnetpara.mqtt_keep_alive,sizeof(mqttConnetpara.mqtt_keep_alive));
     
     if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTNEW, &mqttConnetpara))
     {
@@ -319,14 +319,14 @@ static bool cmd_mqttflow(MctInstance* inst,void *para)
         ULOG_INFO("Y7025: CMD_Y7025_MQTTCON failed:");
         return false;
     }
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, MCT_PTR(mqttRevTopic)))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, MCT_PTR(mqtt_command_topic)))
     {
-        ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_MQTopic.Resp failed:");
+        ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_mqtt_topic.response failed:");
         return false;
     }
-    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, MCT_PTR(mqttCfgDnTopic)))
+    if (false == mct_y7025_execute(inst,  CMD_Y7025_MQTTSUB, MCT_PTR(mqtt_config_down_topic)))
     {
-        ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_MQTopic.ConfigDn failed:");
+        ULOG_INFO("Y7025: CMD_Y7025_MQTTSUB g_mqtt_topic.config_down failed:");
         return false;
     }
     return true;
@@ -384,8 +384,8 @@ static bool cmd_httpConnect(MctInstance *inst,void *para)
 {
     httpURL httpurL;
     memset(&httpurL, 0, sizeof(httpURL));
-    httpurL.ip = MCT_PTR(updateURL);
-    MCT_GET(updatePort,&httpurL.port,sizeof(httpurL.port));
+    httpurL.ip = MCT_PTR(update_url);
+    MCT_GET(update_port,&httpurL.port,sizeof(httpurL.port));
     mct_y7025_execute(inst,CMD_Y7025_HTTPCREATE,&httpurL);
     return true;
 }
