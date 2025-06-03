@@ -27,7 +27,7 @@ static bool cmd_PackPdpRead(uint8_t* buf, size_t* len, void *para)
 // +CGDCONT: 1,"IP","cmnet","10.7.70.160,"",0,0,,,,C11
 static bool cmd_AnalyzePdpRead(uint8_t* buf, size_t len, void *para)
 {
-    PDP_Context *pdp_context = (PDP_Context *)para;
+    pdpContext_t *pdpContext = (pdpContext_t *)para;
     const char *prefix = "+CGDCONT:";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -55,40 +55,40 @@ static bool cmd_AnalyzePdpRead(uint8_t* buf, size_t len, void *para)
         switch (loop_count)
         {
         case 0:
-            sscanf(char_ptr, "%02u", (unsigned int *)&(pdp_context->cid));
+            sscanf(char_ptr, "%02u", (unsigned int *)&(pdpContext->cid));
             break;
         case 1:
-            strncpy(pdp_context->PDP_type, char_ptr, i);
+            strncpy(pdpContext->PDP_type, char_ptr, i);
             break;
         case 2:
-            strncpy(pdp_context->APN, char_ptr, i);
+            strncpy(pdpContext->APN, char_ptr, i);
             break;
         case 3:
-            strncpy(pdp_context->PDP_addr, char_ptr, i);
+            strncpy(pdpContext->PDP_addr, char_ptr, i);
             break;
         case 4:
-            strncpy(pdp_context->d_comp, char_ptr, i);
+            strncpy(pdpContext->d_comp, char_ptr, i);
             break;
         case 5:
-            strncpy(pdp_context->h_comp, char_ptr, i);
+            strncpy(pdpContext->h_comp, char_ptr, i);
             break;
         case 6:
-            strncpy(pdp_context->ipv4_ctrl, char_ptr, i);
+            strncpy(pdpContext->ipv4_ctrl, char_ptr, i);
             break;
         case 7:
-            strncpy(pdp_context->request_type, char_ptr, i);
+            strncpy(pdpContext->request_type, char_ptr, i);
             break;
         case 8:
-            strncpy(pdp_context->PCSCF_discovery, char_ptr, i);
+            strncpy(pdpContext->PCSCF_discovery, char_ptr, i);
             break;
         case 9:
-            strncpy(pdp_context->IM_CN_Signalling_Flag_Ind, char_ptr, i);
+            strncpy(pdpContext->IM_CN_Signalling_Flag_Ind, char_ptr, i);
             break;
         case 10:
-            strncpy(pdp_context->CR, char_ptr, i);
+            strncpy(pdpContext->CR, char_ptr, i);
             break;
         case 11:
-            strncpy(pdp_context->LF, char_ptr, i);
+            strncpy(pdpContext->LF, char_ptr, i);
             break;
         }
         char_ptr = strTopic + 1;
@@ -101,8 +101,8 @@ static bool cmd_AnalyzePdpRead(uint8_t* buf, size_t len, void *para)
 // AT+CGDCONT=1,"IP","cnnet"
 static bool cmd_PackPdpConfig(uint8_t* buf, size_t *len, void *para)
 {
-    PDP_Context_set *pdp_context = (PDP_Context_set *)para;
-    *len = sprintf((char*)buf, "AT+CGDCONT=%u,%s,%s\r\n", pdp_context->cid, pdp_context->PDP_type, pdp_context->APN);
+    pdpContextSet_t *pdpContext = (pdpContextSet_t *)para;
+    *len = sprintf((char*)buf, "AT+CGDCONT=%u,%s,%s\r\n", pdpContext->cid, pdpContext->PDP_type, pdpContext->APN);
     return true;
 }
 
@@ -114,7 +114,7 @@ static bool cmd_AnalyzePdpConfig(uint8_t* buf, size_t len, void *para)
 // AT+CGAUTH=1,0
 static bool cmd_PackPdpIpSet(uint8_t* buf, size_t *len, void *para)
 {
-    PDPIP_Auth_Type *pdp_auth_type = (PDPIP_Auth_Type *)para;
+    pdpIpAuthType_t *pdp_auth_type = (pdpIpAuthType_t *)para;
     *len = sprintf((char*)buf, "AT+CGAUTH=%u,%u\r\n", pdp_auth_type->cid, pdp_auth_type->auth_type);
     return true;
 }
@@ -127,7 +127,7 @@ static bool cmd_AnalyzePdpIpSet(uint8_t* buf, size_t len, void *para)
 // ATE0
 static bool cmd_PackEchoSwitch(uint8_t* buf, size_t *len, void *para)
 {
-    EchoSwitch *echosw = (EchoSwitch *)para;
+    echoSwitch_e *echosw = (echoSwitch_e *)para;
     *len = sprintf((char*)buf, "ATE%u\r\n", *echosw);
     return true;
 }
@@ -140,7 +140,7 @@ static bool cmd_AnalyzeEchoSwitch(uint8_t* buf, size_t len, void *para)
 // AT+AUTOCSQ=0,0
 static bool cmd_PackCsqReport(uint8_t* buf, size_t *len, void *para)
 {
-    CsqReport *Topic = (CsqReport *)para;
+    csqReport_t *Topic = (csqReport_t *)para;
     *len = sprintf((char*)buf, "AT+AUTOCSQ=%u,%u\r\n", Topic->auto_sw, Topic->mode);
     return true;
 }
@@ -177,7 +177,7 @@ static bool cmd_AnalyzeCpinRead(uint8_t* buf, size_t len, void *para)
 // AT+CTZU=1
 static bool cmd_PackNitzSwitch(uint8_t* buf, size_t *len, void *para)
 {
-    NitzSwitch *Topic = (NitzSwitch *)para;
+    nitzSwitch_t *Topic = (nitzSwitch_t *)para;
     *len = sprintf((char*)buf, "AT+CTZU=%u\r\n", *Topic);
     return true;
 }
@@ -294,7 +294,7 @@ static bool cmd_PackMeInfoRead(uint8_t* buf, size_t *len, void *para)
 static bool cmd_AnalyzeMeInfoRead(uint8_t* buf, size_t len, void *para)
 {
     
-    ME_Info *me_info = (ME_Info *)para;
+    meInfo_t *me_info = (meInfo_t *)para;
     const char *prefix = "+CSQ:";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -334,7 +334,7 @@ static bool cmd_PackStatusRead(uint8_t* buf, size_t *len, void *para)
 //+CGREG: 0,1
 static bool cmd_AnalyzeStatusRead(uint8_t* buf, size_t len, void *para)
 {
-    Network_Info *net_info = (Network_Info *)para;
+    networkInfo_t *net_info = (networkInfo_t *)para;
     const char *prefix = "+CGREG:";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -423,7 +423,7 @@ static bool cmd_AnalyzeMqttStart(uint8_t* buf, size_t len, void *para)
 // AT+CMQTTACCQ
 static bool cmd_PackMqttAccq(uint8_t* buf, size_t *len, void *para)
 {
-    MqttAccq_Info *Topic = (MqttAccq_Info *)para;
+    mqttAccqInfo_t *Topic = (mqttAccqInfo_t *)para;
     *len = sprintf((char*)buf, "AT+CMQTTACCQ=%u,\"%s\",%u\r\n", Topic->client_index, Topic->clientID, Topic->server_type);
     return true;
 }
@@ -437,7 +437,7 @@ static bool cmd_AnalyzeMqttAccq(uint8_t* buf, size_t len, void *para)
 // [ATCmd: AT+CMQTTCONNECT=0,"tcp://arong.xicp.net:15321",120,1,"123&DefaultProductKey","EF78D2329E1E387DCB5CA110E71E3839A134C3CF"]
 static bool cmd_PackMqttConnect(uint8_t* buf, size_t *len, void *para)
 {
-    MqttConnect_Info *connct_info = (MqttConnect_Info *)para;
+    mqttConnectInfo_t *connct_info = (mqttConnectInfo_t *)para;
     *len = sprintf((char*)buf, "AT+CMQTTCONNECT=%u,\"%s\",%u,%u,\"%s\",\"%s\"\r\n",
                          connct_info->client_index, connct_info->server_addr, connct_info->keepalive_time, connct_info->clean_session, connct_info->user_name, connct_info->pass_word);
     return true;
@@ -446,7 +446,7 @@ static bool cmd_PackMqttConnect(uint8_t* buf, size_t *len, void *para)
 // +CMQTTCONNECT: <client_index>,<err>
 static bool cmd_AnalyzeMqttConnect(uint8_t* buf, size_t len, void *para)
 {
-    MqttRecv_Info recv_info;
+    mqttRecvInfo_t recv_info;
     const char *prefix = "+CMQTTCONNECT:";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -497,7 +497,7 @@ static bool cmd_AnalyzeMqttConnect(uint8_t* buf, size_t len, void *para)
 // AT+CMQTTSUB=0,37,1
 static bool cmd_PackMqttSub(uint8_t* buf, size_t *len, void *para)
 {
-    MqttSub_Info *Topic = (MqttSub_Info *)para;
+    mqttSubInfo_t *Topic = (mqttSubInfo_t *)para;
     *len = sprintf((char*)buf, "AT+CMQTTSUB=%u,%u,%u\r\n", Topic->client_index, Topic->reqLength, Topic->qos);
     return true;
 }
@@ -526,7 +526,7 @@ static bool cmd_PackMqttSubSend(uint8_t* buf, size_t *len, void *para)
 
 static bool cmd_AnalyzeMqttSubSend(uint8_t* buf, size_t len, void *para)
 {
-    MqttRecv_Info recv_info;
+    mqttRecvInfo_t recv_info;
     const char *prefix = "+CMQTTSUB:";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -569,7 +569,7 @@ static bool cmd_AnalyzeMqttSubSend(uint8_t* buf, size_t len, void *para)
 // AT+CMQTTTOPIC=<client_index>,<req_length>
 static bool cmd_PackMqttTopic(uint8_t* buf, size_t *len, void *para)
 {
-    Topic_Info *Topic = (Topic_Info *)para;
+    topicInfo_t *Topic = (topicInfo_t *)para;
     *len = sprintf((char*)buf, "AT+CMQTTTOPIC=%u,%u\r\n", Topic->client_index, Topic->req_length);
     return true;
 }
@@ -603,7 +603,7 @@ static bool cmd_AnalyzeMqttTopicSend(uint8_t* buf, size_t len, void *para)
 // AT+CMQTTPAYLOAD=0,489
 static bool cmd_PackMqttPayload(uint8_t* buf, size_t *len, void *para)
 {
-    Paylaod_Info *Topic = (Paylaod_Info *)para;
+    payloadInfo_t *Topic = (payloadInfo_t *)para;
     *len = sprintf((char*)buf, "AT+CMQTTPAYLOAD=%u,%u\r\n", Topic->client_index, Topic->req_length);
     return true;
 }
@@ -673,14 +673,14 @@ static bool cmd_AnalyzeMqttStop(uint8_t* buf, size_t len, void *para)
 // AT+CMQTTPUB=<client_index>,<qos>,<pub_timeout>[,<ratained>[,<dup>]]
 static bool cmd_PackMqttPublish(uint8_t* buf, size_t *len, void *para)
 {
-    Publish_Info *pub_info = (Publish_Info *)para;
+    publishInfo_t *pub_info = (publishInfo_t *)para;
     *len = sprintf((char*)buf, "AT+CMQTTPUB=%u,%u,%u\r\n", pub_info->client_index, pub_info->qos, pub_info->pub_timeout);
     return true;
 }
 
 static bool cmd_AnalyzeMqttPublish(uint8_t* buf, size_t len, void *para)
 {
-    MqttRecv_Info recv_info;
+    mqttRecvInfo_t recv_info;
     const char *prefix = "+CMQTTPUB:";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -731,7 +731,7 @@ static bool cmd_PackCockRead(uint8_t* buf, size_t *len, void *para)
 //+CCLK: "14/01/01,02:14:36+08"
 static bool cmd_AnalyzeCockRead(uint8_t* buf, size_t len, void *para)
 {
-    tWanClock *clock = (tWanClock *)para;
+    wanClock_t *clock = (wanClock_t *)para;
     const char *prefix = "+CCLK: \"";
     size_t prefixLen = strlen(prefix);
     uint8_t *ptr = (uint8_t *)buf;
@@ -839,6 +839,352 @@ static bool cmd_AnalyzemqttRev(uint8_t* buf, size_t len, void *para)
     printf("%.*s \r\n", (len), buf);
     return true;
 }
+// AT+HTTPINIT
+static bool cmd_PackHttpInit(uint8_t* buf, size_t *len, void *para)
+{
+    httpInitInfo_t *http_init = (httpInitInfo_t *)para;
+    if (http_init) 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPINIT=%u\r\n", http_init->cid);
+    } 
+    else 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPINIT\r\n");
+    }
+    return true;
+}
+
+static bool cmd_AnalyzeHttpInit(uint8_t* buf, size_t len, void *para)
+{
+    const char *prefix = "+HTTPINIT:";
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, strlen(prefix));
+    if (ptr != NULL) 
+    {
+        // 有返回码的情况
+        char *char_ptr = (char *)ptr + strlen(prefix);
+        uint32_t errcode = 0;
+        sscanf(char_ptr, "%u", &errcode);
+        if (errcode == 0) {
+            printf("HTTP Init Successfully!\r\n");
+            return true;
+        } else {
+            printf("HTTP Init Failed, ErrorCode = %u\r\n", errcode);
+            return false;
+        }
+    }
+    // 只有OK的情况
+    return true;
+}
+
+// AT+HTTPTERM
+static bool cmd_PackHttpTerm(uint8_t* buf, size_t *len, void *para)
+{
+    httpInitInfo_t *http_term = (httpInitInfo_t *)para;
+    if (http_term && http_term->cid > 0) {
+        *len = sprintf((char*)buf, "AT+HTTPTERM=%u\r\n", http_term->cid);
+    } else {
+        *len = sprintf((char*)buf, "AT+HTTPTERM\r\n");
+    }
+    return true;
+}
+
+static bool cmd_AnalyzeHttpTerm(uint8_t* buf, size_t len, void *para)
+{
+    const char *prefix = "+HTTPTERM:";
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, strlen(prefix));
+    if (ptr != NULL) {
+        char *char_ptr = (char *)ptr + strlen(prefix);
+        uint32_t errcode = 0;
+        sscanf(char_ptr, "%u", &errcode);
+        if (errcode == 0) {
+            printf("HTTP Term Successfully!\r\n");
+            return true;
+        } else {
+            printf("HTTP Term Failed, ErrorCode = %u\r\n", errcode);
+            return false;
+        }
+    }
+    return true;
+}
+
+// AT+HTTPPARA
+static bool cmd_PackHttpPara(uint8_t* buf, size_t *len, void *para)
+{
+    httpParaInfo_t *http_para = (httpParaInfo_t *)para;
+    *len = sprintf((char*)buf, "AT+HTTPPARA=\"%s\",\"%s\"\r\n", 
+                   http_para->param_tag, http_para->param_value);
+    return true;
+}
+
+static bool cmd_AnalyzeHttpPara(uint8_t* buf, size_t len, void *para)
+{
+    return true;
+}
+
+// AT+HTTPACTION
+static bool cmd_PackHttpAction(uint8_t* buf, size_t *len, void *para)
+{
+    httpActionPackInfo_t *http_action = (httpActionPackInfo_t *)para;
+    *len = sprintf((char*)buf, "AT+HTTPACTION=%u\r\n", http_action->method);
+    return true;
+}
+
+static bool cmd_AnalyzeHttpAction(uint8_t* buf, size_t len, void *para)
+{
+    HttpActionResponse_Info *resp_info = (HttpActionResponse_Info *)para;
+    const char *prefix = "+HTTPACTION:";
+    size_t prefixLen = strlen(prefix);
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, prefixLen);
+    if (ptr == NULL) 
+    {
+        return false;
+    }
+    
+    char *char_ptr = (char *)ptr + prefixLen;
+    uint32_t method, status, data_len;
+    
+    sscanf(char_ptr, "%u,%u,%u", &method, &status, &data_len);
+    
+    if (resp_info) 
+    {
+        resp_info->http_status = status;
+        resp_info->data_length = data_len;
+        resp_info->RevCmdValidFlag = 1;
+    }
+    
+    printf("HTTP Action: Method=%u, Status=%u, DataLen=%u\r\n", method, status, data_len);
+    return (status >= 200 && status < 300);
+}
+
+// AT+HTTPHEAD
+static bool cmd_PackHttpHead(uint8_t* buf, size_t *len, void *para)
+{
+    *len = sprintf((char*)buf, "AT+HTTPHEAD\r\n");
+    return true;
+}
+
+static bool cmd_AnalyzeHttpHead(uint8_t* buf, size_t len, void *para)
+{
+    httpHeadInfo_t *head_info = (httpHeadInfo_t *)para;
+    const char *prefix = "+HTTPHEAD:";
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, strlen(prefix));
+    
+    if (ptr == NULL) 
+    {
+        return false;
+    }
+    
+    char *char_ptr = (char *)ptr + strlen(prefix);
+    uint32_t head_len = 0;
+    
+    // 解析头部长度
+    sscanf(char_ptr, "%u", &head_len);
+    
+    if (head_info) 
+    {
+        head_info->head_length = head_len;
+        head_info->RevCmdValidFlag = 1;
+        
+        // 查找头部数据的开始位置（跳过长度信息和换行符）
+        char *data_start = strchr(char_ptr, '\n');
+        if (data_start && head_info->head_data && head_info->max_buffer_size > 0)
+        {
+            data_start++; // 跳过换行符
+            
+            // 计算实际可复制的长度
+            size_t remaining_len = len - (data_start - (char*)buf);
+            size_t copy_len = (remaining_len < head_info->max_buffer_size - 1) ? 
+                             remaining_len : head_info->max_buffer_size - 1;
+            
+            // 复制头部数据
+            memcpy(head_info->head_data, data_start, copy_len);
+            head_info->head_data[copy_len] = '\0'; // 添加字符串结束符
+        }
+    }
+    
+    printf("HTTP Header Length: %u\r\n", head_len);
+    return true;
+}
+
+
+// AT+HTTPREAD
+static bool cmd_PackHttpRead(uint8_t* buf, size_t *len, void *para)
+{
+    httpReadInfo_t *http_read = (httpReadInfo_t *)para;
+    if (http_read && http_read->length > 0) 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPREAD=%u,%u\r\n", 
+                       http_read->start_pos, http_read->length);
+    } 
+    else 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPREAD?\r\n");
+    }
+    return true;
+} 
+
+static bool cmd_AnalyzeHttpRead(uint8_t* buf, size_t len, void *para)
+{
+    httpReadInfo_t *read_info = (httpReadInfo_t *)para;
+    const char *prefix1 = "+HTTPREAD: LEN,";
+    const char *prefix2 = "+HTTPREAD:";
+    
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix1, len, strlen(prefix1));
+    if (ptr != NULL) 
+    {
+        // 查询数据长度的响应
+        char *char_ptr = (char *)ptr + strlen(prefix1);
+        uint32_t total_len = 0;
+        sscanf(char_ptr, "%u", &total_len);
+        
+        if (read_info) 
+        {
+            read_info->total_length = total_len;
+            read_info->RevCmdValidFlag = 1;
+        }
+        
+        printf("HTTP Data Total Length: %u\r\n", total_len);
+        return true;
+    }
+    
+    ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix2, len, strlen(prefix2));
+    if (ptr != NULL) 
+    {
+        // 读取数据的响应
+        char *char_ptr = (char *)ptr + strlen(prefix2);
+        uint32_t read_len = 0;
+        sscanf(char_ptr, "%u", &read_len);
+        
+        if (read_info) 
+        {
+            read_info->data_length = read_len;
+            read_info->RevCmdValidFlag = 1;
+            
+            // 查找实际数据的开始位置
+            char *data_start = strchr(char_ptr, '\n');
+            if (data_start && read_info->data_buffer && read_info->max_buffer_size > 0)
+            {
+                data_start++; // 跳过换行符
+                
+                // 计算实际可复制的长度
+                size_t copy_len = (read_len < read_info->max_buffer_size) ? 
+                read_len : read_info->max_buffer_size;
+                
+                // 复制HTTP响应数据
+                memcpy(read_info->data_buffer, data_start, copy_len);
+                
+                // 更新实际复制的长度
+                read_info->data_length = read_len;
+            }
+            printf("HTTP copy Data Length: %u\r\n", read_len);
+        }
+
+        return true;
+    }
+    
+    return false;
+}
+
+
+// AT+HTTPDATA
+static bool cmd_PackHttpData(uint8_t* buf, size_t *len, void *para)
+{
+    httpDataInfo_t *http_data = (httpDataInfo_t *)para;
+    *len = sprintf((char*)buf, "AT+HTTPDATA=%u,%u\r\n", 
+                   http_data->data_size, http_data->timeout);
+    return true;
+}
+
+static bool cmd_AnalyzeHttpData(uint8_t* buf, size_t len, void *para)
+{
+    char *str = (char*)buf;
+    if (!strncmp(str, "DOWNLOAD", 8)) 
+    {
+        printf("Ready to input HTTP data\r\n");
+        return true;
+    }
+    return false;
+}
+
+// AT+HTTPPOSTFILE
+static bool cmd_PackHttpPostFile(uint8_t* buf, size_t *len, void *para)
+{
+    httpFileInfo_t *http_file = (httpFileInfo_t *)para;
+    if (http_file->storage > 0) 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPPOSTFILE=\"%s\",%u\r\n", 
+                       http_file->filename, http_file->storage);
+    } 
+    else 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPPOSTFILE=\"%s\"\r\n", 
+                       http_file->filename);
+    }
+    return true;
+}
+
+static bool cmd_AnalyzeHttpPostFile(uint8_t* buf, size_t len, void *para)
+{
+    const char *prefix = "+HTTPPOSTFILE:";
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, strlen(prefix));
+    if (ptr != NULL) 
+    {
+        char *char_ptr = (char *)ptr + strlen(prefix);
+        uint32_t errcode = 0;
+        sscanf(char_ptr, "%u", &errcode);
+        if (errcode == 0) 
+        {
+            printf("HTTP Post File Successfully!\r\n");
+            return true;
+        } 
+        else 
+        {
+            printf("HTTP Post File Failed, ErrorCode = %u\r\n", errcode);
+            return false;
+        }
+    }
+    return true;
+}
+
+// AT+HTTPREADFILE
+static bool cmd_PackHttpReadFile(uint8_t* buf, size_t *len, void *para)
+{
+    httpFileInfo_t *http_file = (httpFileInfo_t *)para;
+    if (http_file->storage > 0) 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPREADFILE=\"%s\",%u\r\n", 
+                       http_file->filename, http_file->storage);
+    } 
+    else 
+    {
+        *len = sprintf((char*)buf, "AT+HTTPREADFILE=\"%s\"\r\n", 
+                       http_file->filename);
+    }
+    return true;
+}
+
+static bool cmd_AnalyzeHttpReadFile(uint8_t* buf, size_t len, void *para)
+{
+    const char *prefix = "+HTTPREADFILE:";
+    uint8_t *ptr = hexhex((uint8_t *)buf, (uint8_t *)prefix, len, strlen(prefix));
+    if (ptr != NULL) 
+    {
+        char *char_ptr = (char *)ptr + strlen(prefix);
+        uint32_t errcode = 0;
+        sscanf(char_ptr, "%u", &errcode);
+        if (errcode == 0) 
+        {
+            printf("HTTP Read File Successfully!\r\n");
+            return true;
+        } 
+        else 
+        {
+            printf("HTTP Read File Failed, ErrorCode = %u\r\n", errcode);
+            return false;
+        }
+    }
+    return true;
+}
 
 static const tCmd cmdList[] =
 {
@@ -873,6 +1219,15 @@ static const tCmd cmdList[] =
     CMD_ADD(CMD_A7680C_POWEROFF              ,   5,  "OK",              "\r\n",  "ERROR",    SendRev,   PowerOff),
     CMD_ADD(CMD_A7680C_COLD_START_CHECK      ,   5,  "^SIMST:",         NULL,    NULL,       RecvSend,   ColdStart),
     CMD_ADD(CMD_A7680C_MQTTREV               ,   5,  "+CMQTTRXSTART:",  NULL,    NULL,       RecvSend,   mqttRev),
+    CMD_ADD(CMD_A7680C_HTTPINIT                , 3, "OK",              "\r\n", "ERROR", SendRev, HttpInit     ),
+    CMD_ADD(CMD_A7680C_HTTPTERM                , 3, "OK",              "\r\n", "ERROR", SendRev, HttpTerm     ),
+    CMD_ADD(CMD_A7680C_HTTPPARA                , 3, "OK",              "\r\n", "ERROR", SendRev, HttpPara     ),
+    CMD_ADD(CMD_A7680C_HTTPACTION              , 5, "+HTTPACTION:",    "\r\n", "ERROR", SendRev, HttpAction   ),
+    CMD_ADD(CMD_A7680C_HTTPHEAD                , 30, "+HTTPHEAD:",      "\r\n", "ERROR", SendRev, HttpHead     ),
+    CMD_ADD(CMD_A7680C_HTTPREAD                , 30, "+HTTPREAD:",    "+HTTPREAD: 0", "ERROR", SendRev, HttpRead     ),
+    CMD_ADD(CMD_A7680C_HTTPDATA                , 3, "DOWNLOAD",         NULL,   "ERROR", SendRev, HttpData     ),
+    CMD_ADD(CMD_A7680C_HTTPPOSTFILE            , 3, "+HTTPPOSTFILE:",  "\r\n", "ERROR", SendRev, HttpPostFile ),
+    CMD_ADD(CMD_A7680C_HTTPREADFILE            , 3, "+HTTPREADFILE:",  "\r\n", "ERROR", SendRev, HttpReadFile ),
 
 };
 

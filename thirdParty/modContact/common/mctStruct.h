@@ -26,39 +26,68 @@ typedef union
         uint8_t status;
     };
     uint8_t str[DATA_TIME_LEN];
-}uWanClock;
+}wanClock_u;
 
 typedef struct
 {
-    uWanClock clock;
+    wanClock_u clock;
     int       zone;
-}tWanClock;
+}wanClock_t;
 
 typedef struct 
 {
-char*    Topic;
-int      QOS;
-uint32_t PublishLen;
-char*    PublishData;
-}MqttPulish_t;
+    char*    Topic;
+    int      QOS;
+    uint32_t PublishLen;
+    char*    PublishData;
+}mqttPulish_t;
 
 typedef enum
 {
-    registerNone                = (uint8_t)0,
+    registerNone        = (uint8_t)0,
     registerHomeNet,
     resistering,
     registerDenied,
     registerUnknow,
-    registerRoaming,
+    registerRoaming, 
     registerMax,
-}eRegStatus;
+}regStatus_e;
 
 typedef struct
 {
   uint8_t SignalStrength; // 公网信号强度
-  eRegStatus REGstatus; //组网进度
-}NetworkPara_t;
+  regStatus_e REGstatus;  // 组网进度
+}networkPara_t;
 
+typedef struct 
+{
+    char* ip;
+    uint16_t port;
+}httpURL;
+
+typedef struct
+{
+    uint16_t BlockNum;
+    uint32_t fileLen;
+    char UpdatePath[128];		  //远程刷机绝对地址
+    uint8_t *fileData;
+} http_t;
+
+typedef struct
+{
+    char      *ip;                // http地址
+    uint16_t  port;               // http端口号
+    char      *file_path;         // http文件地址
+    uint32_t  file_path_len;      // http文件地址长度 
+    uint32_t  block_len;          // 单包获取长度
+
+
+    uint16_t  block_num;          // 传输序号
+    uint8_t   *p_file_data;       // 单包数据指针
+    uint32_t  file_len;           // 实际获取长度
+
+
+}httpAction_t;
 /***************************************************************
 *Command API
 ***************************************************************/

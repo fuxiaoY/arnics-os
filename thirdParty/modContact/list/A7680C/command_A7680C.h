@@ -59,6 +59,17 @@ extern "C" {
 #define CMD_A7680C_COLD_START_CHECK              (int32_t)(CMD_A7680C_ID_BASE +  29)
 #define CMD_A7680C_MQTTREV                       (int32_t)(CMD_A7680C_ID_BASE +  30)
 #define CMD_A7680C_POWEROFF                      (int32_t)(CMD_A7680C_ID_BASE +  31)
+
+#define CMD_A7680C_HTTPINIT                      (int32_t)(CMD_A7680C_ID_BASE +  32)
+#define CMD_A7680C_HTTPTERM                      (int32_t)(CMD_A7680C_ID_BASE +  33)
+#define CMD_A7680C_HTTPPARA                      (int32_t)(CMD_A7680C_ID_BASE +  34)
+#define CMD_A7680C_HTTPACTION                    (int32_t)(CMD_A7680C_ID_BASE +  35)
+#define CMD_A7680C_HTTPHEAD                      (int32_t)(CMD_A7680C_ID_BASE +  36)
+#define CMD_A7680C_HTTPREAD                      (int32_t)(CMD_A7680C_ID_BASE +  37)
+#define CMD_A7680C_HTTPDATA                      (int32_t)(CMD_A7680C_ID_BASE +  38)
+#define CMD_A7680C_HTTPPOSTFILE                  (int32_t)(CMD_A7680C_ID_BASE +  39)
+#define CMD_A7680C_HTTPREADFILE                  (int32_t)(CMD_A7680C_ID_BASE +  40)
+
 /* 
 1,"IP","cmnet","10.7.70.160,"",0,0,,,,C11
 <cid>,<PDP_type>,<APN>[[,<PDP_addr>],<d_comp>,<h_comp>,<ipv4_ctrl>,<request_type>,<PCSCF_discovery>,<IM_CN_Signalling_Flag_Ind>]<CR><LF>
@@ -78,7 +89,7 @@ typedef struct
     char IM_CN_Signalling_Flag_Ind[10];
     char CR[10];
     char LF[10];
-}PDP_Context;
+}pdpContext_t;
 
 //ptr
 typedef struct 
@@ -96,7 +107,7 @@ typedef struct
     char *IM_CN_Signalling_Flag_Ind;
     char *CR;
     char *LF;
-}PDP_Context_set;
+}pdpContextSet_t;
 
 /*
 'AT+CGAUTH=<cid>[,<auth_type>[,<passwd>[,<user>]]]
@@ -106,14 +117,14 @@ typedef enum
     NONE,
     PAP,
     CHAP
-}Auth_Type;
+}authType_e;
 typedef struct 
 {
     uint8_t cid;
-    Auth_Type auth_type;
+    authType_e auth_type;
     char *passwd;
     char *user;
-}PDPIP_Auth_Type ;
+}pdpIpAuthType_t ;
 
 
 /* 'ATE[<value>] */
@@ -121,7 +132,7 @@ typedef enum
 {
     ATE0,
     ATE1
-}EchoSwitch;
+}echoSwitch_e;
 
 
 /* AT+AUTOCSQ=<auto>[,<mode>] */
@@ -129,14 +140,14 @@ typedef struct
 {
     uint8_t auto_sw;
     uint8_t mode;
-}CsqReport;
+}csqReport_t;
 
 /* 'AT+CTZU=<on/off> */
 typedef enum
 {
     NITZ_OFF,
     NITZ_ON
-}NitzSwitch;
+}nitzSwitch_t;
 
 
 /*
@@ -149,7 +160,7 @@ typedef struct
     uint8_t RevCmdValidFlag;
     uint8_t rssi;
     uint8_t ber;
-}ME_Info;
+}meInfo_t;
 
 
 /* +CGREG: <n>,<stat>[,<lac>,<ci>] */
@@ -160,7 +171,7 @@ typedef struct
     uint32_t stat;
     uint32_t lac;
     char ci[10];
-}Network_Info;
+}networkInfo_t;
 
 
 /* 
@@ -174,14 +185,14 @@ typedef enum
 {
     MQTT_TCP,
     MQTT_SSL_TLS
-}srv_type;
+}srvType_t;
 
 typedef struct 
 {
     uint8_t client_index;
     char* clientID;
-    srv_type server_type;
-}ACCQ_Info;
+    srvType_t server_type;
+}accqInfo_t;
 
 /* 
 AT+CMQTTACCQ=<client_index>,<clientID>[<server_type> 
@@ -194,14 +205,14 @@ typedef enum
 {
     SERVER_TCP,
     SERVER_SSL_TLS
-}serve_type;
+}serveType_e;
 
 typedef struct 
 {
     uint8_t client_index;
     char* clientID;
-    serve_type server_type;
-}MqttAccq_Info;
+    serveType_e server_type;
+}mqttAccqInfo_t;
 
 
 /*
@@ -223,14 +234,14 @@ typedef struct
     uint8_t clean_session;
     char* user_name;
     char* pass_word;   
-}MqttConnect_Info;
+}mqttConnectInfo_t;
 
 typedef struct 
 {
     uint8_t RevCmdValidFlag;
     uint32_t client_index;
     uint32_t errorcode;
-}MqttRecv_Info;
+}mqttRecvInfo_t;
 
 //AT+CMQTTSUB=<client_index>,<reqLength>,<qos>[,<dup>]
 typedef struct 
@@ -239,7 +250,7 @@ typedef struct
     uint16_t reqLength;
     uint8_t qos;
     uint8_t dup;
-}MqttSub_Info;
+}mqttSubInfo_t;
 
 
 //AT+CMQTTTOPIC=<client_index>,<req_length>
@@ -247,14 +258,14 @@ typedef struct
 {
     uint8_t client_index;
     uint16_t req_length;
-}Topic_Info;
+}topicInfo_t;
 
 //AT+CMQTTPAYLOAD=<client_index>,<req_length>
 typedef struct 
 {
     uint8_t client_index;
     uint32_t req_length;
-}Paylaod_Info;
+}payloadInfo_t;
 
 //AT+CMQTTPUB=<client_index>,<qos>,<pub_timeout>[,<ratained>[,<dup>]]
 typedef struct 
@@ -262,7 +273,64 @@ typedef struct
     uint8_t client_index;
     uint8_t qos;
     uint16_t pub_timeout;
-}Publish_Info;
+}publishInfo_t;
+
+/* HTTP相关结构体定义 */
+typedef struct {
+    uint8_t cid;  // PDP上下文ID
+} httpInitInfo_t;
+
+typedef struct {
+    char* param_tag;   // 参数标签如"URL", "CONTENT"等
+    char* param_value; // 参数值
+} httpParaInfo_t;
+
+typedef struct {
+    uint8_t method;    // HTTP方法: 0-GET, 1-POST, 2-HEAD, 3-DELETE, 4-PUT
+} httpActionPackInfo_t;
+typedef struct {
+    uint8_t RevCmdValidFlag;
+    uint32_t http_status;    // HTTP状态码
+    uint32_t data_length;    // 数据长度
+} HttpActionResponse_Info;
+typedef union{
+    httpActionPackInfo_t http_action_pack;
+    HttpActionResponse_Info http_action_response;
+}httpActionInfo_t;
+
+/* HTTP头部信息结构体 */
+typedef struct {
+    uint8_t RevCmdValidFlag;
+    uint32_t head_length;     // 头部长度
+    uint8_t* head_data;          // 头部数据指针
+    uint32_t max_buffer_size; // 最大缓冲区大小
+} httpHeadInfo_t;
+
+
+typedef struct
+{
+    uint32_t start_pos;  // 读取起始位置
+    uint32_t length;     // 读取长度
+
+    /* HTTP读取数据结构体 */
+    uint8_t RevCmdValidFlag;
+    uint32_t data_length;     // 实际读取的数据长度
+    uint32_t total_length;    // 总数据长度（用于查询响应）
+    uint8_t* data_buffer;        // 数据缓冲区指针
+    uint32_t max_buffer_size; // 最大缓冲区大小
+}httpReadInfo_t;
+
+typedef struct {
+    uint32_t data_size;  // 数据大小
+    uint32_t timeout;    // 超时时间
+} httpDataInfo_t;
+
+typedef struct {
+    char* filename;      // 文件名
+    uint8_t storage;     // 存储位置: 1-本地, 2-SD卡
+} httpFileInfo_t;
+
+
 
 //默认MQTT客户端ID
 #define  MQTT_CLIENT_INDEX 0         

@@ -17,14 +17,14 @@
 #include "../../../ulog/ulogDef.h"
 static bool cmd_GetZTZEU(MctInstance* inst,void *para)
 {
-    tWanClock *clock = (tWanClock*)para;
+    wanClock_t *clock = (wanClock_t*)para;
     if (true == mct_y7025_execute(inst,  CMD_Y7025_BOOTZTZEU, clock))
     {
         return true;
     }
     else
     {
-        memset(clock, 0, sizeof(tWanClock));
+        memset(clock, 0, sizeof(wanClock_t));
         ULOG_INFO("Y7025: GetZTZEU failed:");
         return false;
     }
@@ -150,7 +150,7 @@ static bool cmd_CEREGset(MctInstance* inst,void *para)
 // 查看信号强度
 static bool cmd_ModemUpdateSignal(MctInstance* inst,void *para)
 {
-    NetworkPara_t* networkPara = (NetworkPara_t*)para;
+    networkPara_t* networkPara = (networkPara_t*)para;
 
     tsignalQuality signal;
 
@@ -170,7 +170,7 @@ static bool cmd_ModemUpdateSignal(MctInstance* inst,void *para)
 // 查看注网状态
 static bool cmd_CheckCEREG(MctInstance* inst,void *para)
 {
-    NetworkPara_t* networkPara = (NetworkPara_t*)para;
+    networkPara_t* networkPara = (networkPara_t*)para;
     tRegStus reg;
     if (false == mct_y7025_execute(inst,  CMD_Y7025_DATA_REGISTER, &reg.value))
     {
@@ -350,7 +350,7 @@ static bool cmd_mqttpublish(MctInstance* inst,void *para)
 
 static bool cmd_ClockGet(MctInstance* inst,void *para)
 {
-    tWanClock *clock = (tWanClock*)para;
+    wanClock_t *clock = (wanClock_t*)para;
 /*
     if (true == mct_y7025_execute(inst,  CMD_Y7025_CMNTP, clock))
     {
@@ -358,7 +358,7 @@ static bool cmd_ClockGet(MctInstance* inst,void *para)
     }
     else
     {
-        memset(clock, 0, sizeof(tWanClock));
+        memset(clock, 0, sizeof(wanClock_t));
         ULOG_INFO("Y7025: CMD_Y7025_CMNTP failed:");
     }
 */
@@ -368,7 +368,7 @@ static bool cmd_ClockGet(MctInstance* inst,void *para)
     }
     else
     {
-        memset(clock, 0, sizeof(tWanClock));
+        memset(clock, 0, sizeof(wanClock_t));
         ULOG_INFO("Y7025: CMD_Y7025_CLOCK_GET failed:");
         return false;
     }

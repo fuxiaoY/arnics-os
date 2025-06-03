@@ -156,13 +156,13 @@ typedef struct
     MqTType mqttType; //MQTT类型
     uint16_t  RevCmdLen; //接收命令长度
     char   RevCmd[256]; //数据缓存
-    MqttPulish_t mqttPub; //发布数据
+    mqttPulish_t mqttPub; //发布数据
 }tWanData;
 
 typedef struct
 {
     uint32_t                      cs;
-    eRegStatus                  value;
+    regStatus_e                  value;
 }tRegStus;
 typedef struct
 {
@@ -170,19 +170,7 @@ typedef struct
     uint16_t                      data;
 }tPincode;
 
-typedef struct 
-{
-    char* ip;
-    uint16_t port;
-}httpURL;
 
-typedef struct
-{
-    uint16_t BlockNum;
-    uint32_t fileLen;
-    char UpdatePath[128];			//远程刷机绝对地址
-    uint8_t *fileData;
-} http_t;
 
 extern tCmd const *CMD_Y7025CmdGet(void);
 extern uint16_t CMD_Y7025CmdNumGet(void);

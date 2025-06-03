@@ -323,7 +323,7 @@ static bool cmd_PackClockGet(uint8_t* buf, size_t* len, void *para)
 //+CCLK:24/08/28,10:42:56+32
 static bool cmd_AnalyzeClockGet(uint8_t* buf, size_t len, void *para)
 {
-    tWanClock *clock = (tWanClock *)para;
+    wanClock_t *clock = (wanClock_t *)para;
     uint8_t *ptr = (uint8_t *)buf;
     uint8_t *str = NULL;
     int tep[7];
@@ -578,13 +578,13 @@ char* Topic;
 int QOS;
 int PublishLen;
 char* PublishData;
-}MqttPulish_t;
+}mqttPulish_t;
 
 */
 /*
 static bool cmd_PackMqttPublish(uint8_t* buf, size_t* len, void *para)
 {
-    MqttPulish_t *mattPub = (MqttPulish_t *)para;
+    mqttPulish_t *mattPub = (mqttPulish_t *)para;
     *len = sprintf((char*)buf, "AT+MQPUB=%u,\"%s\",%u,0,0,%u,%s\r\n", MQTT_ID, mattPub->Topic, mattPub->QOS, mattPub->PublishLen, mattPub->PublishData);
     return true;
 }
@@ -592,7 +592,7 @@ static bool cmd_PackMqttPublish(uint8_t* buf, size_t* len, void *para)
 
 static bool cmd_PackMqttPublish(uint8_t* buf, size_t* len, void *para)
 {
-    MqttPulish_t *mattPub = (MqttPulish_t *)para;
+    mqttPulish_t *mattPub = (mqttPulish_t *)para;
 
     // Format the command with the PublishData directly
     uint16_t startLen = sprintf((char*)buf, "AT+MQPUB=%u,\"%s\",%u,0,0,%u,",
@@ -659,7 +659,7 @@ static bool cmd_PackCTZEUGet_Receive(uint8_t* buf, size_t* len, void *para)
 // +CTZEU:+32,0,2024/08/29,09:06:08
 static bool cmd_AnalyzeCTZEUGet_Receive(uint8_t* buf, size_t len, void *para)
 {
-    tWanClock *clock = (tWanClock *)para;
+    wanClock_t *clock = (wanClock_t *)para;
     uint8_t *ptr = (uint8_t *)buf;
     uint8_t *str = NULL;
 
@@ -750,8 +750,8 @@ static bool cmd_PackMqttReceive(uint8_t* buf, size_t* len, void *para)
                 memcpy(MCT_PTR(g_mqtt_wan_buf), WanData->RevCmd, strlen(WanData->RevCmd));
                 mqttWanBuf_Ready = true;
                 MCT_SET(is_mqtt_wan_buf_ready,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
-                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->Topic = MCT_PTR(mqtt_config_up_topic);
-                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->QOS = 1;
+                ((mqttPulish_t *)MCT_PTR(g_mqtt_publish))->Topic = MCT_PTR(mqtt_config_up_topic);
+                ((mqttPulish_t *)MCT_PTR(g_mqtt_publish))->QOS = 1;
 
             }
             break;
@@ -761,8 +761,8 @@ static bool cmd_PackMqttReceive(uint8_t* buf, size_t* len, void *para)
                 memcpy(MCT_PTR(g_mqtt_wan_buf), WanData->RevCmd, strlen(WanData->RevCmd));
                 mqttWanBuf_Ready = true;
                 MCT_SET(is_mqtt_wan_buf_ready,&mqttWanBuf_Ready, sizeof(mqttWanBuf_Ready));
-                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->Topic = MCT_PTR(mqtt_response_topic);
-                ((MqttPulish_t *)MCT_PTR(g_mqtt_publish))->QOS = 1;
+                ((mqttPulish_t *)MCT_PTR(g_mqtt_publish))->Topic = MCT_PTR(mqtt_response_topic);
+                ((mqttPulish_t *)MCT_PTR(g_mqtt_publish))->QOS = 1;
             }
             break;
             default:
@@ -781,7 +781,7 @@ struct tWanData
     MqTType    mqttType; //MQTT类型
     uint16_t  RevCmdLen; //接收命令长度
     char   RevCmd[256]; //数据缓存
-    MqttPulish_t mqttPub; //发布数据
+    mqttPulish_t mqttPub; //发布数据
 };
 */
 //+MQPUB:0,$PERSISTENCE/configDn/8212345678100343,0,0,0,17,7B224D656964615472616365223A20317D
@@ -1121,7 +1121,7 @@ static bool cmd_PackCMNTP(uint8_t* buf, size_t* len, void *para)
 // 解析 +CMNTP: 0,"20/07/15,20:29:20+32"
 static bool cmd_AnalyzeCMNTP(uint8_t* buf, size_t len, void *para)
 {
-    tWanClock *clock = (tWanClock *)para;
+    wanClock_t *clock = (wanClock_t *)para;
     uint8_t *ptr = (uint8_t *)buf;
     uint8_t *str = NULL;
     int tep[7];
@@ -1211,8 +1211,8 @@ static bool cmd_PackMQTTDISCON(uint8_t* buf, size_t* len, void *para)
 //
 static bool cmd_AnalyzeMQTTDISCON(uint8_t* buf, size_t len, void *para)
 {
-    eRegStatus status = resistering;
-    MCT_SET(REGstatus,&status,sizeof(eRegStatus));
+    regStatus_e status = resistering;
+    MCT_SET(REGstatus,&status,sizeof(regStatus_e));
     return true;
 }
 

@@ -112,6 +112,13 @@ uint32_t modem_mct_read(uint8_t *buf, uint16_t maxlen)
         {
             printf("\r\nreceive: len:%d\r\n",totalBytesRead);
             printf("%.*s \r\n", totalBytesRead, buf);
+            // // 打印hex
+            // printf("Hex Data: ");
+            // for (uint32_t i = 0; i < totalBytesRead; i++)
+            // {
+            //     printf("%02X ", buf[i]);
+            // }
+            // printf("\r\n");
         }
     }
 

@@ -22,7 +22,7 @@ static bool cmd_EchoClose(MctInstance *inst, void *para)
 {
     uint8_t MAX_RETRIES = 3;
     // ATE0  ECHO off
-    EchoSwitch echo_state = ATE0;
+    echoSwitch_e echo_state = ATE0;
     for (int i = 0; i < MAX_RETRIES; i++)
     {
         if (mct_a7680c_execute(inst, CMD_A7680C_ECHO_SWITCH, &echo_state) == true)
@@ -45,7 +45,7 @@ static bool cmd_apnConfig(MctInstance *inst, void *para)
 {
     uint8_t MAX_RETRIES = 3;
     // AT+CGDCON     APN Config
-    PDP_Context pdp_read = {0};
+    pdpContext_t pdp_read = {0};
     bool apn_state = false;
     for (int i = 0; i < MAX_RETRIES; i++)
     {
@@ -74,7 +74,7 @@ static bool cmd_apnConfig(MctInstance *inst, void *para)
         {
             // AT+CGDCONT=1,"IP","cmnet"
             ULOG_INFO("Match failed, reconfigure PDP...\r\n");
-            PDP_Context_set pdp_set;
+            pdpContextSet_t pdp_set;
             pdp_set.cid = 1;
             pdp_set.PDP_type = string_ip;
             pdp_set.APN = string_cmnet;
@@ -104,7 +104,7 @@ static bool cmd_PDP_IPConfig(MctInstance *inst, void *para)
 {
     // AT+CGAUTH=1,0  GPRS PDP-IP connection config
     uint8_t MAX_RETRIES = 3;
-    PDPIP_Auth_Type pdpip_auth;
+    pdpIpAuthType_t pdpip_auth;
     pdpip_auth.cid = 1;
     pdpip_auth.auth_type = NONE;
     for (int i = 0; i < MAX_RETRIES; i++)
@@ -126,7 +126,7 @@ static bool cmd_PDP_IPConfig(MctInstance *inst, void *para)
 static bool cmd_CSQ_AutoReportOff(MctInstance *inst, void *para)
 {
     // AT+AUTOCSQ=0,0    CSQ Auto report off
-    CsqReport csq_rep;
+    csqReport_t csq_rep;
     csq_rep.mode = 0;
     csq_rep.auto_sw = 0;
 
@@ -171,7 +171,7 @@ static bool cmd_UpdateZonNITZ(MctInstance *inst, void *para)
 {
     // AT+CTZU=1	 updete zone NITZ
     uint8_t MAX_RETRIES = 3;
-    NitzSwitch nitz_state = NITZ_ON;
+    nitzSwitch_t nitz_state = NITZ_ON;
     for (int i = 0; i < MAX_RETRIES; i++)
     {
         if (mct_a7680c_execute(inst,  CMD_A7680C_NITZ_TIMEUPDATE_SWITCH, &nitz_state) == true)
@@ -372,8 +372,8 @@ static bool cmd_autoConfig(MctInstance *inst, void *para)
 // signal strength record
 static bool cmd_ModemUpdateSignal(MctInstance *inst, void *para)
 {
-    ME_Info signal;
-    memset((void *)&signal, 0x00, sizeof(ME_Info));
+    meInfo_t signal;
+    memset((void *)&signal, 0x00, sizeof(meInfo_t));
 
     if (false == mct_a7680c_execute(inst,  CMD_A7680C_ME_INFO_READ, (void *)&signal))
     {
@@ -383,7 +383,7 @@ static bool cmd_ModemUpdateSignal(MctInstance *inst, void *para)
     else
     {
         ULOG_INFO("rssi : %u  ber : %u\r\n", signal.rssi, signal.ber);
-        NetworkPara_t* networkPara = (NetworkPara_t*)para;
+        networkPara_t* networkPara = (networkPara_t*)para;
         networkPara->SignalStrength = signal.rssi;
     }
     
@@ -393,7 +393,7 @@ static bool cmd_ModemUpdateSignal(MctInstance *inst, void *para)
 // register stat record
 static bool cmd_CheckCEREG(MctInstance *inst, void *para)
 {
-    Network_Info net_info;
+    networkInfo_t net_info;
     if (false == mct_a7680c_execute(inst, CMD_A7680C_REGISTER_STATUS_READ, (void *)&net_info))
     {
         ULOG_INFO("A7680C: CMD_A7680C_REGISTER_STATUS_READ failed");
@@ -402,8 +402,8 @@ static bool cmd_CheckCEREG(MctInstance *inst, void *para)
     else
     {
         ULOG_INFO("net_info.stat : %d\r\n", net_info.stat);
-        NetworkPara_t* networkPara = (NetworkPara_t*)para;
-        networkPara->REGstatus = (eRegStatus)net_info.stat;
+        networkPara_t* networkPara = (networkPara_t*)para;
+        networkPara->REGstatus = (regStatus_e)net_info.stat;
     }
     return true;
 }
@@ -428,7 +428,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
         return false;
     }
     // accq
-    MqttAccq_Info accq_test;
+    mqttAccqInfo_t accq_test;
     char client_id[128] = {0};
     sprintf(client_id, "%s.%s|securemode=3,signmethod=hmacsha1|",(char*)MCT_PTR(mqtt_key),(char*)MCT_PTR(device_name));
 
@@ -452,7 +452,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
     MCT_GET(server_port,&server_port, sizeof(server_port));
     snprintf(server_addr, sizeof(server_addr), "tcp://%s:%u", (char*)MCT_PTR(server_url),server_port);
     snprintf(user_name, sizeof(user_name), "%s&%s",(char*)MCT_PTR(device_name), (char*)MCT_PTR(mqtt_key));
-    MqttConnect_Info connect_info;
+    mqttConnectInfo_t connect_info;
     connect_info.client_index = MQTT_CLIENT_INDEX;
     connect_info.server_addr = server_addr;
     MCT_GET(mqtt_keep_alive, &connect_info.keepalive_time, sizeof(connect_info.keepalive_time));
@@ -470,7 +470,7 @@ static bool cmd_mqttConnect(MctInstance *inst, void *para)
 static bool cmd_mqttSubscribe(MctInstance *inst, void *para)
 {
     // subscribe
-    MqttSub_Info subinfo;
+    mqttSubInfo_t subinfo;
     subinfo.client_index = MQTT_CLIENT_INDEX;
     subinfo.reqLength = strlen(MCT_PTR(mqtt_response_topic));
     subinfo.qos = 1;
@@ -513,9 +513,9 @@ static bool cmd_mqttflow(MctInstance *inst, void *para)
 
 static bool cmd_mqttpublish(MctInstance *inst, void *para)
 {
-    MqttPulish_t *mattPub = (MqttPulish_t *)para;
+    mqttPulish_t *mattPub = (mqttPulish_t *)para;
     // topic
-    Topic_Info topicinfo;
+    topicInfo_t topicinfo;
     topicinfo.client_index = MQTT_CLIENT_INDEX;
     topicinfo.req_length = strlen(mattPub->Topic);
     if (mct_a7680c_execute(inst, CMD_A7680C_CMQTT_TOPIC, &topicinfo) == false)
@@ -527,7 +527,7 @@ static bool cmd_mqttpublish(MctInstance *inst, void *para)
         return false;
     }
     // payload
-    Paylaod_Info paylaod_info;
+    payloadInfo_t paylaod_info;
     paylaod_info.client_index = MQTT_CLIENT_INDEX;
     paylaod_info.req_length = mattPub->PublishLen;
     if (mct_a7680c_execute(inst,  CMD_A7680C_CMQTT_PAYLOAD, (void *)&paylaod_info) == false)
@@ -539,7 +539,7 @@ static bool cmd_mqttpublish(MctInstance *inst, void *para)
         return false;
     }
     // pubilsh
-    Publish_Info pub_info;
+    publishInfo_t pub_info;
     pub_info.client_index = MQTT_CLIENT_INDEX;
     pub_info.qos = mattPub->QOS;
     pub_info.pub_timeout = 60;
@@ -570,14 +570,14 @@ static bool cmd_mqttStop(MctInstance *inst, void *para)
 // time read
 static bool cmd_GetZTZEU(MctInstance *inst, void *para)
 {
-    tWanClock *clock = (tWanClock *)para;
+    wanClock_t *clock = (wanClock_t *)para;
     if (true == mct_a7680c_execute(inst,  CMD_A7680C_CLOCK_READ, clock))
     {
         return true;
     }
     else
     {
-        memset(clock, 0, sizeof(tWanClock));
+        memset(clock, 0, sizeof(wanClock_t));
         ULOG_INFO("A7680C: GetZTZEU failed:");
         return false;
     }
@@ -607,6 +607,164 @@ static bool cmd_revHandle(MctInstance *inst,void *para)
     return true;
 }
 
+static bool cmd_httpConnect(MctInstance *inst, void *para)
+{
+    uint8_t MAX_RETRIES = 3;
+    httpAction_t *url_info = (httpAction_t *)para;
+    
+    if (url_info == NULL || url_info->ip == NULL)
+    {
+        ULOG_INFO("HTTP Connect: Invalid URL parameters\r\n");
+        return false;
+    }
+    
+    // HTTP服务初始化
+
+    for (int i = 0; i < MAX_RETRIES; i++)
+    {
+        if (mct_a7680c_execute(inst, CMD_A7680C_HTTPINIT, NULL) == true)
+        {
+            ULOG_INFO("HTTP Init Successfully!\r\n");
+            break;
+        }
+        if (i == MAX_RETRIES - 1)
+        {
+            ULOG_INFO("HTTP Init Failed!\r\n");
+            return false;
+        }
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+    }
+    
+    // 构建完整URL
+    char full_url[256] = {0};
+    snprintf(full_url, sizeof(full_url), "http://%s:%u%s", url_info->ip, url_info->port, url_info->file_path);
+    
+    // 设置HTTP参数 - URL
+    httpParaInfo_t http_para;
+    http_para.param_tag = "URL";
+    http_para.param_value = full_url;
+    
+    for (int i = 0; i < MAX_RETRIES; i++)
+    {
+        if (mct_a7680c_execute(inst, CMD_A7680C_HTTPPARA, &http_para) == true)
+        {
+            ULOG_INFO("HTTP URL Set Successfully: %s\r\n", full_url);
+            break;
+        }
+        if (i == MAX_RETRIES - 1)
+        {
+            ULOG_INFO("HTTP URL Set Failed!\r\n");
+            return false;
+        }
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+    }
+    
+    // 设置HTTP参数 - Content-Type
+    http_para.param_tag = "CONTENT";
+    http_para.param_value = "application/octet-stream";
+    
+    if (mct_a7680c_execute(inst, CMD_A7680C_HTTPPARA, &http_para) == true)
+    {
+        ULOG_INFO("HTTP Content-Type Set Successfully!\r\n");
+    }
+    else
+    {
+        ULOG_INFO("HTTP Content-Type Set Failed!\r\n");
+        // 允许失败，继续执行
+    }
+    // 执行HTTP GET请求
+    httpActionInfo_t http_action;
+    memset(&http_action, 0, sizeof(httpActionInfo_t));
+    http_action.http_action_pack.method = 0; // GET方法
+
+    
+    for (int i = 0; i < MAX_RETRIES; i++)
+    {
+        if (mct_a7680c_execute(inst, CMD_A7680C_HTTPACTION, &http_action) == true)
+        {
+            ULOG_INFO("HTTP GET Request Successfully!\r\n");
+            break;
+        }
+        if (i == MAX_RETRIES - 1)
+        {
+            ULOG_INFO("HTTP GET Request Failed!\r\n");
+            return false;
+        }
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+    }
+
+    return true;
+}
+
+static bool cmd_httpGet(MctInstance *inst, void *para)
+{
+    httpAction_t *http_info = (httpAction_t *)para;
+    
+    if (http_info == NULL)
+    {
+        ULOG_INFO("HTTP GET: Invalid parameters\r\n");
+        return false;
+    }
+    
+    // 查询并读取数据
+    httpReadInfo_t read_info = {0};
+    memset(&read_info, 0, sizeof(httpReadInfo_t));
+    // 传输起始地址
+    read_info.start_pos = http_info->block_num *http_info->block_len;
+    // 传输长度
+    read_info.length = http_info->block_len;
+    // 最大缓冲大小 = 传输长度
+    read_info.max_buffer_size = http_info->block_len;
+    // 数据指针
+    read_info.data_buffer =http_info->p_file_data;
+
+    
+    if (mct_a7680c_execute(inst, CMD_A7680C_HTTPREAD, &read_info) == true)
+    {
+        if (read_info.RevCmdValidFlag && read_info.data_length > 0)
+        {
+            ULOG_INFO("HTTP Data Downloaded: %u bytes\r\n", read_info.data_length);
+            // 更新实际下载的数据长度
+            http_info->file_len = read_info.data_length;
+            return true;
+        }
+        else
+        {
+            ULOG_INFO("No HTTP Response Data Available\r\n");
+            return false;
+        }
+    }
+    else
+    {
+        ULOG_INFO("HTTP Data Download Failed!\r\n");
+        return false;
+    }
+}
+
+static bool cmd_httpClose(MctInstance *inst, void *para)
+{
+    uint8_t MAX_RETRIES = 3;    
+    
+    // 终止HTTP服务
+    for (int i = 0; i < MAX_RETRIES; i++)
+    {
+        if (mct_a7680c_execute(inst, CMD_A7680C_HTTPTERM, NULL) == true)
+        {
+            ULOG_INFO("HTTP Service Terminated Successfully!\r\n");
+            break;
+        }
+        if (i == MAX_RETRIES - 1)
+        {
+            ULOG_INFO("HTTP Service Terminate Failed!\r\n");
+            // 允许失败，因为可能服务已经关闭
+        }
+        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+    }
+    
+    return true;
+}
+
+
 static const tCmdApi funList[] =
     {
         {.id = CMD_ECHO_CLOSE, .fun = cmd_NULL},
@@ -626,7 +784,9 @@ static const tCmdApi funList[] =
         {.id = CMD_COLDSTARTUP_CHECK, .fun = cmd_coldstartcheck},
         {.id = CMD_POWEROFF, .fun = cmd_poweroff},
         {.id = CMD_REV_FLOW,   .fun = cmd_revHandle},
-
+        {.id = CMD_HTTPCONNECT,   .fun = cmd_httpConnect},
+        {.id = CMD_HTTPGET,   .fun = cmd_httpGet},
+        {.id = CMD_HTTPCLOSE,   .fun = cmd_httpClose},
 };
 
 tCmdApi const *CMD_A7680CApiGet(void)
