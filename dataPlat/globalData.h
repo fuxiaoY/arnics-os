@@ -24,11 +24,7 @@ extern bool sys_allow_sleep;
 /*运行与配置参数------------------------------------------------------------------------*/
 extern systemCfg_t g_system_cfg;       // 全局配置参数
 extern systemStatus_t g_system_status; // 全局运行参数
-extern mqttTopic_t g_mqtt_topic;	   // MQTT主题集
-extern NetworkPara_t networkPara;      // 媒体中心网络参数
-extern char g_mqtt_wan_buf[256];       // MQTT远程帧缓冲区
-extern bool is_mqtt_wan_buf_ready;
-extern MqttPulish_t g_mqtt_publish;
+
 
 #ifdef __cplusplus
 }
