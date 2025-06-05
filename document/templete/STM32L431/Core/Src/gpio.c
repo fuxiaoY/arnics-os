@@ -150,16 +150,10 @@ void bsp_gpio_init(io_t *io)
           HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
       }
   }
-
-
-
-
-
-
 }
 void bsp_gpio_close(io_t *io)
 {
-  HAL_GPIO_Init(io->GPIOx, &io->GPIO_InitStruct);
+  HAL_GPIO_DeInit(io->GPIOx, io->GPIO_InitStruct.Pin);
 
 }
 void bsp_gpio_set(io_t *io,unsigned int statue)
