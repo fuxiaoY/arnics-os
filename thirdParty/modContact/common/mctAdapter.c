@@ -128,7 +128,7 @@ bool mctApiExecute(MctInstance *inst,uint16_t id, void *para)
     {
         return false; // 如果未找到，则返回执行失败
     }
-    bool cmd_use_malloc, payload_use_malloc = false;
+    bool cmd_use_malloc = false, payload_use_malloc = false;
     if(inst->cmd_cache == NULL)
     {
         cmd_use_malloc = true;

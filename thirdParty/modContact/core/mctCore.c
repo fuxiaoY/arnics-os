@@ -3,8 +3,14 @@
 
 void mct_data_reset(MctInstance* pInstance)
 {
-    memset(pInstance->cmd_cache,0,pInstance->CMD_MAX_SIZE);
-    memset(pInstance->payload_cache,0,pInstance->PAYLOAD_MAX_SIZE);
+    if(NULL != pInstance->cmd_cache)
+    {
+        memset(pInstance->cmd_cache,0,pInstance->CMD_MAX_SIZE);
+    }
+    if(NULL != pInstance->payload_cache)
+    {
+        memset(pInstance->payload_cache,0,pInstance->PAYLOAD_MAX_SIZE);
+    }
     pInstance->cmd_size = 0;
     pInstance->payload_size = 0;
 }
