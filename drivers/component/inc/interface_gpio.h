@@ -13,6 +13,8 @@ enum IO_CTL
   IO_SET,
   IO_RESET,
   IO_READ,
+  IO_FREECFG,
+  IO_NVIC_DISABLE,
 };
 
 extern int gpio_open(device_t *self);

@@ -20,8 +20,15 @@ enum IIC_CTL
 {
   IIC_WRITE = 0,
   IIC_READ,
+  IIC_WRITE16,
+  IIC_READ16,
 };
 
+typedef enum 
+{
+  ADDR_8BIT,
+  ADDR_16BIT,
+}addr_type_e;
 
 extern int iic_open(device_t *self);
 extern int iic_close(device_t *self);

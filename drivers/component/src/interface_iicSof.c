@@ -1,3 +1,4 @@
+#include "../../common/drivers_list.h"
 #include "../inc/interface_iicSof.h"
 #include "../../../port/delay.h"
 #include "../../bsp/bsp_def.h"
@@ -207,7 +208,7 @@ void IIC_Send7bitAddress(device_t *self,uint8_t Address, uint8_t Direction)
     IIC_Send_Byte(self,Address);
 }
 
-int IIC_Write(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *buf, uint16_t len,uint32_t timeout)
+int IIC_Write(device_t *self, uint8_t devAddr, uint16_t regAddr, addr_type_e regType, uint8_t *buf, uint16_t len,uint32_t timeout)
 {
     int Ret = 0;
 
@@ -231,11 +232,33 @@ int IIC_Write(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *buf, ui
     }
 
     // 步骤4：发送寄存器地址
-    IIC_Send_Byte(self, regAddr);
-    if (IIC_Wait_Ack(self))
+    switch(regType)
     {
-        IIC_Stop(self);
-        return -14;
+        case ADDR_8BIT:
+            IIC_Send_Byte(self, (uint8_t)regAddr);
+            if (IIC_Wait_Ack(self))
+            {
+                IIC_Stop(self);
+                Ret = -14; 
+                return Ret;
+            }
+        break;
+        case ADDR_16BIT:
+            IIC_Send_Byte(self, (uint8_t)(regAddr >> 8));
+            if (IIC_Wait_Ack(self))
+            {
+                IIC_Stop(self);
+                Ret = -14; 
+                return Ret;
+            }
+            IIC_Send_Byte(self, (uint8_t)regAddr);
+            if (IIC_Wait_Ack(self))
+            {
+                IIC_Stop(self);
+                Ret = -14; 
+                return Ret;
+            }
+        break;
     }
 
     // 步骤5：发送待写入的字节，然后阻塞等待ACK
@@ -255,7 +278,7 @@ int IIC_Write(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *buf, ui
     return Ret;
 }
 
-int IIC_Read(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut)
+int IIC_Read(device_t *self, uint8_t devAddr, uint16_t regAddr, addr_type_e regType, uint8_t *ReadBuf, uint32_t ReadLen, uint32_t TimeOut)
 {
     int Ret = 0;
 
@@ -280,12 +303,33 @@ int IIC_Read(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf,
     }
 
     // 步骤4：发送寄存器地址
-    IIC_Send_Byte(self, regAddr);
-    if (IIC_Wait_Ack(self))
+    switch(regType)
     {
-        IIC_Stop(self);
-        Ret = -14; 
-        return Ret;
+        case ADDR_8BIT:
+            IIC_Send_Byte(self, (uint8_t)regAddr);
+            if (IIC_Wait_Ack(self))
+            {
+                IIC_Stop(self);
+                Ret = -14; 
+                return Ret;
+            }
+        break;
+        case ADDR_16BIT:
+            IIC_Send_Byte(self, (uint8_t)(regAddr >> 8));
+            if (IIC_Wait_Ack(self))
+            {
+                IIC_Stop(self);
+                Ret = -14; 
+                return Ret;
+            }
+            IIC_Send_Byte(self, (uint8_t)regAddr);
+            if (IIC_Wait_Ack(self))
+            {
+                IIC_Stop(self);
+                Ret = -14; 
+                return Ret;
+            }
+        break;
     }
 
     // 步骤5：产生第二个起始信号
@@ -320,7 +364,6 @@ int IIC_Read(device_t *self, uint8_t devAddr, uint8_t regAddr, uint8_t *ReadBuf,
 }
 
 
-
 int iic_open(device_t *self)
 {
     return IIC_Init(self);
@@ -328,13 +371,16 @@ int iic_open(device_t *self)
 
 int iic_close(device_t *self)
 {
+    iicSof_t *iicSofInstance = (iicSof_t *)self->device;
+    bsp_gpio_close(&(iicSofInstance->SCL));
+    bsp_gpio_close(&(iicSofInstance->SDA_OUT));
     return 0;
 }
 
 int iic_ctl(device_t *self, int cmd,va_list ap)
 {
     uint8_t devAddr = (uint8_t)va_arg(ap, int);
-    uint8_t regAddr = (uint8_t)va_arg(ap, int);
+    uint16_t regAddr = (uint16_t)va_arg(ap, int);
 
     if(self->ds == 0)
     {
@@ -348,14 +394,28 @@ int iic_ctl(device_t *self, int cmd,va_list ap)
             uint8_t *Writedata = (uint8_t*)va_arg(ap, int);
             uint32_t WriteLen = (uint32_t)va_arg(ap, int); 
             uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
-            return IIC_Write(self,devAddr,regAddr,Writedata,WriteLen,TimeOut);
+            return IIC_Write(self,devAddr,regAddr,ADDR_8BIT,Writedata,WriteLen,TimeOut);
         }
         case IIC_READ:
         {
             uint8_t* ReadBuf = va_arg(ap, uint8_t*);
             uint32_t ReadLen = (uint32_t)va_arg(ap, int); 
             uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
-            return IIC_Read(self,devAddr,regAddr,ReadBuf,ReadLen,TimeOut);   
+            return IIC_Read(self,devAddr,regAddr,ADDR_8BIT,ReadBuf,ReadLen,TimeOut);   
+        }
+        case IIC_WRITE16:
+        {
+            uint8_t *Writedata = (uint8_t*)va_arg(ap, int);
+            uint32_t WriteLen = (uint32_t)va_arg(ap, int); 
+            uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
+            return IIC_Write(self,devAddr,regAddr,ADDR_16BIT,Writedata,WriteLen,TimeOut);
+        }
+        case IIC_READ16:
+        {
+            uint8_t* ReadBuf = va_arg(ap, uint8_t*);
+            uint32_t ReadLen = (uint32_t)va_arg(ap, int); 
+            uint32_t TimeOut = (uint32_t)va_arg(ap, int); 
+            return IIC_Read(self,devAddr,regAddr,ADDR_16BIT,ReadBuf,ReadLen,TimeOut);   
         }
         default: return -1;
 

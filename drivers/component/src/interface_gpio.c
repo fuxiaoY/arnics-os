@@ -1,3 +1,4 @@
+#include "../../common/drivers_list.h"
 #include "../inc/interface_gpio.h"
 #include "gpio.h"
 
@@ -51,6 +52,20 @@ int gpio_ctl(device_t *self, int cmd, va_list ap)
         {
             return bsp_gpio_get(self->device);
 
+        }
+        case IO_FREECFG:
+        {
+            uint32_t gpio_mode = (uint32_t)va_arg(ap, int);
+            uint32_t gpio_pull = (uint32_t)va_arg(ap, int);
+            uint32_t gpio_speed = (uint32_t)va_arg(ap, int);    
+            uint8_t  gpio_PinState = (uint8_t)va_arg(ap, int); 
+            bsp_gpio_free_cfg(self->device,gpio_mode,gpio_pull,gpio_speed,gpio_PinState);
+            break;
+        }
+        case IO_NVIC_DISABLE:
+        {
+            bsp_gpio_irq_disable(self->device);
+            break;
         }
         default: return -1; 
     }

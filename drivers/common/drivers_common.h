@@ -46,12 +46,6 @@ typedef struct
     void (*ds_irq)(device_t *dev);
 }dev_operations;
 
-struct device_t
-{
-    int ds;       /* 设备号 */
-    void *device; /* 设备指针 */
-    dev_operations *dev_ops; /* 设备操作函数 */
-} ;
 
 
 

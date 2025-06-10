@@ -1,3 +1,4 @@
+#include "../../common/drivers_list.h"
 #include "../inc/interface_rng.h"
 #include "../../bsp/bsp_def.h"
 #include "rng.h"

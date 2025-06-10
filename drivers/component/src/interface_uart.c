@@ -1,3 +1,4 @@
+#include "../../common/drivers_list.h"
 #include "../inc/interface_uart.h"
 #include "../../bsp/bsp_def.h"
 #include "usart.h"
@@ -63,7 +64,6 @@ int uart_write(device_t *self, void *buf, size_t count)
 
 int uart_ctl(device_t *self, int cmd,va_list ap)
 {
-    void* arg1 = va_arg(ap, void*);
     if(self->ds == 0)
     {
         return -1;
@@ -71,10 +71,23 @@ int uart_ctl(device_t *self, int cmd,va_list ap)
     switch(cmd)
     {
         case UART_DSEND:
-        return bsp_uart_dirct_send(self->device,arg1);
+        {
+            void* arg1 = va_arg(ap, void*);
+            return bsp_uart_dirct_send(self->device,arg1);
+        }
+        case UART_WAKEUP_SET:
+        {
+            bsp_uart_wakeup_set(self->device);
+        }
+        break;
+        case UART_WAKEUP_CLR:
+        {
+            bsp_uart_wakeup_clear(self->device);
+        }
+        break;
         default: return -1; 
     }
-
+    return 0;
 }
 void uart_irq(device_t *self)
 {

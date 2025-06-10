@@ -1,3 +1,4 @@
+#include "../../common/drivers_list.h"
 #include "../inc/interface_iwdg.h"
 #include "iwdg.h"
 

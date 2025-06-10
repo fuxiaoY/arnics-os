@@ -1,7 +1,10 @@
 
 
+#include "../../common/drivers_list.h"
 #include "../inc/interface_adc.h"
 #include "adc.h"
+
+
 int adc_open(device_t *self)
 {
     if(self->ds == 0)

@@ -37,7 +37,12 @@ extern "C" {
 #include "../../Inc/typedef.h"
 #include "../bsp/drivers_var.h"
 
-
+struct device_t
+{
+    int ds;       /* 设备号 */
+    void *device; /* 设备指针 */
+    dev_operations *dev_ops; /* 设备操作函数 */
+};
 /* define -------------------------------------------------------------*/
 
 /* declaration --------------------------------------------------------*/

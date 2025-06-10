@@ -1,3 +1,4 @@
+#include "../../common/drivers_list.h"
 #include "../inc/interface_spi.h"
 #include "../../bsp/bsp_def.h"
 #include "spi.h"

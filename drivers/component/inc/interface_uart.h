@@ -12,6 +12,8 @@ extern "C" {
 enum UART_CTL
 {
   UART_DSEND = 0,
+  UART_WAKEUP_SET,
+  UART_WAKEUP_CLR,
 };
 
 

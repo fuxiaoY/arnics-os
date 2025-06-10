@@ -1,4 +1,5 @@
 
+#include "../../common/drivers_list.h"
 #include "../inc/interface_flash.h"
 #include "flash.h"
 /*
