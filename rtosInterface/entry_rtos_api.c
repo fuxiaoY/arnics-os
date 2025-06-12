@@ -1,7 +1,5 @@
 #include "entry_rtos_api.h"
 #undef cpuInfo
-#undef vApplicationMallocFailedHook
-#undef vApplicationStackOverflowHook
 #undef rtosTaskSuspendAll
 #undef rtosTaskResumeAll
 #undef rtosThreadDelayUntil
@@ -116,6 +114,8 @@ const tRTOSEntry entry_rtos_list =
     INIT_MEMBER(ReleaseMediaMsgQueueMutex),
     #undef CheckMediaRspMesgNum
     INIT_MEMBER(CheckMediaRspMesgNum),
+    #undef CheckMediaReqMesgNum
+    INIT_MEMBER(CheckMediaReqMesgNum),
     #undef PeekMediaRspMesg
     INIT_MEMBER(PeekMediaRspMesg),
     #undef CheckMediaQueueSpacesAvailable
