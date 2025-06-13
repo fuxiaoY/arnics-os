@@ -1,15 +1,21 @@
 #include "dataLink.h"
+#include "../../../dataPlat/dataPlatInclude.h"
+#undef X 
+#define X(name, var, len) {var, len, name},
 
 
+// 参数表结构体
+typedef struct {
+    void* pVar;
+    uint32_t len;
+    mctParaIndex index; // 添加索引字段
+} mctParaList;
 
 
-#undef X
-#define X(name,var,len) \
-    {var,len},
 // 用户事件
 static mctParaList paraTable[] = 
 {
-    MCT_DATA_LIST
+    #include "dataLinkDef.h" 
 }; 
 
 void *mctParaGetPtr(mctParaIndex id)
