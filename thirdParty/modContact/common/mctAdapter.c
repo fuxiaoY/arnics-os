@@ -3,7 +3,7 @@
 
 bool AT_found(MctInstance *inst)
 {
-    bool cmd_use_malloc, payload_use_malloc = false;
+    bool cmd_use_malloc = false, payload_use_malloc = false;
     if(inst->cmd_cache == NULL)
     {
         cmd_use_malloc = true;
