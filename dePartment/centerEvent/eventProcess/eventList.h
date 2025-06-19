@@ -36,6 +36,7 @@ extern "C" {
 
 #define EVENT_INTERNAL_EMPLOY 1
 #define EVENT_EXTERNAL_EMPLOY 2
+#define EVENT_HIRED_EMPLOY    3 
 
 // 定义 X 宏
 #define X(func, priority, needRsp) \
@@ -49,6 +50,9 @@ extern "C" {
 #define REGISTER_ENTRIES \
     X(NULL, EVENT_EXTERNAL_EMPLOY, false) 
 
+
+#define HIRD_EMPLOY_STATIC_REFERENCE \
+    Y(NULL,rtosPriorityNormal,0) 
 
 #ifdef __cplusplus
 }

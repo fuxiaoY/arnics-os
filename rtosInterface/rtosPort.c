@@ -102,6 +102,24 @@ void rtosThreadDelay(uint32_t ms)
 {
     osDelay(ms);
 }
+void rtosTaskCreate(char* name, \
+                            rtosPriority_e priority, \
+                            void* func, \
+                            uint32_t stackSize, \
+                            void* arg)
+{
+    if (func == NULL || stackSize == 0) 
+    {
+        return;
+    }
+    const osThreadDef_t os_thread_def = 
+    {(name), (os_pthread)(func),(osPriority)(priority),0,(stackSize)};
+    osThreadCreate(&os_thread_def, arg);
+}
+void rtosTaskSelfDelete(void)
+{
+    vTaskDelete(NULL);
+}
 
 /*---------------------------------------------------------------------------------------*/
 

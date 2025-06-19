@@ -9,8 +9,8 @@
   * 该文件定义了事件核心的相关宏定义、结构体和函数声明。
   * 主要用于事件的管理和处理。
   * 
-  * @version        : 1.0.1
-  * @date           : 2025-05-15
+  * @version        : 1.0.2
+  * @date           : 2025-06-19
   ******************************************************************************
   * @attention
   *
@@ -36,10 +36,9 @@ extern "C" {
 #include "../../../dataPlat/dataPlatInclude.h"
 #include "../../../core/coreInclude.h"
 #include "../../../Common/commonInclude.h"
-
 /* define ------------------------------------------------------------*/
 
-
+#define EVENT_VERSION "1.0.2"
 // 宏定义，用于清除事件标志 表示将处理过的所有事件无效化
 #define CLR_EVENT_FLAG_ALL(pEvent_) \
     do                              \
@@ -54,14 +53,23 @@ extern "C" {
 typedef struct {
     const char* name;
     void (*func)(void* argv);
-    int priority;
+    int employ_kind;
+    size_t msg_struct_offset;
+    size_t msg_struct_size;
     bool needRsp;
 } RegisterEntry;
 
 // 定义事件位映射结构体
 typedef struct {
     const char* name;
+    int employ_kind;
+    size_t msg_struct_offset;
+    size_t msg_struct_size;
     uint32_t event_bit;
+    bool needRsp;
+    //status
+    bool is_running;
+    void* task_argv;
 } EventBitMapping;
 
 

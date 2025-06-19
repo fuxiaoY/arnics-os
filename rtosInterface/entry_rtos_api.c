@@ -1,10 +1,13 @@
 #include "entry_rtos_api.h"
 #undef cpuInfo
+#undef vApplicationMallocFailedHook
+#undef vApplicationStackOverflowHook
 #undef rtosTaskSuspendAll
 #undef rtosTaskResumeAll
 #undef rtosThreadDelayUntil
 #undef rtosThreadDelay
-
+#undef rtosTaskCreate
+#undef rtosTaskSelfDelete
 #undef rtosAdGetMsg
 #undef rtosAdSendMsg
 #undef rtosTakeMsgFromAd
@@ -53,7 +56,10 @@ const tRTOSEntry entry_rtos_list =
     INIT_MEMBER(rtosThreadDelayUntil),
     #undef rtosThreadDelay
     INIT_MEMBER(rtosThreadDelay),
-
+    #undef rtosTaskCreate
+    INIT_MEMBER(rtosTaskCreate),
+    #undef rtosTaskSelfDelete
+    INIT_MEMBER(rtosTaskSelfDelete),
     #undef rtosAdGetMsg
     INIT_MEMBER(rtosAdGetMsg),
     #undef rtosAdSendMsg

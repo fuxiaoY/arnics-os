@@ -2,6 +2,7 @@
 #define ENTRY_RTOS_API_H_
 #include "../Inc/ProjDefine.h"
 #include "../Inc/typedef.h"
+#include "rtosInterface.h"
 #ifdef _USE_FREERTOS_
 #define BLOCK_DELAY 0xffffffffUL
 #endif
@@ -12,7 +13,12 @@ typedef void     (T_TYPEDEF(rtosTaskSuspendAll))(void);
 typedef void     (T_TYPEDEF(rtosTaskResumeAll))(void);
 typedef void     (T_TYPEDEF(rtosThreadDelayUntil))(uint32_t time);
 typedef void     (T_TYPEDEF(rtosThreadDelay))(uint32_t ms);
-
+typedef void     (T_TYPEDEF(rtosTaskCreate))(char* name, \
+                                            rtosPriority_e priority, \
+                                            void* func, \
+                                            uint32_t stackSize, \
+                                            void* arg);
+typedef void     (T_TYPEDEF(rtosTaskSelfDelete))(void);
 typedef bool     (T_TYPEDEF(rtosAdGetMsg))(void *msg, uint32_t delay);
 typedef bool     (T_TYPEDEF(rtosAdSendMsg))(void *msg, uint32_t delay);
 typedef bool     (T_TYPEDEF(rtosTakeMsgFromAd))(void *msg, uint32_t delay);
@@ -56,6 +62,8 @@ typedef struct
     T_STRUCT_MEMBER(rtosTaskResumeAll);
     T_STRUCT_MEMBER(rtosThreadDelayUntil);
     T_STRUCT_MEMBER(rtosThreadDelay);
+    T_STRUCT_MEMBER(rtosTaskCreate);
+    T_STRUCT_MEMBER(rtosTaskSelfDelete);
 
     T_STRUCT_MEMBER(rtosAdGetMsg);
     T_STRUCT_MEMBER(rtosAdSendMsg);
@@ -104,6 +112,8 @@ extern const tRTOSEntry entry_rtos_list;
 #define rtosTaskResumeAll                         RTOS_MICRODEF(rtosTaskResumeAll)
 #define rtosThreadDelayUntil                      RTOS_MICRODEF(rtosThreadDelayUntil)
 #define rtosThreadDelay                           RTOS_MICRODEF(rtosThreadDelay)
+#define rtosTaskCreate                            RTOS_MICRODEF(rtosTaskCreate)
+#define rtosTaskSelfDelete                        RTOS_MICRODEF(rtosTaskSelfDelete)
 
 #define rtosAdGetMsg                              RTOS_MICRODEF(rtosAdGetMsg)
 #define rtosAdSendMsg                             RTOS_MICRODEF(rtosAdSendMsg)

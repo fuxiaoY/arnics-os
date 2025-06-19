@@ -5,7 +5,7 @@
 #include "../../../rtosInterface/entry_rtos_api.h"
 
 
-DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 3);
+DEFINE_ARNICS_FUNC_ITEM_RANGE(arnics_event_item, EVENT_TAG, 0, 4);
 _SECTION("._entry_event_api")
 
 static EVENT_STATE event_state = OnWattingOutMsg;
@@ -15,7 +15,7 @@ static message_t mesg_cache = {0};//事件应用消息
 
 
 #undef X
-#define X(func, priority, needRsp) + 1
+#define X(func, employ_kind, needRsp) + 1
 #define COUNT_TOTAL_ENTRIES (0 REGISTER_ENTRIES)
 // 定义事件位映射表
 static EventBitMapping eventBitMapping[COUNT_TOTAL_ENTRIES];
@@ -25,8 +25,8 @@ static uint32_t getRegisterTableNum()
 }
 #undef X
 // 定义 X 宏
-#define X(func, priority, needRsp) \
-    {#func, func, priority, needRsp},
+#define X(func, employ_kind, needRsp) \
+    {#func, func, employ_kind,offsetof(messge_deliver_t,func##_msg),(sizeof(func##_msg_t)),needRsp},
 
 // 用户事件
 static RegisterEntry registerTable[] = 
@@ -37,13 +37,13 @@ static RegisterEntry registerTable[] =
 
 #undef X
 // 定义 X 宏来调用 ARNICS_REGISTER
-#define X(func, priority, needRsp) \
-    ARNICS_REGISTER(#func, func, EVENT_TAG, priority);
+#define X(func, employ_kind, needRsp) \
+    ARNICS_REGISTER(#func, func, EVENT_TAG, employ_kind);
 // 调用 X 宏
 REGISTER_ENTRIES
 
 #undef X
-#define X(func, priority, needRsp) + 1
+#define X(func, employ_kind, needRsp) + 1
 
 
 
@@ -213,6 +213,7 @@ void id_to_event_combination(uint32_t id, uint32_t* output, uint32_t* count)
         last = v;
     }
 }
+
 /*--------------------------------------------------------*/
 // event core
 
@@ -223,7 +224,11 @@ void event_list_register()
     for (size_t i = 0; i < getRegisterTableNum(); ++i)
     {
         eventBitMapping[i].name = registerTable[i].name;
+        eventBitMapping[i].employ_kind = registerTable[i].employ_kind;
         eventBitMapping[i].event_bit = i;
+        eventBitMapping[i].msg_struct_offset = registerTable[i].msg_struct_offset;
+        eventBitMapping[i].msg_struct_size = registerTable[i].msg_struct_size;
+        eventBitMapping[i].needRsp = registerTable[i].needRsp;
     }
 }
 
@@ -234,7 +239,127 @@ void event_init(void)
     event_list_register();
 }
 
-void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
+/*-------------------------------------------------------------------------------------*/
+
+/*雇佣员工-----------------------------------------------------------------------------*/
+typedef struct 
+{
+    uint8_t j;
+    messge_deliver_t data;
+}hird_employ_t;
+
+typedef struct {
+    const char* name;
+    rtosPriority_e rtos_priority;
+    size_t stack_size;
+} hird_employ_task_t;
+#undef Y
+#define Y(name,rtos_priority,stack_size) \
+    {#name, rtos_priority,stack_size},
+hird_employ_task_t stack_ref[] =
+{
+    HIRD_EMPLOY_STATIC_REFERENCE
+};
+#undef Y
+
+static volatile uint32_t hird_task_id = 0;
+void hird_employ(void *argument)
+{
+    hird_employ_t *param = (hird_employ_t *)argument;
+    uint8_t j = param->j;
+    hird_task_id++;
+    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name, EVENT_HIRED_EMPLOY, (uint8_t*)&param->data + eventBitMapping[j].msg_struct_offset);
+    if(false == eventBitMapping[j].needRsp)
+    {
+        arnicsFree(param); // 不需要回复则直接释放内存
+    }
+    eventBitMapping[j].is_running = false;
+    rtosTaskSelfDelete();
+}
+void hird_employ_no_argv(void *argument)
+{
+    hird_employ_t *param = (hird_employ_t *)argument;
+    uint8_t j = param->j;
+    if(false == eventBitMapping[j].needRsp)
+    {
+        arnicsFree(param); // 不需要回复则直接释放内存
+    }
+    hird_task_id++;
+    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name, EVENT_HIRED_EMPLOY,NULL);
+    eventBitMapping[j].is_running = false;
+    rtosTaskSelfDelete();
+}
+void event_hird_employ_task(uint8_t j,void *argv)
+{
+    uint32_t current_hird_task_id = hird_task_id;
+    if((EVENT_HIRED_EMPLOY == eventBitMapping[j].employ_kind))
+    {
+        if(true == eventBitMapping[j].is_running)
+        {
+            ULOG_ERROR("event:hird_employ task is running! %s",eventBitMapping[j].name);
+            return;
+        }
+        hird_employ_t *hird_employ_data = (hird_employ_t *)arnicsMalloc(sizeof(hird_employ_t));
+        eventBitMapping[j].task_argv = hird_employ_data;
+        if (hird_employ_data == NULL) 
+        {
+            ULOG_ERROR("event:Memory allocation failed! %s",eventBitMapping[j].name);
+            return;
+        }
+        hird_employ_data->j = j;
+        size_t stack_size = 256;
+        rtosPriority_e rtos_priority = rtosPriorityNormal;
+        for(size_t i = 0; i < sizeof(stack_ref); i++)
+        {
+            if(0 == strcmp(stack_ref[i].name, eventBitMapping[j].name))
+            {
+                // 用户指定堆空间
+                stack_size = stack_ref[i].stack_size;
+                rtos_priority = stack_ref[i].rtos_priority;
+                break;  
+            }
+        }
+
+        eventBitMapping[j].is_running = true;
+        if(NULL != argv)
+        {
+            memcpy(&hird_employ_data->data,argv,sizeof(messge_deliver_t));
+            rtosTaskCreate((char*)eventBitMapping[j].name, rtos_priority, (void* )hird_employ, stack_size, hird_employ_data);
+        }
+        else
+        {
+            rtosTaskCreate((char*)eventBitMapping[j].name, rtos_priority, (void* )hird_employ_no_argv, stack_size, hird_employ_data);
+        }
+
+        uint32_t i_count = 0;
+        do
+        {
+            rtosThreadDelay(100);
+            i_count++;
+            if(i_count > 20)
+            {
+                i_count = 20;
+                ULOG_ERROR("%s task create out of time!",eventBitMapping[j].name);
+                rtosThreadDelay(1000);
+            }
+        } while(current_hird_task_id == hird_task_id);
+        //任务创建成功，由任务负责释放内存
+    }
+}
+void hird_employ_message_handle(size_t mapping_id,messge_deliver_t *event_mesg_cache)
+{
+    // 等待雇佣工执行完成
+    do
+    {
+        rtosThreadDelay(100);
+    }while(true == eventBitMapping[mapping_id].is_running);
+
+    memcpy((uint8_t*)event_mesg_cache + eventBitMapping[mapping_id].msg_struct_offset, \
+    (uint8_t*)eventBitMapping[mapping_id].task_argv +offsetof(hird_employ_t,data) + eventBitMapping[mapping_id].msg_struct_offset,eventBitMapping[mapping_id].msg_struct_size);
+    arnicsFree(eventBitMapping[mapping_id].task_argv);
+}
+/*-------------------------------------------------------------------------------------*/
+void event_exec(uint32_t event_flag,uint32_t msg_flag,messge_deliver_t *argv)
 {
     uint32_t msgs[COUNT_TOTAL_ENTRIES];
     uint32_t msg_num = 0;
@@ -245,7 +370,37 @@ void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
     id_to_event_combination(event_flag, events, &event_num);
     id_to_event_combination(msg_flag, msgs, &msg_num);   
     bool ismsg = false;
-    //外部员工执行
+
+    // 雇佣员工执行
+    for (size_t i = 0; i < event_num; i++)
+    {
+        // 遍历查找匹配的 event_bit
+        for (size_t j = 0; j < getRegisterTableNum(); j++)
+        {
+            if (events[i] ==  eventBitMapping[j].event_bit)
+            {
+                ismsg = false;
+                for (size_t k = 0; k < msg_num; k++)
+                {
+                    if (msgs[k] ==  eventBitMapping[j].event_bit)
+                    {
+                        // 有消息传递
+                        ismsg = true;
+                        break;
+                    }
+                }
+                if(ismsg)
+                {
+                    event_hird_employ_task(j,argv);
+                }
+                else
+                {
+                    event_hird_employ_task(j,NULL);
+                }
+            }
+        }
+    }
+    // 外部员工执行
     for (size_t i = 0; i < event_num; i++)
     {
         // 遍历查找匹配的 event_bit
@@ -266,7 +421,7 @@ void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
                 if(ismsg)
                 {
                     // 找到匹配的 event_bit，执行对应的函数
-                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_EXTERNAL_EMPLOY,argv);
+                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_EXTERNAL_EMPLOY,((uint8_t*)argv + eventBitMapping[j].msg_struct_offset));
                 }
                 else
                 {
@@ -276,7 +431,7 @@ void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
             }
         }
     }
-    //内部员工执行
+    // 内部员工执行
     for (size_t i = 0; i < event_num; i++)
     {
         // 遍历查找匹配的 event_bit
@@ -297,7 +452,7 @@ void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
                 if(ismsg)
                 {
                     // 找到匹配的 event_bit，执行对应的函数
-                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_INTERNAL_EMPLOY,argv);
+                    EXECUTE_FUNC_BY_NAME_AT_LEVEL(arnics_event_item, eventBitMapping[j].name,EVENT_INTERNAL_EMPLOY,((uint8_t*)argv + eventBitMapping[j].msg_struct_offset));
                 }
                 else
                 {
@@ -307,7 +462,6 @@ void event_exec(uint32_t event_flag,uint32_t msg_flag,void *argv)
             }
         }
     }
-            
 }
 
 void event_internal_exec()
@@ -364,6 +518,8 @@ bool set_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg)
     }
     return true;
 }
+
+
 /*-------------------------------------------------------------------------------------*/
 
 /*任务主函数-----------------------------------------------------------------------------*/
@@ -401,7 +557,7 @@ _WEAK void eventAction()
 {
     while (1)
     {
-        event_exec(EVENT_FLAG,MSG_FLAG,mesg_cache.buf);          // 此处将里面的每一项需求分析出来，并分发任务
+        event_exec(EVENT_FLAG,MSG_FLAG,&mesg_cache.message_union.message_deliver);          // 此处将里面的每一项需求分析出来，并分发任务
         ULOG_DEBUG("eventCenter: analyzeSampleNeed Done!");
         rtosThreadDelay(100);
         event_state = SendingRspMsg; // 进入发送响应消息状态
@@ -419,10 +575,16 @@ _WEAK void onResetState()
         {
             if (single_event ==  eventBitMapping[i].event_bit)
             {
-                if (true == registerTable[i].needRsp)
+                if (true == eventBitMapping[i].needRsp)
                 {
-                    needRsp = true;
-                    break;
+                    needRsp = true; //必定需要回复，直接置位
+                    if(EVENT_HIRED_EMPLOY == eventBitMapping[i].employ_kind)
+                    {
+                        // 是雇佣工 等待雇佣工的消息
+                        hird_employ_message_handle(i,&mesg_cache.message_union.message_deliver);
+                    }
+
+
                 }
             }
         }
@@ -491,8 +653,7 @@ uint32_t SendEventCallToEventCenter(eventFlag_t eventflag, time_t wait)
     msg.msgflag = eventflag.msg_flag;
     if(!IS_EVENT_FLAG_CLR(msg.msgflag))
     {
-        memcpy(msg.buf, &eventflag.msg, sizeof(messageUnion_u));
-        msg.length = sizeof(messageUnion_u);
+        memcpy(&msg.message_union, &eventflag.msg, sizeof(messageUnion_u));
     }
 
     // 等待时间为wait
@@ -563,7 +724,7 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
                     // 找到消息，释放信号量并返回 TRUE
                     ReleaseEventosMsgQueueMutex();
                     //消息拷贝
-                    memcpy(argv,receivedMsg.buf,receivedMsg.length);
+                    memcpy(argv,&receivedMsg.message_union,sizeof(messageUnion_u));
                     return TRUE;
                 }
                 else

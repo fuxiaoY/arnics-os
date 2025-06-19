@@ -6,6 +6,7 @@ extern "C" {
 #endif
 #include "../Inc/ProjDefine.h"
 #include "../Inc/typedef.h"
+#include "rtosInterface.h"
 
 #ifdef _USE_FREERTOS_
 #include "FreeRTOS.h"
@@ -22,7 +23,12 @@ extern void rtosTaskSuspendAll(void);
 extern void rtosTaskResumeAll(void);
 extern void rtosThreadDelayUntil(uint32_t time);
 extern void rtosThreadDelay(uint32_t ms);
-
+extern void rtosTaskCreate(char* name, \
+    rtosPriority_e priority, \
+    void* func, \
+    uint32_t stackSize, \
+    void* arg);
+extern void rtosTaskSelfDelete(void);
 /*---------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------*/

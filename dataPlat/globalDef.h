@@ -32,7 +32,10 @@ typedef enum
 
 
 #define MAX_MESSAGE_LENGTH 40
-
+typedef struct 
+{
+    uint8_t reserved;
+} NULL_msg_t;
 
 typedef struct 
 {
@@ -67,7 +70,7 @@ typedef union
 */
 typedef struct 
 {
-    uint32_t msg_flag;                //消息标志位
+    NULL_msg_t NULL_msg;
     /*--------------------*/
     /* led0_toggle员工函数 */
     led0_toggle_msg_t led0_toggle_msg;  
@@ -94,9 +97,8 @@ typedef struct
 {
     time_t ID_Ts;                         //消息ID，可用于检查区分消息传送 
     uint32_t eventflag;                   //事件
-    uint32_t msgflag;                    //消息
-    char buf[MAX_MESSAGE_LENGTH];         // 可以根据需要添加更多的字段
-    int length;                           // 数据长度
+    uint32_t msgflag;                     //消息
+    messageUnion_u message_union;
 } message_t;
 
 /*---------------------------------------------------------------------------------------*/
