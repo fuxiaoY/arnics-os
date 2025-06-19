@@ -74,6 +74,22 @@ extern UART_HandleTypeDef huart1;
 /**
   * @brief This function handles Non maskable interrupt.
   */
+
+void LPUART1_IRQHandler(void)
+{
+  dev_irq(&debug_ds);
+}
+
+void RTC_Alarm_IRQHandler(void) 
+{
+  dev_irq(&rtc_ds);
+}
+
+void RTC_WKUP_IRQHandler(void)
+{
+  dev_irq(&rtc_ds);
+}
+
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
@@ -229,7 +245,16 @@ void USART1_IRQHandler(void)
 
   /* USER CODE END USART1_IRQn 1 */
 }
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
 
+  /* USER CODE END USART1_IRQn 0 */
+  dev_irq(&wan_uart_ds);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
 /**
   * @brief This function handles TIM7 global interrupt.
   */
@@ -382,4 +407,3 @@ void DMA2_Channel7_IRQHandler(void)
  
    /* USER CODE END EXTI15_10_IRQn 1 */
  } 
-  

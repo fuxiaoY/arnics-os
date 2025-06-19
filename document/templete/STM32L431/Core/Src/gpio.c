@@ -151,9 +151,63 @@ void bsp_gpio_init(io_t *io)
       }
   }
 }
+void bsp_gpio_irq_disable(io_t *io)
+{
+    if(io->GPIO_InitStruct.Pin == GPIO_PIN_0)
+    {
+        HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+    }
+    else if(io->GPIO_InitStruct.Pin == GPIO_PIN_1)
+    {
+        HAL_NVIC_DisableIRQ(EXTI1_IRQn);
+    }
+    else if(io->GPIO_InitStruct.Pin == GPIO_PIN_2)
+    {
+        HAL_NVIC_DisableIRQ(EXTI2_IRQn);
+    }
+    else if(io->GPIO_InitStruct.Pin == GPIO_PIN_3)
+    {
+        HAL_NVIC_DisableIRQ(EXTI3_IRQn);
+    }
+    else if(io->GPIO_InitStruct.Pin == GPIO_PIN_4)
+    {
+        HAL_NVIC_DisableIRQ(EXTI4_IRQn);
+    }
+    else if(io->GPIO_InitStruct.Pin == GPIO_PIN_5
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_6
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_7
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_8
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_9)
+    {
+        HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+    }
+    else if(io->GPIO_InitStruct.Pin == GPIO_PIN_10
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_11
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_12
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_13
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_14
+          || io->GPIO_InitStruct.Pin == GPIO_PIN_15)
+    {
+        HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+    }
+}
+
+void bsp_gpio_free_cfg(io_t *io,uint32_t gpio_mode,uint32_t gpio_pull,uint32_t gpio_speed,uint8_t gpio_PinState)
+{
+  io_t ioStruct = {0};
+
+  ioStruct.GPIOx = io->GPIOx;
+  ioStruct.GPIO_InitStruct.Pin = io->GPIO_InitStruct.Pin;
+  ioStruct.GPIO_InitStruct.Mode = gpio_mode;
+  ioStruct.GPIO_InitStruct.Pull = gpio_pull;
+  ioStruct.GPIO_InitStruct.Speed = gpio_speed;
+  ioStruct.PinState = (GPIO_PinState)gpio_PinState;
+  bsp_gpio_init(&ioStruct);
+
+}
 void bsp_gpio_close(io_t *io)
 {
-  HAL_GPIO_Init(io->GPIOx, &io->GPIO_InitStruct);
+  HAL_GPIO_DeInit(io->GPIOx, io->GPIO_InitStruct.Pin);
 
 }
 void bsp_gpio_set(io_t *io,unsigned int statue)

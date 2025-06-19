@@ -3,6 +3,7 @@
 // .h file
 #include "../../arnics-os/drivers/bsp/bsp_def.h"
 extern void bsp_gpio_init(io_t *io);
+extern void bsp_gpio_free_cfg(io_t *io,uint32_t gpio_mode,uint32_t gpio_pull,uint32_t gpio_speed,uint8_t gpio_PinState);
 extern void bsp_gpio_close(io_t *io);
 extern void bsp_gpio_set(io_t *io,unsigned int statue);
 extern GPIO_PinState bsp_gpio_get(io_t *io);
@@ -38,11 +39,24 @@ void bsp_gpio_init(io_t *io)
   HAL_GPIO_WritePin(io->GPIOx, io->GPIO_InitStruct.Pin, io->PinState);
 
 }
-void bsp_gpio_close(io_t *io)
+void bsp_gpio_free_cfg(io_t *io,uint32_t gpio_mode,uint32_t gpio_pull,uint32_t gpio_speed,uint8_t gpio_PinState)
 {
-  HAL_GPIO_DeInit(io->GPIOx, io->GPIO_InitStruct.Pin);
+  io_t ioStruct = {0};
+
+  ioStruct.GPIOx = io->GPIOx;
+  ioStruct.GPIO_InitStruct.Pin = io->GPIO_InitStruct.Pin;
+  ioStruct.GPIO_InitStruct.Mode = gpio_mode;
+  ioStruct.GPIO_InitStruct.Pull = gpio_pull;
+  ioStruct.GPIO_InitStruct.Speed = gpio_speed;
+  ioStruct.PinState = (GPIO_PinState)gpio_PinState;
+  bsp_gpio_init(&ioStruct);
 
 }
+void bsp_gpio_close(io_t *io)
+{
+  HAL_GPIO_DeInit(io->GPIOx, &io->GPIO_InitStruct);
+}
+
 void bsp_gpio_set(io_t *io,unsigned int statue)
 {
   HAL_GPIO_WritePin(io->GPIOx, io->GPIO_InitStruct.Pin, (GPIO_PinState)statue);

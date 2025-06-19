@@ -219,4 +219,66 @@ bool bsp_rtc_check_second_update(rtc_t *dev)
     
     return false; // 表示没有过去一秒
 }
-/* USER CODE END 1 */
+
+void bsp_rtc_alarm_set(rtc_t *dev, uint32_t sleep_ms)
+{
+  	RTC_HandleTypeDef *hrtc = &dev->hrtc;
+    uint32_t time_s = sleep_ms / 1000;
+    // alarm
+    RTC_AlarmTypeDef sAlarm = {0};
+    RTC_TimeTypeDef sTime;
+
+	// 时钟溢出处理
+    HAL_RTC_GetTime(hrtc, &sTime, RTC_FORMAT_BIN);
+
+    uint8_t second = (sTime.Seconds + time_s) % 60;
+    uint8_t minite = ((sTime.Seconds + time_s) / 60) % 60;
+    uint8_t hour = (((sTime.Seconds + time_s) / 60) / 60) % 24;
+
+    sAlarm.AlarmTime.Hours = sTime.Hours + hour;
+    sAlarm.AlarmTime.Minutes = sTime.Minutes + minite;
+    sAlarm.AlarmTime.Seconds = sTime.Seconds + second;
+    sAlarm.AlarmTime.SubSeconds = 0;
+     // 掩码设置（全匹配）
+    sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
+    sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+    sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+    // 1（忽略日期匹配）
+    sAlarm.AlarmDateWeekDay = 1;  
+    // 使用AlarmA         
+    sAlarm.Alarm = RTC_ALARM_A;            
+    HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, RTC_FORMAT_BIN);
+
+	  HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
+}
+void bsp_rtc_alarm_clear(rtc_t *dev)
+{
+	HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
+}
+
+void bsp_rtc_wakeup_set(rtc_t *dev, uint32_t sleep_ms)
+{
+    RTC_HandleTypeDef *hrtc = &dev->hrtc;
+    uint32_t interval_ms = sleep_ms;
+
+    // 计算Wakeup计数器值 2048Hz
+    uint32_t wakeup_clock = RTC_WAKEUPCLOCK_RTCCLK_DIV16; // 2048Hz
+    uint32_t wakeup_value = (interval_ms * 2048) / 1000;
+    HAL_RTCEx_SetWakeUpTimer_IT(hrtc, wakeup_value, wakeup_clock);
+
+    HAL_NVIC_SetPriority(RTC_WKUP_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
+}
+void bsp_rtc_wakeup_clear(rtc_t *dev)
+{
+  // 禁用Wakeup定时器
+  HAL_RTCEx_DeactivateWakeUpTimer(&dev->hrtc);
+	HAL_NVIC_DisableIRQ(RTC_WKUP_IRQn);
+}
+
+void bsp_rtc_irq(rtc_t *dev) 
+{
+  HAL_RTC_AlarmIRQHandler(&dev->hrtc);
+  HAL_RTCEx_WakeUpTimerIRQHandler(&dev->hrtc);
+}

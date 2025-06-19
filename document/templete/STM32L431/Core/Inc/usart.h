@@ -49,6 +49,8 @@ extern void bsp_uart_IT_enable(uart_t *dev);
 extern void bsp_usart_write(uart_t *dev, void *buf, size_t count);
 extern void bsp_usart_read(uart_t *dev, void *buf, size_t count);
 extern int bsp_uart_dirct_send(uart_t *dev,uart_dirct_t *buffer);
+extern void bsp_uart_wakeup_set(uart_t *dev);
+extern void bsp_uart_wakeup_clear(uart_t *dev);
 extern void bsp_uart_irq(uart_t *dev);
 extern void bsp_uart_irq_ring(uart_t *dev);
 /* USER CODE END Prototypes */

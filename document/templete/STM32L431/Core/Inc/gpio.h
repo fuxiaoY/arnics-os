@@ -41,6 +41,8 @@ void MX_GPIO_Init(void);
 /* USER CODE BEGIN Prototypes */
 #include "../../arnics-os/drivers/bsp/bsp_def.h"
 extern void bsp_gpio_init(io_t *io);
+extern void bsp_gpio_irq_disable(io_t *io);
+extern void bsp_gpio_free_cfg(io_t *io,uint32_t gpio_mode,uint32_t gpio_pull,uint32_t gpio_speed,uint8_t gpio_PinState);
 extern void bsp_gpio_close(io_t *io);
 extern void bsp_gpio_set(io_t *io,unsigned int statue);
 extern GPIO_PinState bsp_gpio_get(io_t *io);
