@@ -1,7 +1,6 @@
 
 #include "../Inc/projDefine.h"
 #include "../Inc/typedef.h"
-#include "../dataPlat/globalDef.h"
 #include "rtosTask.h"
 #include "rtosPort.h"
 #include "../dePartment/centerEvent/entry_event_api.h"

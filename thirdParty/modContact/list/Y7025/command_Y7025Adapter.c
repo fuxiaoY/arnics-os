@@ -15,6 +15,7 @@
  */
 #include "command_Y7025Adapter.h"
 #include "../../../ulog/ulogDef.h"
+#include "../../dataPlat/dataLink.h"
 static bool cmd_GetZTZEU(MctInstance* inst,void *para)
 {
     wanClock_t *clock = (wanClock_t*)para;

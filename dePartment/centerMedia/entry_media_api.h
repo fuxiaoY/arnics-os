@@ -4,7 +4,7 @@
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
 #include "../../dataPlat/dataPlatInclude.h"
-
+#include "../dePartment/centerMedia/centerMedia.h"
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(media_process))(void);
 typedef bool (T_TYPEDEF(readMediaReq))(mediaMessage_t *msg,time_t wait);

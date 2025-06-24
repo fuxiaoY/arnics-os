@@ -62,7 +62,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)20480)  //freertos的堆大小（字节数为单位）38K
+#define configTOTAL_HEAP_SIZE                    ((size_t)20 * 1024)  //freertos的堆大小（字节数为单位）20KB
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1

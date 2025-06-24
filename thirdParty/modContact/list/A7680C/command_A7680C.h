@@ -22,7 +22,6 @@ extern "C" {
 #endif
 #include "../../core/mctCore.h"
 #include "../../common/mctStruct.h"
-#include "../../dataPlat/dataLink.h"
 #include "../../port/mctDriver.h"
 #define CMD_A7680C_ID_BASE                      (int32_t)0
 

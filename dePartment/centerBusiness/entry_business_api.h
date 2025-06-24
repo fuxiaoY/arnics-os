@@ -4,7 +4,6 @@
 #include "../../Inc/ProjDefine.h"
 
 
-
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(business_process))(void);
 

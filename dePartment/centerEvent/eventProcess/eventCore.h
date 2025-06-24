@@ -36,6 +36,7 @@ extern "C" {
 #include "../../../dataPlat/dataPlatInclude.h"
 #include "../../../core/coreInclude.h"
 #include "../../../Common/commonInclude.h"
+#include "../dePartment/centerEvent/centerEvent.h"
 /* define ------------------------------------------------------------*/
 
 #define EVENT_VERSION "1.0.2"

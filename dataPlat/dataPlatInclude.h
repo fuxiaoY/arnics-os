@@ -6,12 +6,11 @@
 extern "C" {
 #endif
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
-#include "globalDef.h"
-#include "globalData.h"
-#include "globalDataManager.h"
-#include "globalDataAction.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
+#include "dataPlat/dataApi/dataApi.h"
+#include "dataPlat/dataApi/dataPublic.h"
+#include "dataPlat/dataManager/dataJson.h"
 #ifdef __cplusplus
 }
 #endif

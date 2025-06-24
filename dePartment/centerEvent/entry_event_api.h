@@ -4,7 +4,7 @@
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
 #include "../../dataPlat/dataPlatInclude.h"
-
+#include "../dePartment/centerEvent/centerEvent.h"
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(event_process))(void);
 typedef uint32_t (T_TYPEDEF(SendEventCallToEventCenter))(eventFlag_t eventflag, time_t wait);

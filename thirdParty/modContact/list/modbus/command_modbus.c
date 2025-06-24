@@ -23,7 +23,7 @@
 #include "command_modbus.h"
 #include "../../common/mctLib.h"
 #include "../../../AlgorithmLib/crc16.h"
-
+#include "../../dataPlat/dataLink.h"
 /*-----------------------------------------------------------------------------*/
 
 /*-------------------------------Slave Mode------------------------------------*/

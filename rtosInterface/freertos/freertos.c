@@ -21,7 +21,9 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "freertosDef.h"
-
+#include "../dePartment/centerEvent/centerEvent.h"
+#include "../dePartment/centerAdministrative/centerAdministrative.h"
+#include "../dePartment/centerMedia/centerMedia.h"
 /* Private includes ----------------------------------------------------------*/
 
 /* Private typedef -----------------------------------------------------------*/

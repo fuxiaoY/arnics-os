@@ -7,7 +7,7 @@ extern "C" {
 #include "../../../Inc/projDefine.h"
 #include "../../../Inc/typedef.h"
 
-
+#ifdef USE_MCT_DATA_LINK
 
 #define MCT(NAME) MCT_DATA_##NAME
 #undef X
@@ -30,6 +30,12 @@ extern uint32_t mctParaSet(mctParaIndex id, const void* inData, uint32_t dataLen
 #define MCT_PTR(ID) mctParaGetPtr(MCT(ID))
 #define MCT_GET(ID,OUT_BUF,BUF_LEN) mctParaGet(MCT(ID),OUT_BUF,BUF_LEN)
 #define MCT_SET(ID,IN_DATA,DATA_LEN) mctParaSet(MCT(ID),IN_DATA,DATA_LEN)
+#else
+#include "../../../dataPlat/dataApi/dataApi.h"
+#define MCT_PTR(ID)                      DATA_PTR(ID)                  
+#define MCT_GET(ID,OUT_BUF,BUF_LEN)      DATA_GET(ID,OUT_BUF,BUF_LEN)  
+#define MCT_SET(ID,IN_DATA,DATA_LEN)     DATA_SET(ID,IN_DATA,DATA_LEN) 
+#endif
 #ifdef __cplusplus
 }
 #endif

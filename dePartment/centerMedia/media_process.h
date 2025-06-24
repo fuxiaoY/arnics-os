@@ -9,8 +9,7 @@ extern "C" {
 #include "../../thirdParty/thirdPartyInclude.h"
 #include "../../rtosInterface/entry_rtos_api.h"
 #include "../../dataPlat/dataPlatInclude.h"
-
-
+#include "../dePartment/centerMedia/centerMedia.h"
 
 
 

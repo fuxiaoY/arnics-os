@@ -5,7 +5,7 @@
 #include "../../Inc/ProjDefine.h"
 #include "../../Inc/typedef.h"
 #include "../../dataPlat/dataPlatInclude.h"
-
+#include "../dePartment/centerAdministrative/centerAdministrative.h"
 // 函数指针类型的定义
 typedef void (T_TYPEDEF(ad_process))(void);
 typedef bool (T_TYPEDEF(readAdReq))(adMessage_t *msg,time_t wait);

@@ -16,7 +16,7 @@
  *******************************************************************************
  */
 #include "command_Y7025.h"
-
+#include "../../dataPlat/dataLink.h"
 
 static bool cmd_PackEchoOff(uint8_t* buf, size_t* len, void *para)
 {

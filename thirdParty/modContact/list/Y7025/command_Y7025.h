@@ -22,7 +22,6 @@ extern "C" {
 #endif
 #include "../../core/mctCore.h"
 #include "../../common/mctStruct.h"
-#include "../../dataPlat/dataLink.h"
 #include "../../port/mctDriver.h"
 
 #define CMD_Y7025_ID_BASE                           (uint16_t)0

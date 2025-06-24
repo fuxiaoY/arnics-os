@@ -8,7 +8,7 @@ extern "C" {
 
 #include "../../core/mctCore.h"
 #include "../../common/mctStruct.h"
-#include "../../dataPlat/dataLink.h"
+
 
 
 #define CMD_MODBUS_RTU_MASTER                           (int32_t)0

@@ -1,158 +1,164 @@
 
-#include "globalDataManager.h"
-#include "globalData.h"
-#include "../thirdParty/thirdPartyInclude.h"
-#include "../common/commonInclude.h"
-_SECTION( "._entry_dataPlat_api")
+#include "dataJson.h"
+#include "thirdParty/thirdPartyInclude.h"
+#include "common/commonInclude.h"
+#include "dataPlat/dataObj/dataObj.h"
+#define DATA_ALL_STRUCT
+#include "dataPlat/dataObj/dataClass.h"
 
-// Sæƒé™ç”±ç£æŸ¥ä¸­å¿ƒå¼€æœºåè‡ªåŠ¨æ›´æ–°å­˜å–
-static const unityParaList_t unity_system_paralist[] = 
+#undef X 
+#define X(auth,index,type,subtype,var,len,key) {auth,index,type,subtype,var,len,key},
+static const dataParaList_t unity_system_paralist[] = 
 {
-    {R|W,  unity_system_usr_systick,                   UINT32_TYPE, NULL_TYPE,   (void*)&arnics_systick,                       sizeof(uint32_t),       "arnics_systick"}
+    ARNICS_PARA_ENTRIES
 };
 
-static const unityParaList_t unity_global_cfg_paralist[] = 
+static const dataParaList_t unity_global_cfg_paralist[] = 
 {
-    {R|W, unity_global_cfg_save_ts,                   UINT32_TYPE, NULL_TYPE,   &g_system_cfg.save_ts,                      sizeof(uint32_t),  "save_ts"}
+    SYSTEM_CFG_ENTRIES
 };
 
-static const unityParaList_t unity_global_status_paralist[] = 
+static const dataParaList_t unity_global_status_paralist[] = 
 {
-    {R|W,  unity_global_state_save_ts,                UINT32_TYPE,NULL_TYPE, &g_system_status.save_ts,             sizeof(uint32_t),  "save_ts"},
-    {R,    unity_global_state_work_status,            UINT8_TYPE, NULL_TYPE, &g_system_status.work_status,           sizeof(uint8_t),  "work_status"},
-    {R,    unity_global_state_prework_status,         UINT8_TYPE, NULL_TYPE, &g_system_status.prework_status,        sizeof(uint8_t),  "prework_status"}
+    SYSTEM_STATUS_ENTRIES
 };
 
 
 static uint16_t unity_systemParaNumGet(void)
 {
-    return (sizeof(unity_system_paralist) / sizeof(unityParaList_t));
+    return (sizeof(unity_system_paralist) / sizeof(dataParaList_t));
 }
 
 
 static uint16_t unity_GlobalCfgParaNumGet(void)
 {
-    return (sizeof(unity_global_cfg_paralist) / sizeof(unityParaList_t));
+    return (sizeof(unity_global_cfg_paralist) / sizeof(dataParaList_t));
 }
 
 static uint16_t unity_GlobalStatParaNumGet(void)
 {
-    return (sizeof(unity_global_status_paralist) / sizeof(unityParaList_t));
+    return (sizeof(unity_global_status_paralist) / sizeof(dataParaList_t));
 }
 
-// è®¾ç½®å‚æ•°å¹¶æ›´æ–° JSON
-static void setToJson(cJSON *obj, const unityParaList_t *field, cJSON *json_obj)
+// ÉèÖÃ²ÎÊı²¢¸üĞÂ JSON
+static void setToJson(cJSON *obj, const dataParaList_t *field, cJSON *json_obj)
 {
     switch (field->type)
     {
-    case UINT8_TYPE:
+    case TYPE_UINT8:
+    case TYPE_CHAR:
+    case TYPE_BOOL:
         if ((obj->type & cJSON_Number) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                *(uint8_t *)field->addr = (uint8_t)obj->valuedouble;
+                *(uint8_t *)field->pVar = (uint8_t)obj->valuedouble;
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case INT_TYPE:
+    case TYPE_INT:
         if ((obj->type & cJSON_Number) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                *(int *)field->addr = (int)obj->valuedouble;
+                *(int *)field->pVar = (int)obj->valuedouble;
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case INT16_TYPE:
+    case TYPE_INT16:
         if ((obj->type & cJSON_Number) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                *(int16_t *)field->addr = (int16_t)obj->valuedouble;
+                *(int16_t *)field->pVar = (int16_t)obj->valuedouble;
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case UINT16_TYPE:
+    case TYPE_UINT16:
         if ((obj->type & cJSON_Number) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                *(uint16_t *)field->addr = (uint16_t)obj->valuedouble;
+                *(uint16_t *)field->pVar = (uint16_t)obj->valuedouble;
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case UINT32_TYPE:
+    case TYPE_UINT32:
+    case TYPE_ENUM:
+    case TYPE_SIZE_T:
         if ((obj->type & cJSON_Number) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                *(uint32_t *)field->addr = (uint32_t)obj->valuedouble;
+                *(uint32_t *)field->pVar = (uint32_t)obj->valuedouble;
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case FLOAT_TYPE:
+    case TYPE_FLOAT:
         if ((obj->type & cJSON_Number) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                *(float *)field->addr = (float)obj->valuedouble;
+                *(float *)field->pVar = (float)obj->valuedouble;
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case STRING_TYPE:
+    case TYPE_STRING:
         if ((obj->type & cJSON_String) != 0)
         {
-            if ((field->access & W) != NA)
+            if ((field->auth & W) != NA)
             {
-                strcpy((char *)field->addr, obj->valuestring);
+                strcpy((char *)field->pVar, obj->valuestring);
                 cJSON_AddStringToObject(json_obj, field->key, "OK");
             }
             else
             {
-                cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
             }
         }
         break;
 
-    case ARRAY_TYPE:
+    case TYPE_ARRAY:
+    case TYPE_STRUCT:
+    case TYPE_UNION:
     {
-        float *values = (float *)field->addr;
+        float *values = (float *)field->pVar;
         cJSON *array = obj;
         cJSON *item = array->child;
         int index = 0;
@@ -160,13 +166,13 @@ static void setToJson(cJSON *obj, const unityParaList_t *field, cJSON *json_obj)
         {
             if ((item->type & cJSON_Number) != 0)
             {
-                if ((field->access & W) != NA)
+                if ((field->auth & W) != NA)
                 {
                     values[index++] = (float)item->valuedouble;
                 }
                 else
                 {
-                    cJSON_AddStringToObject(json_obj, field->key, "access W denied");
+                    cJSON_AddStringToObject(json_obj, field->key, "auth W denied");
                 }
             }
             item = item->next;
@@ -179,96 +185,101 @@ static void setToJson(cJSON *obj, const unityParaList_t *field, cJSON *json_obj)
         break;
     }
 }
-// è¾…åŠ©å‡½æ•°ï¼Œæ ¹æ®ç±»å‹è®¾ç½® JSON å€¼
-// è¾…åŠ©å‡½æ•°ï¼Œæ ¹æ®ç±»å‹è®¾ç½® JSON å€¼
-static void packToJSON(cJSON *obj, const unityParaList_t *field)
+// ¸¨Öúº¯Êı£¬¸ù¾İÀàĞÍÉèÖÃ JSON Öµ
+static void packToJSON(cJSON *obj, const dataParaList_t *field)
 {
     switch (field->type)
     {
-    case UINT8_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_UINT8:
+    case TYPE_CHAR:
+    case TYPE_BOOL:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddNumberToObject(obj, field->key, *(uint8_t *)field->addr);
+            cJSON_AddNumberToObject(obj, field->key, *(uint8_t *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case INT_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_INT:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddNumberToObject(obj, field->key, *(int *)field->addr);
+            cJSON_AddNumberToObject(obj, field->key, *(int *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case INT16_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_INT16:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddNumberToObject(obj, field->key, *(int16_t *)field->addr);
+            cJSON_AddNumberToObject(obj, field->key, *(int16_t *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case UINT16_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_UINT16:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddNumberToObject(obj, field->key, *(uint16_t *)field->addr);
+            cJSON_AddNumberToObject(obj, field->key, *(uint16_t *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case UINT32_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_UINT32:
+    case TYPE_ENUM:
+    case TYPE_SIZE_T:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddNumberToObject(obj, field->key, *(uint32_t *)field->addr);
+            cJSON_AddNumberToObject(obj, field->key, *(uint32_t *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case FLOAT_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_FLOAT:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddNumberToObject(obj, field->key, *(float *)field->addr);
+            cJSON_AddNumberToObject(obj, field->key, *(float *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case STRING_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_STRING:
+        if ((field->auth & R) != NA)
         {
-            cJSON_AddStringToObject(obj, field->key, (char *)field->addr);
+            cJSON_AddStringToObject(obj, field->key, (char *)field->pVar);
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
-    case ARRAY_TYPE:
-        if ((field->access & R) != NA)
+    case TYPE_ARRAY:
+    case TYPE_STRUCT:
+    case TYPE_UNION:
+        if ((field->auth & R) != NA)
         {
             cJSON *array = cJSON_CreateArray();
-            if (field->subType == FLOAT_TYPE)
+            if (field->sub_type == TYPE_FLOAT)
             {
-                float *values = (float *)field->addr;
+                float *values = (float *)field->pVar;
                 for (int i = 0; i < field->len / sizeof(float); ++i)
                 {
                     cJSON *number = cJSON_CreateNumber(values[i]);
@@ -279,7 +290,7 @@ static void packToJSON(cJSON *obj, const unityParaList_t *field)
         }
         else
         {
-            cJSON_AddStringToObject(obj, field->key, "access R denied");
+            cJSON_AddStringToObject(obj, field->key, "auth R denied");
         }
         break;
 
@@ -287,23 +298,27 @@ static void packToJSON(cJSON *obj, const unityParaList_t *field)
         break;
     }
 }
-// å°†ç»“æ„ä½“è½¬æ¢ä¸º JSON å¯¹è±¡
-static cJSON *jsonMethod(const char *ArgReq, const unityParaList_t *unityPara, uint16_t len)
+// ½«½á¹¹Ìå×ª»»Îª JSON ¶ÔÏó
+static cJSON *jsonMethod(const char *ArgReq, const dataParaList_t *unityPara, uint16_t len)
 {
     cJSON *json_obj = cJSON_CreateObject();
 
-    // åˆ¤æ–­ ArgReq æ˜¯å¦ä¸º "all"
+    // ÅĞ¶Ï ArgReq ÊÇ·ñÎª "all"
     if (strcmp(ArgReq, "all") == 0)
     {
-        // å¤„ç†æ‰€æœ‰å­—æ®µ
+        // ´¦ÀíËùÓĞ×Ö¶Î
         for (uint16_t i = 0; i < len; i++)
         {
-            packToJSON(json_obj, &unityPara[i]);
+            if ((unityPara[i].auth & R) != NA)
+            {
+                packToJSON(json_obj, &unityPara[i]);
+            }
+
         }
     }
     else
     {
-        // è§£æ JSON å­—ç¬¦ä¸²
+        // ½âÎö JSON ×Ö·û´®
         cJSON *argReq = cJSON_Parse(ArgReq);
         if (argReq == NULL)
         {
@@ -312,7 +327,7 @@ static cJSON *jsonMethod(const char *ArgReq, const unityParaList_t *unityPara, u
             return NULL;
         }
 
-        // éå† argReq ä¸­çš„æ‰€æœ‰é”®
+        // ±éÀú argReq ÖĞµÄËùÓĞ¼ü
         cJSON *item = argReq->child;
         while (item != NULL)
         {
@@ -322,13 +337,13 @@ static cJSON *jsonMethod(const char *ArgReq, const unityParaList_t *unityPara, u
                 {
                     if (strcmp(item->valuestring, "~") == 0)
                     {
-                        // è·å–è¯¥å€¼
+                        // »ñÈ¡¸ÃÖµ
                         packToJSON(json_obj, &unityPara[i]);
                         break;
                     }
                     else
                     {
-                        // è®¾ç½®è¯¥å€¼
+                        // ÉèÖÃ¸ÃÖµ
                         setToJson(item, &unityPara[i], json_obj);
                         break;
                     }
@@ -337,18 +352,18 @@ static cJSON *jsonMethod(const char *ArgReq, const unityParaList_t *unityPara, u
             item = item->next;
         }
 
-        cJSON_Delete(argReq); // é‡Šæ”¾è§£æçš„ JSON å¯¹è±¡
+        cJSON_Delete(argReq); // ÊÍ·Å½âÎöµÄ JSON ¶ÔÏó
     }
 
     return json_obj;
 }
 
-char *UnityParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityPara, uint16_t len,jsonFomat_e format)
+char *UnityParaInterfaceGetSet(const char *ArgReq, const dataParaList_t *unityPara, uint16_t len,jsonFomat_e format)
 {
-    // è½¬æ¢ä¸º JSON
+    // ×ª»»Îª JSON
     cJSON *json = jsonMethod(ArgReq, unityPara, len);
     char *JsonOut = NULL;
-    // æ‰“å° JSON
+    // ´òÓ¡ JSON
     switch(format)
     {
         case FORMAT:
@@ -364,13 +379,13 @@ char *UnityParaInterfaceGetSet(const char *ArgReq, const unityParaList_t *unityP
 
 
     // printf("%s\n", JSonStr);
-    //  æ¸…ç†
+    //  ÇåÀí
     cJSON_Delete(json);
     return JsonOut;
 }
 
 /*---------------------------------------------------------------------------------------------*/
-/*-æ¥å£----------------------------------------------------------------------------------------*/
+/*-½Ó¿Ú----------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------*/
 
 void UnitySystemInterface(const char *ArgReq)

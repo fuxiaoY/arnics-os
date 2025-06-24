@@ -23,7 +23,7 @@ extern "C" {
 void critical_enter(void);
 void critical_exit(void);
 
-void user_port_assert(const char * funcname,unsigned int error_id);
+void user_port_assert(const char * funcname,const char * file,unsigned int error_id);
 
 #ifdef __cplusplus
 }

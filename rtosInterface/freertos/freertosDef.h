@@ -6,10 +6,7 @@ extern "C" {
 #endif
 #include "../../Inc/projDefine.h"
 #include "../../Inc/typedef.h"
-
-#include "../../dataPlat/globalDef.h"
 #include "../rtosTask.h"
-
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "task.h"

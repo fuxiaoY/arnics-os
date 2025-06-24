@@ -1,5 +1,5 @@
 #include "command_modbusAdapter.h"
-
+#include "../../dataPlat/dataLink.h"
 
 
 static bool modbus_01_handle(MctInstance *inst,void *para)

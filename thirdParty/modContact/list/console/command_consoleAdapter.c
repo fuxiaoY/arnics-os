@@ -1,5 +1,5 @@
 #include "command_consoleAdapter.h"
-
+#include "../../dataPlat/dataLink.h"
 
 
 static bool cmd_reqHandle(MctInstance *inst,void *para)

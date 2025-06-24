@@ -6,6 +6,7 @@
 #include "../../../upgrade/upgradeManager.h"
 #include "../../../rollDB/rolldbPort.h"
 #include "../../../../drivers/driversInclude.h"
+#include "../../dataPlat/dataLink.h"
 static void CurrentTimeToString(rtcTimeDateTypeDef_t* DT, char* buffer, size_t bufferSize)
 {
   snprintf(buffer, bufferSize, "%02d-%02d-%02d %02d:%02d:%02d", DT->Year, DT->Month, DT->Date,DT->Hour, DT->Minute, DT->Second);

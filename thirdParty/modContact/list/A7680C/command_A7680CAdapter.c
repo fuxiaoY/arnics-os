@@ -17,7 +17,7 @@
  */
 #include "command_A7680CAdapter.h"
 #include "../../../ulog/ulogDef.h"
-
+#include "../../dataPlat/dataLink.h"
 static bool cmd_EchoClose(MctInstance *inst, void *para)
 {
     uint8_t MAX_RETRIES = 3;

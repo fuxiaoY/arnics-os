@@ -16,7 +16,7 @@
  *******************************************************************************
  */
 #include "command_A7680C.h"
-
+#include "../../dataPlat/dataLink.h"
 // AT+CGDCONT?
 static bool cmd_PackPdpRead(uint8_t* buf, size_t* len, void *para)
 {

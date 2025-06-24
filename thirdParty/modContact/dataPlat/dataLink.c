@@ -1,4 +1,5 @@
 #include "dataLink.h"
+#ifdef USE_MCT_DATA_LINK
 #include "../../../dataPlat/dataPlatInclude.h"
 #undef X 
 #define X(name, var, len) {var, len, name},
@@ -50,3 +51,4 @@ uint32_t mctParaSet(mctParaIndex id, const void* inData, uint32_t dataLen)
     memcpy(pPara->pVar, inData, copyLen);
     return copyLen;
 }
+#endif
