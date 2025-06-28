@@ -9,6 +9,7 @@ extern "C" {
 
 /* include----------------------------------------------------------*/
 #include "dataPlat/dataObj/systemCfg/systemConfigPublic.h"  
+#include "dataPlat/dataManager/dataStore.h"
 /* typedef private -------------------------------------------------*/
 /**
  * @brief 对内'私有文档'在此处定义
@@ -17,6 +18,18 @@ extern "C" {
 
 /* vars   ----------------------------------------------------------*/
 extern systemCfg_t g_system_cfg;
+/* typedef datastore ----------------------------------------------*/
+/**
+ * @brief 对可持续存储的空间支持
+ *        Support for sustainable storage space.
+ */
+STRUCT_WITH_CRC(systemCfg_t,g_system_cfg);
+
+
+typedef struct
+{
+    SOTRE_SUPPORT(g_system_cfg);
+}dataStoreSysCfg_t;
 #ifdef __cplusplus
 }
 #endif

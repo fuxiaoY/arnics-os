@@ -23,8 +23,6 @@ typedef struct
   char  wan_imei[20];
   char  wan_ver[20];
   char  wan_iccid[25];
-
-  uint16_t crc;                          //校验位
 }systemStatus_t;
 
 //MQTT主题
@@ -42,6 +40,7 @@ typedef struct
 #undef X 
 #define X(auth,index,type,subtype,var,len,key) + 1
 #define SYSTEM_STATUS_ENTRIES \
+X(NA, DATA(g_system_status),       TYPE_STRUCT,  TYPE_NULL, &g_system_status,                    sizeof(systemStatus_t),         "g_system_status"        )   \
 X(R|W, DATA(SignalStrength),        TYPE_UINT8,   TYPE_NULL, &networkPara.SignalStrength,         sizeof(networkPara.SignalStrength),         "SignalStrength"        )   \
 X(R|W, DATA(REGstatus),             TYPE_ENUM,    TYPE_NULL, &networkPara.REGstatus,              sizeof(networkPara.REGstatus),              "REGstatus"             )   \
 X(R|W, DATA(g_mqtt_wan_buf),        TYPE_ARRAY,   TYPE_CHAR,  g_mqtt_wan_buf,                      sizeof(g_mqtt_wan_buf),                     "g_mqtt_wan_buf"        )  \

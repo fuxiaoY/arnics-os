@@ -22,18 +22,14 @@ typedef struct
 
   char              update_url[128];            //HTTP远程刷机域名或IP，最长不得超过128字节
   uint16_t          update_port;                //HTTP远程刷机端口，缺省为1883
-  uint16_t          crc;                        //校验位
 
 }systemCfg_t;
 
-extern void global_cfg_reset(void);
-extern void global_cfg_read(void);
-extern void global_cfg_write(void);
 
 #undef X 
 #define X(auth,index,type,subtype,var,len,key) + 1
 #define SYSTEM_CFG_ENTRIES \
-X(W,    DATA(g_system_cfg),          TYPE_STRUCT , TYPE_NULL,      &g_system_cfg,                      sizeof(g_system_cfg)                      , "g_system_cfg" )         \
+X(NA,  DATA(g_system_cfg),          TYPE_STRUCT , TYPE_NULL,      &g_system_cfg,                      sizeof(g_system_cfg)                      , "g_system_cfg" )         \
 X(R|W,  DATA(device_name),            TYPE_STRING, TYPE_CHAR,      g_system_cfg.device_name,            sizeof(g_system_cfg.device_name)          , "device_name")           \
 X(R|W,  DATA(server_url),             TYPE_STRING, TYPE_CHAR,      g_system_cfg.server_url,             sizeof(g_system_cfg.server_url)           , "server_url" )           \
 X(R|W,  DATA(server_port),            TYPE_UINT16, TYPE_NULL,      &g_system_cfg.server_port,          sizeof(g_system_cfg.server_port)          ,"server_port")            \

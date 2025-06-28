@@ -2,43 +2,9 @@
 #include "dataJson.h"
 #include "thirdParty/thirdPartyInclude.h"
 #include "common/commonInclude.h"
-#include "dataPlat/dataObj/dataObj.h"
-#define DATA_ALL_STRUCT
-#include "dataPlat/dataObj/dataClass.h"
-
-#undef X 
-#define X(auth,index,type,subtype,var,len,key) {auth,index,type,subtype,var,len,key},
-static const dataParaList_t unity_system_paralist[] = 
-{
-    ARNICS_PARA_ENTRIES
-};
-
-static const dataParaList_t unity_global_cfg_paralist[] = 
-{
-    SYSTEM_CFG_ENTRIES
-};
-
-static const dataParaList_t unity_global_status_paralist[] = 
-{
-    SYSTEM_STATUS_ENTRIES
-};
+#include "dataPlat/dataManager/dataManagerList.h"
 
 
-static uint16_t unity_systemParaNumGet(void)
-{
-    return (sizeof(unity_system_paralist) / sizeof(dataParaList_t));
-}
-
-
-static uint16_t unity_GlobalCfgParaNumGet(void)
-{
-    return (sizeof(unity_global_cfg_paralist) / sizeof(dataParaList_t));
-}
-
-static uint16_t unity_GlobalStatParaNumGet(void)
-{
-    return (sizeof(unity_global_status_paralist) / sizeof(dataParaList_t));
-}
 
 // 设置参数并更新 JSON
 static void setToJson(cJSON *obj, const dataParaList_t *field, cJSON *json_obj)
@@ -388,7 +354,14 @@ char *UnityParaInterfaceGetSet(const char *ArgReq, const dataParaList_t *unityPa
 /*-接口----------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------------------------*/
 
-void UnitySystemInterface(const char *ArgReq)
+// 回调函数：打印读取的日志信息
+bool print_str_callback(char *str) 
+{
+    printf("%s\r\n", str);
+    return true; // 返回 true 继续读取
+}
+
+void UnitySystemInterface(const char *ArgReq,unityCb cb)
 {
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
@@ -399,11 +372,11 @@ void UnitySystemInterface(const char *ArgReq)
     {
         JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_system_paralist, unity_systemParaNumGet(),FORMAT);
     }
-    printf("%s\r\n", JsonOut);
+    cb(JsonOut);
     arnicsFree(JsonOut);
 }
 
-void UnityGlobalStatInterface(const char *ArgReq)
+void UnityGlobalStatInterface(const char *ArgReq,unityCb cb)
 {
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
@@ -414,11 +387,11 @@ void UnityGlobalStatInterface(const char *ArgReq)
     {
         JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_global_status_paralist, unity_GlobalStatParaNumGet(),FORMAT);
     }
-    printf("%s\r\n", JsonOut);
+    cb(JsonOut);
     arnicsFree(JsonOut);
 }
 
-void UnityGlobalCfgInterface(const char *ArgReq)
+void UnityGlobalCfgInterface(const char *ArgReq,unityCb cb)
 {
     char *JsonOut = NULL;
     if (strstr(ArgReq, "{all}") != NULL)
@@ -429,7 +402,7 @@ void UnityGlobalCfgInterface(const char *ArgReq)
     {
         JsonOut = UnityParaInterfaceGetSet(ArgReq, unity_global_cfg_paralist, unity_GlobalCfgParaNumGet(),FORMAT);
     }
-    printf("%s\r\n", JsonOut);
+    cb(JsonOut);
     arnicsFree(JsonOut);
 }
 

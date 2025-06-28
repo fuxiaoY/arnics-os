@@ -1,6 +1,7 @@
 
 
 #include "systemStatus.h"
+#include "port/arnicsPort.h"
 
 systemStatus_t g_system_status = {0};       // 全局运行参数
 

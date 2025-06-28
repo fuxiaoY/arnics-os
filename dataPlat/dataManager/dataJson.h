@@ -31,8 +31,6 @@
 extern "C"
 {
 #endif
-#include "dataPlat/dataCore/dataCore.h"
-#include "dataPlat/dataCore/dataStruct.h"
 
 /* typedef -----------------------------------------------------------*/
 typedef enum
@@ -41,10 +39,11 @@ typedef enum
     UNFORMAT,
 } jsonFomat_e;
 
-
-extern void UnitySystemInterface(const char *ArgReq);
-extern void UnityGlobalStatInterface(const char *ArgReq);
-extern void UnityGlobalCfgInterface(const char *ArgReq);
+typedef bool (*unityCb)(char *str);
+extern bool print_str_callback(char *str);
+extern void UnitySystemInterface(const char *ArgReq,unityCb cb);
+extern void UnityGlobalStatInterface(const char *ArgReq,unityCb cb);
+extern void UnityGlobalCfgInterface(const char *ArgReq,unityCb cb);
 
 
 
