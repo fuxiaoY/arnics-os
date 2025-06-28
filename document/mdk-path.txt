@@ -37,19 +37,54 @@
           <GroupName>arnics/dataPlat</GroupName>
           <Files>
             <File>
-              <FileName>globalData.c</FileName>
+              <FileName>dataCore.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\arnics-os\dataPlat\globalData.c</FilePath>
+              <FilePath>..\arnics-os\dataPlat\dataCore\dataCore.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/dataPlat/dataObj</GroupName>
+          <Files>
+            <File>
+              <FileName>systemConfig.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\dataObj\systemCfg\systemConfig.c</FilePath>
             </File>
             <File>
-              <FileName>globalDataManager.c</FileName>
+              <FileName>systemStatus.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\arnics-os\dataPlat\globalDataManager.c</FilePath>
+              <FilePath>..\arnics-os\dataPlat\dataObj\systemStatus\systemStatus.c</FilePath>
             </File>
             <File>
-              <FileName>globalDataAction.c</FileName>
+              <FileName>arnicsPara.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\arnics-os\dataPlat\globalDataAction.c</FilePath>
+              <FilePath>..\arnics-os\dataPlat\dataObj\arnicsPara\arnicsPara.c</FilePath>
+            </File>
+            <File>
+              <FileName>dataObj.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\dataObj\dataObj.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>arnics/dataPlat/dataManager</GroupName>
+          <Files>
+            <File>
+              <FileName>dataJson.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\dataManager\dataJson.c</FilePath>
+            </File>
+            <File>
+              <FileName>dataManagerList.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\dataManager\dataManagerList.c</FilePath>
+            </File>
+            <File>
+              <FileName>dataStore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\dataManager\dataStore.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -292,11 +327,6 @@
           <GroupName>arnics/thirdParty/modContact/list</GroupName>
           <Files>
             <File>
-              <FileName>dataLink.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\dataPlat\dataLink.c</FilePath>
-            </File>
-            <File>
               <FileName>command_console.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\list\console\command_console.c</FilePath>
@@ -315,6 +345,11 @@
               <FileName>command_A7680CAdapter.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\list\A7680C\command_A7680CAdapter.c</FilePath>
+            </File>
+            <File>
+              <FileName>dataLink.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\modContact\dataPlat\dataLink.c</FilePath>
             </File>
             <File>
               <FileName>command_Y7025.c</FileName>

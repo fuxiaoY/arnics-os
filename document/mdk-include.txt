@@ -1,1 +1,1 @@
-..\arnics-os\Inc;..\arnics-os\rtosInterface\freertos
+..\arnics-os;..\arnics-os\Inc;..\arnics-os\rtosInterface\freertos
