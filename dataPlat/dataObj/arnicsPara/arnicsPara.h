@@ -17,7 +17,6 @@ extern "C" {
  */
 /* vars   ----------------------------------------------------------*/
 extern bool              arnics_start;
-extern volatile uint32_t arnics_systick;
 extern bool              sys_allow_sleep;            // 系统是否允许休眠标志位
 extern uint8_t           virtual_environment;  
 extern bool              eventos_want_sleep;

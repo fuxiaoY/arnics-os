@@ -9,6 +9,7 @@ extern "C" {
  * @brief 对外'公有文档'在此处定义
  *        Definition of publicly accessible data struct is here.
  */
+extern volatile uint32_t arnics_systick;
 extern bool arnics_para_save(void);
 extern bool arnics_para_load(void);
 #undef X 

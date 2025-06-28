@@ -18,7 +18,6 @@ extern "C" {
 
 
 #define arnics_start            ((*(bool*)DATA_PTR(arnics_start)))
-#define arnics_systick          ((*(volatile uint32_t*)DATA_PTR(arnics_systick)))
 #define virtual_environment     ((*(uint8_t*)DATA_PTR(virtual_environment))) 
 #define sys_allow_sleep         ((*(bool*)DATA_PTR(sys_allow_sleep)))
 #define eventos_want_sleep      ((*(bool*)DATA_PTR(eventos_want_sleep)))
