@@ -90,7 +90,7 @@ static void handleCmd_E0(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 {
   rtosTaskSuspendAll();
   {
-    UnitySystemInterface((const char*)buf);
+    UnitySystemInterface((const char*)buf,print_str_callback);
   }
   rtosTaskResumeAll();
 
@@ -99,7 +99,7 @@ static void handleCmd_E3(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 {
   rtosTaskSuspendAll();
   {
-    UnityGlobalStatInterface((const char*)buf);
+    UnityGlobalStatInterface((const char*)buf,print_str_callback);
   }
   rtosTaskResumeAll();
 
@@ -108,7 +108,7 @@ static void handleCmd_E4(const uint8_t *buf, size_t len,uint8_t *packbuf, size_t
 {
   rtosTaskSuspendAll();
   {
-    UnityGlobalCfgInterface((const char*)buf);
+    UnityGlobalCfgInterface((const char*)buf,print_str_callback);
   }
   rtosTaskResumeAll();
 
