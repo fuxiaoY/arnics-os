@@ -1,5 +1,5 @@
 #include "dataStore.h"
-#include "thirdParty/thirdPartyInclude.h"
+#include "thirdParty/fal/inc/fal.h"
 #include "thirdParty/AlgorithmLib/crc16.h"
 #include "dataPlat/dataManager/dataManagerList.h"
 

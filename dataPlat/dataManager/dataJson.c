@@ -1,6 +1,6 @@
 
 #include "dataJson.h"
-#include "thirdParty/thirdPartyInclude.h"
+#include "thirdParty/struct2json/inc/s2j.h"
 #include "common/commonInclude.h"
 #include "dataPlat/dataManager/dataManagerList.h"
 
