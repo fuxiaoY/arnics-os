@@ -27,9 +27,7 @@ bool value_load_with_crc16(const store_operation_t* op,uint8_t* dest_buf,size_t 
 bool data_save(const char *part_name,size_t offset,uint8_t *buf ,size_t len)
 {
     int ret = 0;
-	struct fal_partition fal_part, *P_fal_part;
-	P_fal_part = &fal_part;
-	P_fal_part = (struct fal_partition *)fal_partition_find(part_name);
+	const struct fal_partition* P_fal_part = fal_partition_find(part_name);
 	if(P_fal_part == NULL)
 	{
 		printf("fal partition error\r\n");
@@ -53,9 +51,7 @@ bool data_save(const char *part_name,size_t offset,uint8_t *buf ,size_t len)
 bool data_load(const char *part_name,size_t offset,uint8_t *buf ,size_t len)
 {
     int ret = 0;
-	struct fal_partition fal_part, *P_fal_part;
-	P_fal_part = &fal_part;
-	P_fal_part = (struct fal_partition *)fal_partition_find(part_name);
+	const struct fal_partition* P_fal_part = fal_partition_find(part_name);
 	if(P_fal_part == NULL)
 	{
 		printf("fal partition error\r\n");
