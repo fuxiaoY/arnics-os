@@ -3,13 +3,14 @@
 
 #include "Inc/ProjDefine.h"
 #include "Inc/typedef.h"
+#include "syslogFormat.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 extern void syslog_port_print(const char *msg);
-
+extern void syslog_port_get_hostname(char *buf, size_t len);
 extern void syslog_port_get_timestamp(char *buf, unsigned int len);
 
 #ifdef __cplusplus

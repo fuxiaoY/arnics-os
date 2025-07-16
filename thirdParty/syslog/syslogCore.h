@@ -7,43 +7,42 @@
 extern "C" {
 #endif
 
-#ifndef SYSLOG_MAX_MSG_LEN
-#define SYSLOG_MAX_MSG_LEN 512
-#endif
+/**
+ * 结构化数据项
+ */
+typedef struct 
+{
+    char struct_data_element[SYSLOG_MAX_SINGLE_STRUCT_ID_LEN];
+    uint16_t len;
+} syslog_structured_data_t;
 
-
-
-// RFC5424日志API
+/**
+ * syslog_log，支持多个STRUCTURED_DATA
+ * @param facility   日志Facility
+ * @param severity   日志Severity
+ * @param app_name   应用名
+ * @param procid     进程ID
+ * @param msgid      消息ID
+ * @param file       文件名
+ * @param line        行号
+ * @param structured_data 结构化数据数组指针
+ * @param sd_count   结构化数据项数量
+ * @param fmt        printf格式字符串
+ * @param ...        可选的printf参数
+ */
 extern void syslog_log(syslog_facility_t facility, syslog_severity_t severity,
-    const char *app_name, const char *procid, const char *msgid, 
-    const char *function, int line,
+    const char *app_name, const char *procid, const char *msgid,
+    const char *file, int line,
+    const syslog_structured_data_t *structured_data, int sd_count,
     const char *fmt, ...);
 
 /**
- * SYSLOG日志宏，生成并输出一条符合RFC5424格式的syslog日志。
- *
- * 参数说明:
- *   facility   - 日志Facility（如SYSLOG_FACILITY_LOCAL0等）
- *   severity   - 日志Severity（如SYSLOG_SEVERITY_INFO等）
- *   app_name   - 应用名
- *   procid     - 进程ID
- *   msgid      - 消息ID
- *   fmt        - printf格式字符串
- *   ...        - 可选的printf参数
- *
- *   例子:
- *   <7>1 2024-05-01T13:45:30Z - business - - - sending message to eventos:rfid_action
+ * @brief 生成结构化数据
  */
+extern syslog_structured_data_t create_structed_data(const char* sd_id, const char* fmt, ...);
 
- /**
-  * @brief     STRUCTURED_DATA(buffer, sizeof(buffer), "exampleSDID@32473",
-                    "function=\"%s\" line=\"%d\"", __FUNCTION__, __LINE__);
-  * 
-  */
-#define STRUCTURED_DATA(buffer, size, sd_id, ...) \
-    snprintf(buffer, size, "[%s " __VA_ARGS__ "]", sd_id)
 
-#define SYSLOG(facility, severity, app_name, msgid, fmt, ...) \
+#define SYSLOG(facility, severity, app_name, msgid, structured_data, sd_count, fmt, ...) \
 syslog_log(              \
     facility,            \
     severity,            \
@@ -52,11 +51,33 @@ syslog_log(              \
     msgid,               \
     __FILE__,            \
     __LINE__,            \
+    structured_data,     \
+    sd_count,            \
     fmt,                 \
     ##__VA_ARGS__        \
 )
 
+extern syslog_control_t *syslog_flags(void);
 
+/**
+ * @brief 位操作宏定义
+ */
+extern syslog_control_t *syslog_flags(void);
+
+/**
+ * @brief 位操作宏定义 - C/C++ 兼容
+ */
+#ifdef __cplusplus
+#define SYSLOG_SET_FLAG(flag)    ((*syslog_flags()) = (syslog_control_t)((uint32_t)(*syslog_flags()) | (uint32_t)(flag)))
+#define SYSLOG_CLEAR_FLAG(flag)  ((*syslog_flags()) = (syslog_control_t)((uint32_t)(*syslog_flags()) & ~(uint32_t)(flag)))
+#define SYSLOG_TOGGLE_FLAG(flag) ((*syslog_flags()) = (syslog_control_t)((uint32_t)(*syslog_flags()) ^ (uint32_t)(flag)))
+#define SYSLOG_HAS_FLAG(flag)    (((uint32_t)(*syslog_flags()) & (uint32_t)(flag)) != 0)
+#else
+#define SYSLOG_SET_FLAG(flag)    ((*syslog_flags()) |= (flag))
+#define SYSLOG_CLEAR_FLAG(flag)  ((*syslog_flags()) &= ~(flag))
+#define SYSLOG_TOGGLE_FLAG(flag) ((*syslog_flags()) ^= (flag))
+#define SYSLOG_HAS_FLAG(flag)    (((*syslog_flags()) & (flag)) != 0)
+#endif
 
 #ifdef __cplusplus
 }
