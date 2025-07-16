@@ -4,7 +4,7 @@
 #include "../../rtosInterface/entry_rtos_api.h"
 static rollts_sys_t rollts_sys;
 static rollts_log_t rollts_log;
-
+static bool ts_init_flag = false;
 
 void task_suspend(void)
 {
@@ -108,35 +108,53 @@ void ts_init(void)
 {
     rollts_init(&rollts_sys);
     log_info("roll DB (%s) initialize success",ROLLDB_VERSION);
+    ts_init_flag = true;
 }
 void ts_deinit(void)
 {
     rollts_deinit(&rollts_sys); // 注销数据库
     log_info("roll DB %s deinitialize success",ROLLDB_VERSION);
+    ts_init_flag = false;
 }
 void ts_clear(void)
 {
-    rollts_clear(&rollts_sys); // 清空数据库
+    if(true == ts_init_flag)
+    {
+        rollts_clear(&rollts_sys); // 清空数据库
+    }
 }
 
 void ts_record(uint8_t *data, uint32_t len)
 {
-    rollts_add(&rollts_sys, &rollts_log, data, len); // 添加日志
+    if(true == ts_init_flag)
+    {
+        rollts_add(&rollts_sys, &rollts_log, data, len); // 添加日志
+    }
 }
 
 void ts_read_all()
 {
-    rollts_read_all(&rollts_sys, &rollts_log, print_log_callback); // 读取所有日志并打印
+    if(true == ts_init_flag)
+    {
+        rollts_read_all(&rollts_sys, &rollts_log, print_log_callback); // 读取所有日志并打印
+    }
 }
 
 void ts_read_pick(uint32_t start, uint32_t end)
 {
-    rollts_read_pick(&rollts_sys, &rollts_log, start, end, print_log_callback); // 读取指定范围的日志并打印
+    if(true == ts_init_flag)
+    {
+        rollts_read_pick(&rollts_sys, &rollts_log, start, end, print_log_callback); // 读取指定范围的日志并打印
+    }
 }
 
 uint32_t ts_read_num(void)
 {
-    return rollts_num(&rollts_sys);
+    if(true == ts_init_flag)
+    {
+        return rollts_num(&rollts_sys);
+    }
+    return 0;
 }
 
 uint32_t ts_read_capacity(void)
@@ -150,7 +168,10 @@ uint32_t ts_read_capacity_size(void)
 }
 void ts_repair(void)
 {
-    rollts_repair_logs(&rollts_sys,&rollts_log); // 修复数据库
+    if(true == ts_init_flag)
+    {
+        rollts_repair_logs(&rollts_sys,&rollts_log); // 修复数据库
+    }
 }
 void ts_read_sysinfo(void)
 {

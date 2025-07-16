@@ -399,6 +399,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thirdParty/syslog</GroupName>
+          <Files>
+            <File>
+              <FileName>syslogCore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\syslog\syslogCore.c</FilePath>
+            </File>
+            <File>
+              <FileName>syslogPort.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\syslog\syslogPort.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/drivers/common</GroupName>
           <Files>
             <File>

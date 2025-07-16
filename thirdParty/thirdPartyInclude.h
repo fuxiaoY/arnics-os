@@ -14,6 +14,7 @@ extern "C" {
 #include "Runonce/Runonce.h"
 #include "upgrade/upgradeManager.h"
 #include "rollDB/rolldbPort.h"
+#include "syslog/syslogCore.h"
 
 extern void thirdPartyInit(void);
 #ifdef __cplusplus
