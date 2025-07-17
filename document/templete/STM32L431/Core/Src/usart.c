@@ -302,6 +302,11 @@ void bsp_uart_irq_ring(uart_t *dev)
     __HAL_UART_CLEAR_IDLEFLAG(&dev->huart); // 清IDLE标志
   }
 
+  if (__HAL_UART_GET_FLAG(&dev->huart, UART_FLAG_WUF)) 
+  {
+    __HAL_UART_CLEAR_FLAG(&dev->huart, UART_CLEAR_WUF);
+  }
+  
   /*异常处理 ----------------------------------- ----------------------------*/
   if (__HAL_UART_GET_FLAG(&dev->huart, UART_FLAG_ORE)) // 过载错误
   {

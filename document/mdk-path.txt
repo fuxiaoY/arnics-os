@@ -476,6 +476,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_rng.c</FilePath>
             </File>
+            <File>
+              <FileName>interface_sdmmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_sdmmc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -35,19 +35,12 @@ void HAL_RNG_MspInit(RNG_HandleTypeDef* rngHandle)
 
   /** Initializes the peripherals clock
   */
-    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RNG;
-    PeriphClkInit.RngClockSelection = RCC_RNGCLKSOURCE_PLLSAI1;
-    PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_HSE;
-    PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
-    PeriphClkInit.PLLSAI1.PLLSAI1N = 8;
-    PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV7;
-    PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
-    PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
-    PeriphClkInit.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_48M2CLK;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-    {
-      Error_Handler();
-    }
+PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RNG;
+PeriphClkInit.RngClockSelection = RCC_RNGCLKSOURCE_MSI;  // 使用MSI时钟
+if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+{
+    Error_Handler();
+}
 
     /* RNG clock enable */
     __HAL_RCC_RNG_CLK_ENABLE();

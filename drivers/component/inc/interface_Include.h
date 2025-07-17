@@ -13,7 +13,7 @@ extern "C" {
 #include "interface_adc.h"
 #include "interface_iicSof.h"
 #include "interface_rng.h"
-
+#include "interface_sdmmc.h"
 #ifdef __cplusplus
 }
 #endif

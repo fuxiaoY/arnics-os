@@ -216,6 +216,7 @@ typedef struct
 #define DRIVERS_ENABLE_ADC
 #define DRIVERS_ENABLE_IICSOF
 #define DRIVERS_ENABLE_RNG
+#define DRIVERS_ENABLE_SDMMC
 /* typedef -----------------------------------------------------------*/
 // I/O 结构体
 typedef struct
@@ -380,6 +381,26 @@ typedef struct
 }rng_t;
 #define RNG_PARAM_MAP_X \
     X("hrng", rng_t, hrng, RNG_HandleTypeDef) \
+
+
+typedef struct
+{
+  uint32_t CardType;          /*!< Specifies the card Type                         */
+  uint32_t CardVersion;       /*!< Specifies the card version                      */
+  uint32_t Class;             /*!< Specifies the class of the card class           */
+  uint32_t RelCardAdd;        /*!< Specifies the Relative Card Address             */
+  uint32_t BlockNbr;          /*!< Specifies the Card Capacity in blocks           */
+  uint32_t BlockSize;         /*!< Specifies one block size in bytes               */
+  uint32_t LogBlockNbr;       /*!< Specifies the Card logical Capacity in blocks   */
+  uint32_t LogBlockSize;      /*!< Specifies logical block size in bytes           */
+}sdCardInfo_t;
+
+typedef struct 
+{
+    SD_HandleTypeDef hsd;
+}sdmmc_t;
+#define SDMMC_PARAM_MAP_X \
+    X("hsd", sdmmc_t, hsd, SD_HandleTypeDef) 
 
 
 

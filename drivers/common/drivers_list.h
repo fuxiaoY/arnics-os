@@ -92,6 +92,11 @@ extern const param_map_t rng_param_map[];
 extern const size_t rng_param_map_size ;
 extern dev_operations rng_ops;
 #endif
+#ifdef DRIVERS_ENABLE_SDMMC
+extern const param_map_t sdmmc_param_map[];
+extern const size_t sdmmc_param_map_size ;
+extern dev_operations sdmmc_ops;
+#endif
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];

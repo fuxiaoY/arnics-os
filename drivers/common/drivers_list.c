@@ -173,6 +173,25 @@ dev_operations rng_ops = {
                         NULL};
 #endif
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_SDMMC
+// 使用 X-macro 生成 sdmmc 参数映射表
+const param_map_t sdmmc_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    SDMMC_PARAM_MAP_X
+    #undef X
+};
+const size_t sdmmc_param_map_size = sizeof(sdmmc_param_map) / sizeof(param_map_t);
+
+dev_operations sdmmc_ops = {
+                        sdmmc_open,
+                        sdmmc_close,
+                        NULL,
+                        NULL,
+                        sdmmc_ctl,
+                        NULL};
+#endif
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
 #ifdef DRIVERS_ENABLE_UART
@@ -201,6 +220,9 @@ const device_type_map_t device_type_maps[] = {
 #endif
 #ifdef DRIVERS_ENABLE_RNG
     {"rng_t", rng_param_map, sizeof(rng_param_map) / sizeof(param_map_t),&rng_ops},
+#endif
+#ifdef DRIVERS_ENABLE_SDMMC
+    {"sdmmc_t", sdmmc_param_map, sizeof(sdmmc_param_map) / sizeof(param_map_t),&sdmmc_ops},
 #endif
     // 可以添加更多设备类型
 };
