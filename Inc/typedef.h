@@ -30,17 +30,6 @@ typedef float              fp32, F32;
 typedef double             fp64, F64;
 
 
-typedef long long INT64;
-typedef unsigned long long UINT64;
-typedef unsigned long UINT32;
-typedef signed long INT32;
-typedef unsigned short  UINT16;
-typedef unsigned char UINT8;
-
-typedef unsigned int UINT;
-typedef unsigned short USHORT;
-typedef unsigned char BYTE;
-
 #ifndef BOOL
 typedef unsigned char BOOL;
 #endif

@@ -28,11 +28,18 @@ extern const struct fal_flash_dev onchip_flash;
 extern struct fal_flash_dev nor_flash0;
 
 /* flash device table */
+#ifdef _EXT_DATAFLASH_
 #define FAL_FLASH_DEV_TABLE                                          \
 {                                                                    \
     &onchip_flash,                                                   \
     &nor_flash0,                                                     \
 }
+#else
+#define FAL_FLASH_DEV_TABLE                                          \
+{                                                                    \
+    &onchip_flash,                                                   \
+}
+#endif
 /* ====================== Partition Configuration ========================== */
 #ifdef FAL_PART_HAS_TABLE_CFG
 /* partition table */
