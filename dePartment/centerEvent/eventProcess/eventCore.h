@@ -85,7 +85,7 @@ typedef enum
 #define PT_END_NORETURN(pt) LC_END((pt)->lc); PT_YIELD_FLAG = 0; \
                    PT_INIT(pt); }
 // 封装 _START 和 _END
-#define EVET_START static struct pt _pt_##__func__ = {0}; struct pt *ppt = &_pt_##__func__; PT_BEGIN(ppt); static uint32_t _delay_start_ = arnics_getTick(); 
+#define EVET_START static struct pt _pt_##__func__ = {0}; struct pt *ppt = &_pt_##__func__; PT_BEGIN(ppt); static uint32_t _delay_start_ = 0; _delay_start_ = arnics_getTick(); 
 #define EVET_END PT_END_NORETURN(ppt);
 
 
