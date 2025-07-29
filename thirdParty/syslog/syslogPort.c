@@ -7,7 +7,7 @@ void syslog_port_print(const char *msg)
     dev_write(&debug_ds, (void*)msg, strlen(msg));
     if(SYSLOG_HAS_FLAG(SYSLOG_CTRL_STORE))
     {
-        ts_record(msg,strlen(msg));
+        ts_record((uint8_t*)msg,strlen(msg));
     }
 }
 
