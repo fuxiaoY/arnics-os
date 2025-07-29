@@ -414,6 +414,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thirdParty/softMutex</GroupName>
+          <Files>
+            <File>
+              <FileName>soft_mutex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\softMutex\soft_mutex.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/drivers/common</GroupName>
           <Files>
             <File>

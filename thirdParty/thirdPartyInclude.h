@@ -15,6 +15,7 @@ extern "C" {
 #include "upgrade/upgradeManager.h"
 #include "rollDB/rolldbPort.h"
 #include "syslog/syslogCore.h"
+#include "softMutex/soft_mutex.h"
 
 extern void thirdPartyInit(void);
 #ifdef __cplusplus
