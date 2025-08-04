@@ -309,7 +309,7 @@ void event_hird_employ_task(uint8_t j,void *argv)
         hird_employ_data->j = j;
         size_t stack_size = 256;
         rtosPriority_e rtos_priority = rtosPriorityNormal;
-        for(size_t i = 0; i < sizeof(stack_ref); i++)
+        for(size_t i = 0; i < sizeof(stack_ref)/sizeof(stack_ref[0]); i++)
         {
             if(0 == strcmp(stack_ref[i].name, eventBitMapping[j].name))
             {
