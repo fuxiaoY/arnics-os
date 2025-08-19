@@ -17,17 +17,19 @@ DataPlat 是一个轻量级的嵌入式系统数据管理平台，旨在提供�
 
 DataPlat 采用分层架构设计，主要包括以下三个核心层次：
 
-### 2.1 数据对象层 (dataObj)
-定义具体的数据对象，例如：
-- **arnicsPara**：系统参数
-- **systemCfg**：系统配置
-- **systemStatus**：系统状态
+![dataplat架构](../document/picture/dataplat.png)
 
-### 2.2 数据管理层 (dataManager)
+### 2.1 数据管理层 (dataManager)
 提供统一的数据操作接口，包括：
 - 数据存储与加载
 - 数据校验与打包
 - 数据访问控制
+### 2.2 数据对象层 (dataObj)
+
+定义具体的数据对象，例如：
+- **arnicsPara**：系统参数
+- **systemCfg**：系统配置
+- **systemStatus**：系统状态
 
 ### 2.3 存储抽象层
 通过 FAL (Flash 抽象层) 提供对物理存储设备的统一访问。
