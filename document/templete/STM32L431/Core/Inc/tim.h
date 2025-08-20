@@ -41,9 +41,13 @@ extern TIM_HandleTypeDef htim7;
 void MX_TIM7_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+// .h file
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
 
 /* USER CODE END Prototypes */
-
+extern int bsp_tim_init(tim_t *dev);
+extern int bsp_tim_close(tim_t *dev);
+extern void bsp_tim_irq(tim_t *dev);
 #ifdef __cplusplus
 }
 #endif

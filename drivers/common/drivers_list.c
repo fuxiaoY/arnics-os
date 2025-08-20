@@ -192,6 +192,25 @@ dev_operations sdmmc_ops = {
                         NULL};
 #endif
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_TIM
+// 使用 X-macro 生成 rng 参数映射表
+const param_map_t tim_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    TIM_PARAM_MAP_X
+    #undef X
+};
+const size_t tim_param_map_size = sizeof(tim_param_map) / sizeof(param_map_t);
+
+dev_operations tim_ops = {
+                        tim_open,
+                        tim_close,
+                        NULL,
+                        NULL,
+                        tim_ctl,
+                        tim_irq};
+#endif
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
 #ifdef DRIVERS_ENABLE_UART
@@ -223,6 +242,9 @@ const device_type_map_t device_type_maps[] = {
 #endif
 #ifdef DRIVERS_ENABLE_SDMMC
     {"sdmmc_t", sdmmc_param_map, sizeof(sdmmc_param_map) / sizeof(param_map_t),&sdmmc_ops},
+#endif
+#ifdef DRIVERS_ENABLE_TIM
+    {"tim_t", tim_param_map, sizeof(tim_param_map) / sizeof(param_map_t),&tim_ops},
 #endif
     // 可以添加更多设备类型
 };

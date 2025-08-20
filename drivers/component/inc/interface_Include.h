@@ -14,6 +14,7 @@ extern "C" {
 #include "interface_iicSof.h"
 #include "interface_rng.h"
 #include "interface_sdmmc.h"
+#include "interface_tim.h"
 #ifdef __cplusplus
 }
 #endif

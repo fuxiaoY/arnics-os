@@ -217,6 +217,7 @@ typedef struct
 #define DRIVERS_ENABLE_IICSOF
 #define DRIVERS_ENABLE_RNG
 #define DRIVERS_ENABLE_SDMMC
+#define DRIVERS_ENABLE_TIM
 /* typedef -----------------------------------------------------------*/
 // I/O 结构体
 typedef struct
@@ -402,6 +403,19 @@ typedef struct
 #define SDMMC_PARAM_MAP_X \
     X("hsd", sdmmc_t, hsd, SD_HandleTypeDef) 
 
+typedef struct
+{
+    float period; 
+    TIM_HandleTypeDef htim;
+    TIM_ClockConfigTypeDef sClockSourceConfig;
+    TIM_MasterConfigTypeDef sMasterConfig;
+}tim_t;
+
+#define TIM_PARAM_MAP_X \
+    X("period", tim_t, period, float) \
+    X("htim", tim_t, htim, TIM_HandleTypeDef) \
+    X("sClockSourceConfig", tim_t, sClockSourceConfig, TIM_ClockConfigTypeDef) \
+    X("sMasterConfig", tim_t, sMasterConfig, TIM_MasterConfigTypeDef)
 
 
 #endif
