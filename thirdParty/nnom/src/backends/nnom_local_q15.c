@@ -561,8 +561,12 @@ void local_convolve_CHW_q15_nonsquare(const q15_t *Im_in,                // inpu
     }
 }
 
+#ifndef FALSE
 #define FALSE 0
+#endif
+#ifndef TRUE
 #define TRUE 1
+#endif
 
 static int alg_deconv2d_calculate_position(
 		int pos,
