@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-#define SEPARATE_CORE_VERSION "1.0.1"
+#define SEPARATE_CORE_VERSION "1.0.2"
 
 // Macro to define a function that gets the current state value
-#define SEPARATE_GET_STATE_FUNC(enum_type, func_name) \
-    static void* func_name(void* context) {                \
+#define SEPARATE_GET_STATE_FUNC(enum_type, separate_func_name) \
+    static void* separate_func_name(void* context) {                \
         return (void*) (*((enum_type*)context));           \
     }
 
@@ -43,7 +43,7 @@ typedef struct {
 // Macro to initialize the kernel
 #define SEPARATE_INIT_KERNEL(pstatelist, inenum_type, incontext, inonNotFound) \
         SEPARATE_DEFINE_GET_STATE_FUNC(inenum_type);                      \
-        static SEPARATE_KERNEL kernel = {                                 \
+        static SEPARATE_KERNEL separate_kernel = {                                 \
             .states = pstatelist,                                         \
             .stateCount = sizeof(pstatelist) / sizeof(pstatelist[0]),     \
             .getState = SEPARATE_GET_CURRENT_##inenum_type##_STATE,       \
@@ -55,7 +55,7 @@ typedef struct {
 extern void separate_kernel_loop(SEPARATE_KERNEL* kernel,unsigned char autoLoop) ; 
 
 // Macro to run the kernel
-#define SEPARATE_RUN_KERNEL(autoLoop) separate_kernel_loop(&kernel,autoLoop)
+#define SEPARATE_RUN_KERNEL(autoLoop) separate_kernel_loop(&separate_kernel,autoLoop)
 
 #ifdef __cplusplus
 }
