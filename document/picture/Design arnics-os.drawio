@@ -1,0 +1,192 @@
+<mxfile host="Electron" modified="2025-08-24T12:33:32.054Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.0.3 Chrome/114.0.5735.289 Electron/25.8.4 Safari/537.36" etag="KruGT6pDzWgBcUtbH_k-" version="22.0.3" type="device">
+  <diagram name="第 1 页" id="POoFcn3_rUu5T37X8swt">
+    <mxGraphModel dx="5554" dy="3406" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pqNqYuuR6wCKAecuFPu2-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-30" y="-15" width="1690" height="910" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-1" value="决策层" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#7ea6e0;" parent="1" vertex="1">
+          <mxGeometry x="163" y="165" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-5" target="J_HZbvXvhgAx7XwrL8-C-10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-5" value="执行部门&lt;br&gt;（事件中心）" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="543" y="480" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-6" target="J_HZbvXvhgAx7XwrL8-C-30" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1383" y="580" />
+              <mxPoint x="1253" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-6" target="J_HZbvXvhgAx7XwrL8-C-32" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-6" target="J_HZbvXvhgAx7XwrL8-C-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1383" y="580" />
+              <mxPoint x="1523" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-6" value="媒体部门" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="1323" y="490" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-10" target="J_HZbvXvhgAx7XwrL8-C-14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-10" target="J_HZbvXvhgAx7XwrL8-C-15" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="603" y="660" />
+              <mxPoint x="713" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-10" value="事件主管" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="543" y="590" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-12" value="外部员工" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="443" y="680" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-14" value="内部员工" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="548" y="680" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-15" value="雇佣工" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="658" y="680" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.463;entryY=0.018;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-10" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="603" y="660" />
+              <mxPoint x="489" y="660" />
+            </Array>
+            <mxPoint x="488.92999999999984" y="690.54" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-19" value="&lt;div style=&quot;font-size: 10px;&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot; face=&quot;Verdana&quot; color=&quot;#050505&quot;&gt;&amp;nbsp; &amp;nbsp;一、员工只接受内部工作消息，服务完成立即休假。&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot; face=&quot;Verdana&quot; color=&quot;#050505&quot;&gt;&amp;nbsp; &amp;nbsp;二、对“重要工作消息”，完成后提供当前工作报表。&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot; face=&quot;Verdana&quot; color=&quot;#050505&quot;&gt;&amp;nbsp; &amp;nbsp;三、对“普通工作消息”，自行完成，不做要求。&lt;/font&gt;&lt;/div&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;align=left;" parent="1" vertex="1">
+          <mxGeometry x="443" y="730" width="320" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-23" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;&lt;div style=&quot;&quot;&gt;&amp;nbsp; &amp;nbsp;一、根据决策层进行休假安排，并在规定时间收假；收到休假安排后：查看其余部门是否可休假（是否有工作消息待查收，是否已经申请休假单），可以则安排休假，若有部门正在工作，则不进行休假安排。&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&amp;nbsp; &amp;nbsp;二、随时响应突然事件，通知全员回岗。&lt;/div&gt;&lt;/font&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;align=left;" parent="1" vertex="1">
+          <mxGeometry x="846" y="690" width="270" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-26" value="休假员" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="907" y="610" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-29" target="J_HZbvXvhgAx7XwrL8-C-26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-29" value="行政管理部门" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="907" y="490" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-30" value="团队A" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="1193" y="610" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-32" value="团队B" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="1323" y="610" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-33" value="团队C" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="1463" y="610" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-34" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp;一、自行维护与外界沟通。&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;二、接受决策层命令，向外界发送申明。&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp;三、接受外界指令，对内进行需求传递和沟通。&lt;/div&gt;&lt;/div&gt;&lt;/font&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;align=left;" parent="1" vertex="1">
+          <mxGeometry x="1193" y="690" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-38" value="公司政策：&lt;br&gt;1.除外聘员工外，所有部门休假均需要提休假申请单&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;2.所有部门和决策层需定期向督查部门汇报工作状态（是否宕机）&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#f5f5f5;strokeColor=#666666;gradientColor=#b3b3b3;" parent="1" vertex="1">
+          <mxGeometry x="936" y="30" width="360" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-55" value="&lt;div style=&quot;&quot;&gt;一、通过公司管理平台，监督所有部门工作情况。&lt;/div&gt;二、通过公司管理平台，&lt;span style=&quot;background-color: initial;&quot;&gt;监督所有部门工作情况，所有中心需使用督察中心的格式要求记录自己的工作日志&lt;/span&gt;&lt;br&gt;&lt;div style=&quot;&quot;&gt;&amp;nbsp; &amp;nbsp;三、督查部门提供公司控制后台，可审查、发布、或篡改公司政策等。&lt;/div&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;align=left;" parent="1" vertex="1">
+          <mxGeometry x="33" y="590" width="370" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-56" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="283" y="165" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-56" value="智慧囊2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="223" y="55" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-57" target="J_HZbvXvhgAx7XwrL8-C-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-57" value="智慧囊n" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="393" y="55" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="J_HZbvXvhgAx7XwrL8-C-58" target="J_HZbvXvhgAx7XwrL8-C-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-58" value="智慧囊1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="63" y="55" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-60" value="&lt;font style=&quot;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&amp;nbsp;决策层根据当前公司运转情况，&lt;span style=&quot;background-color: initial;&quot;&gt;取智慧囊方法管理公司&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 10px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&amp;nbsp;&lt;span style=&quot;font-size: 10px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp; &amp;nbsp; 一、根据当前状态和政策，使用邮箱进行公司管理。&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;二、决策当前的全员休假计划与时长：并发放命令给休眠中心&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/font&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;align=left;" parent="1" vertex="1">
+          <mxGeometry x="33" y="245" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-71" value="公司管理平台系统：&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;1.用于各部门工作结果保存&lt;br&gt;2.用于各部门请假申请填报&lt;br&gt;3.用于各部门填写督查中心汇报" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;fillColor=#e6d0de;gradientColor=#d5739d;strokeColor=#996185;" parent="1" vertex="1">
+          <mxGeometry x="593" y="55" width="290" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="J_HZbvXvhgAx7XwrL8-C-72" value="督查部门" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="123" y="490" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-1" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="673" y="645" as="sourcePoint" />
+            <mxPoint x="673" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-2" value="工作任务下发&lt;br style=&quot;border-color: var(--border-color); font-size: 11px;&quot;&gt;&lt;br style=&quot;border-color: var(--border-color); font-size: 11px;&quot;&gt;&lt;span style=&quot;font-size: 11px; background-color: rgb(255, 255, 255);&quot;&gt;工作报表提交&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="673" y="590" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-3" value="邮箱" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" parent="1" vertex="1">
+          <mxGeometry x="1433" y="390" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-4" value="邮箱" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" parent="1" vertex="1">
+          <mxGeometry x="440" y="205" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-6" value="邮箱" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" parent="1" vertex="1">
+          <mxGeometry x="1027" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-7" value="邮箱" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" parent="1" vertex="1">
+          <mxGeometry x="693" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-8" value="邮箱" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#bac8d3;strokeColor=#23445d;" parent="1" vertex="1">
+          <mxGeometry x="263" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-9" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="243" y="520" as="sourcePoint" />
+            <mxPoint x="293" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-10" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="673" y="520" as="sourcePoint" />
+            <mxPoint x="723" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-11" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1033" y="530" as="sourcePoint" />
+            <mxPoint x="1083" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-12" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1443" y="520" as="sourcePoint" />
+            <mxPoint x="1493" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lsb9O6bjPwuiWgeQbXA2-13" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="404.99" y="185.96" as="sourcePoint" />
+            <mxPoint x="452.995732584566" y="225.00170803186845" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
