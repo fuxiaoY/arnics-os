@@ -133,7 +133,10 @@ static bool expected_cmd_send(MctInstance *inst,StaticFrameList *payloadlist,tCm
     {
         return false;
     }
-    inst->mct_write(inst->cmd_cache,inst->cmd_size);  
+    if(0 > inst->mct_write(inst->cmd_cache,inst->cmd_size))
+    {
+        return false;
+    }
     return true;
 
 }
@@ -349,7 +352,7 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
                 break;
             }
 
-            if (!inst->mct_write(inst->cmd_cache, inst->cmd_size))
+            if (0 > inst->mct_write(inst->cmd_cache, inst->cmd_size))
             {
                 break;
             }
@@ -368,18 +371,23 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
     return status;
 }
 
-static void frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum,void *para)
+static dealprocess frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum,void *para)
 {
+  dealprocess status = FRAME_FAILED;
   if(payloadlist->size > 0)
   { 
     for(uint8_t i = 0;i < payloadlist->size;i++)
     {
         if(payloadlist->frames[i].status ==    FRAME_NEW)
         {
-            singleframeListDeal(inst,payloadlist,cmdList,i,cmdListNum,para);
+            if(FRAME_SUCCEED == singleframeListDeal(inst,payloadlist,cmdList,i,cmdListNum,para))
+            {
+                status = FRAME_SUCCEED;
+            }
         }
     }
   }
+  return status;
 }
 
 
@@ -474,7 +482,10 @@ bool CMD_Execute(MctInstance *inst, \
     else
     {
         payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id,cmdlist_seq_i);
-        frameListDeal(inst,&inst->payload_list,List,cmdNum,para);
+        if(FRAME_SUCCEED == frameListDeal(inst,&inst->payload_list,List,cmdNum,para))
+        {
+            result = true;
+        }
     }
 
     return result;
