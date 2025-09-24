@@ -424,6 +424,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>arnics/thirdParty/uflog</GroupName>
+          <Files>
+            <File>
+              <FileName>uflog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\uflog\uflog.c</FilePath>
+            </File>
+            <File>
+              <FileName>uflogPort.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\thirdParty\uflog\uflogPort.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>arnics/drivers/common</GroupName>
           <Files>
             <File>

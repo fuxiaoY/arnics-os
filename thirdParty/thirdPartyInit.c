@@ -25,4 +25,5 @@ void thirdPartyInit(void)
    fal_init();
    unity_test();
    ts_init();
+   uflog_init(UFLOG_LEVEL_ALL,UFLOG_SHOW_FULL);
 }
