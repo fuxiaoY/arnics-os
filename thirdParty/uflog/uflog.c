@@ -306,7 +306,14 @@ void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility,
     {
         return;
     }
-    
+    if(UFLOG_HAS_FLAG(uflog_p->control,UFLOG_AUTO_STORE))
+    {
+        if(uflog_p->print_cache != NULL)
+        {
+            uflog_p->len = 0;
+        }
+    }
+
 
     char message[UFLOG_USER_MSG_MAX_LEN];  
     int msg_len = 0;
