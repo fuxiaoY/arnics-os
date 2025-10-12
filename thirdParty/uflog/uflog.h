@@ -68,13 +68,13 @@ typedef enum
 /*    日志等级          字体色彩           是否粗体   是否下划线  是否反显  是否闪烁  
  *  Log level,       font color,          bold,     underline, reverse, blink  */
 #define UFLOG_LEVEL_COLOR_MAP \
-    X(UFLOG_PRI_DBG, UFLOG_COLOR_CYAN   , false,    false,     false,   false)    \
-    X(UFLOG_PRI_INF, UFLOG_COLOR_GREEN  , false,    false,     false,   false)    \
+    X(UFLOG_PRI_DBG, UFLOG_COLOR_BLACK  , false,    false,     false,   false)    \
+    X(UFLOG_PRI_INF, UFLOG_COLOR_BLACK  , false,    false,     false,   false)    \
     X(UFLOG_PRI_WAR, UFLOG_COLOR_YELLOW , false,    false,     false,   false)    \
     X(UFLOG_PRI_ERR, UFLOG_COLOR_RED    , false,    false,     false,   false)    \
-    X(UFLOG_PRI_ALT, UFLOG_COLOR_MAGENTA, false,    false,     false,   false)    \
+    X(UFLOG_PRI_ALT, UFLOG_COLOR_RED    , false,    false,     false,   false)    \
     X(UFLOG_PRI_NOT, UFLOG_COLOR_BLUE   , false,    false,     false,   false)    \
-    X(UFLOG_PRI_ALW, UFLOG_COLOR_BLACK  , false,    false,     false,   false)  
+    X(UFLOG_PRI_ALW, UFLOG_COLOR_BLACK  , false,    false,     false,   false)   
     
 /* ASCII 颜色代码定义 / ASCII Color Code Definitions */
 #define UFLOG_COLOR_BLACK                    "\033[30m"    /* 黑色前景色 / Black foreground color */
