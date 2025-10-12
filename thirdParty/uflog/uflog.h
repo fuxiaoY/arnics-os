@@ -57,6 +57,7 @@ typedef enum
 
    /*--------------------------------------------------------------*/
     UFLOG_AUTO_STORE       = 0x00000100,                              // 自动存储日志 
+    UFLOG_USE_COLOR        = 0x00000200,                              // 使用颜色
 
     /* 组合标志 */
     UFLOG_SHOW_DEFAULT    = UFLOG_SHOW_BASIC|UFLOG_SHOW_FUNTION,      // 默认打印 
@@ -64,13 +65,54 @@ typedef enum
                             UFLOG_SHOW_FACILITY|UFLOG_SHOW_TIMESTAMP|UFLOG_SHOW_KIND, // 完整打印日志
 } uflog_control_e;
 
+/*    日志等级          字体色彩           是否粗体   是否下划线  是否反显  是否闪烁  
+ *  Log level,       font color,          bold,     underline, reverse, blink  */
+#define UFLOG_LEVEL_COLOR_MAP \
+    X(UFLOG_PRI_DBG, UFLOG_COLOR_CYAN   , false,    false,     false,   false)    \
+    X(UFLOG_PRI_INF, UFLOG_COLOR_GREEN  , false,    false,     false,   false)    \
+    X(UFLOG_PRI_WAR, UFLOG_COLOR_YELLOW , false,    false,     false,   false)    \
+    X(UFLOG_PRI_ERR, UFLOG_COLOR_RED    , false,    false,     false,   false)    \
+    X(UFLOG_PRI_ALT, UFLOG_COLOR_MAGENTA, false,    false,     false,   false)    \
+    X(UFLOG_PRI_NOT, UFLOG_COLOR_BLUE   , false,    false,     false,   false)    \
+    X(UFLOG_PRI_ALW, UFLOG_COLOR_BLACK  , false,    false,     false,   false)  
+    
+/* ASCII 颜色代码定义 / ASCII Color Code Definitions */
+#define UFLOG_COLOR_BLACK                    "\033[30m"    /* 黑色前景色 / Black foreground color */
+#define UFLOG_COLOR_RED                      "\033[31m"    /* 红色前景色 / Red foreground color */
+#define UFLOG_COLOR_GREEN                    "\033[32m"    /* 绿色前景色 / Green foreground color */
+#define UFLOG_COLOR_YELLOW                   "\033[33m"    /* 黄色前景色 / Yellow foreground color */
+#define UFLOG_COLOR_BLUE                     "\033[34m"    /* 蓝色前景色 / Blue foreground color */
+#define UFLOG_COLOR_MAGENTA                  "\033[35m"    /* 洋红色前景色 / Magenta foreground color */
+#define UFLOG_COLOR_CYAN                     "\033[36m"    /* 青色前景色 / Cyan foreground color */
+#define UFLOG_COLOR_WHITE                    "\033[37m"    /* 白色前景色 / White foreground color */
 
+/* 格式属性定义 / Format Attributes */
+#define UFLOG_COLOR_FORMAT_BOLD              "\033[1m"     /* 粗体 / Bold text */
+#define UFLOG_COLOR_FORMAT_UNDERLINE         "\033[4m"     /* 下划线 / Underline text */
+#define UFLOG_COLOR_FORMAT_BLINK             "\033[5m"     /* 闪烁 / Blinking text */
+#define UFLOG_COLOR_FORMAT_REVERSE           "\033[7m"     /* 反显(前景色与背景色互换) / Reverse video (swap foreground and background) */
+
+/* 重置为默认格式 / Reset to Default */
+#define UFLOG_COLOR_RESET                    "\033[0m"     /* 重置所有格式属性 / Reset all formatting attributes */
+
+typedef struct 
+{
+    uflog_pri_e level;
+    char *color;
+    bool bold;
+    bool underline;
+    bool reverse;
+    bool blink;
+} uflog_color_t;
+
+
+#define WITH_HEX(data, len) data, len
+#define NO_HEX              NULL, 0 
 typedef struct
 {
     uint8_t *hex;
     size_t hex_len;
 } uflog_hex_t;
-
 
 #define UFLOG_HAS_FLAG(control,flag) ((control & flag) == flag)
 
@@ -91,54 +133,63 @@ extern void uflog_delete(uflog_t *uflog_p);
 extern void uflog_control_config(uflog_t *uflog_p, int control);
 
 extern void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility, 
-    const char *kind, uint8_t *data, size_t len, const char *func, const char *file, int line, const char *fmt, ...);
+    const char *kind, uint8_t *data, size_t len, bool force_store, const char *func, const char *file, int line, const char *fmt, ...);
 
-#define _UFLOG_SIMPLE(uflog_p,pri,facility,kind,data,len,fmt, ...) \
-uflog_log(               \
-    uflog_p,             \
-    pri,                 \
-    facility,            \
-    kind,                \
-    data,                \
-    len,                 \
-    __FUNCTION__,        \
-    __FILENAME__,        \
-    __LINE__,            \
-    fmt,                 \
-    ##__VA_ARGS__        \
-)
 
-#define WITH_HEX(data,len)  data,len
-#define NO_HEX              NULL,0
+extern uflog_t *uflog_default_p;
 
-#define xUFLOG_DBG_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_DBG, facility, kind, data, len, fmt, ##__VA_ARGS__)
-#define xUFLOG_INF_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_INF, facility, kind, data, len, fmt, ##__VA_ARGS__)
-#define xUFLOG_WAR_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_WAR, facility, kind, data, len, fmt, ##__VA_ARGS__)
-#define xUFLOG_ERR_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_ERR, facility, kind, data, len, fmt, ##__VA_ARGS__)
-#define xUFLOG_ALT_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_ALT, facility, kind, data, len, fmt, ##__VA_ARGS__)
-#define xUFLOG_NOT_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_NOT, facility, kind, data, len, fmt, ##__VA_ARGS__)
-#define xUFLOG_ALW_HELPER(uflog_p, facility, kind, data, len, fmt, ...)  _UFLOG_SIMPLE(uflog_p, UFLOG_PRI_ALW, facility, kind, data, len, fmt, ##__VA_ARGS__)
+/* 最简日志 \ Basic format logging macros - UFLOG_* */
+#define UFLOG_DBG(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_DBG, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define UFLOG_INF(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_INF, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define UFLOG_WAR(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_WAR, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define UFLOG_ERR(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_ERR, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define UFLOG_ALT(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_ALT, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define UFLOG_NOT(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_NOT, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define UFLOG_ALW(fmt, ...)                               uflog_log(uflog_default_p, UFLOG_PRI_ALW, "temp", "temp", NO_HEX, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define xUFLOG_DBG(facility, kind, hex_args, fmt, ...)                   xUFLOG_DBG_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-#define xUFLOG_INF(facility, kind, hex_args, fmt, ...)                   xUFLOG_INF_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-#define xUFLOG_WAR(facility, kind, hex_args, fmt, ...)                   xUFLOG_WAR_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-#define xUFLOG_ERR(facility, kind, hex_args, fmt, ...)                   xUFLOG_ERR_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-#define xUFLOG_ALT(facility, kind, hex_args, fmt, ...)                   xUFLOG_ALT_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-#define xUFLOG_NOT(facility, kind, hex_args, fmt, ...)                   xUFLOG_NOT_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-#define xUFLOG_ALW(facility, kind, hex_args, fmt, ...)                   xUFLOG_ALW_HELPER(uflog_default_p, facility, kind, hex_args, fmt, ##__VA_ARGS__)
-    
-#define UFLOG_DBG(fmt, ...)                                              xUFLOG_DBG("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
-#define UFLOG_INF(fmt, ...)                                              xUFLOG_INF("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
-#define UFLOG_WAR(fmt, ...)                                              xUFLOG_WAR("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
-#define UFLOG_ERR(fmt, ...)                                              xUFLOG_ERR("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
-#define UFLOG_ALT(fmt, ...)                                              xUFLOG_ALT("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
-#define UFLOG_NOT(fmt, ...)                                              xUFLOG_NOT("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
-#define UFLOG_ALW(fmt, ...)                                              xUFLOG_ALW("temp", "user", NO_HEX, fmt, ##__VA_ARGS__)
+/* 扩展日志 \ Extended format logging - xUFLOG_* */
+#define xUFLOG_DBG(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_DBG, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define xUFLOG_INF(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_INF, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define xUFLOG_WAR(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_WAR, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define xUFLOG_ERR(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_ERR, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define xUFLOG_ALT(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_ALT, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define xUFLOG_NOT(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_NOT, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define xUFLOG_ALW(facility, kind, hex_args, fmt, ...)   uflog_log(uflog_default_p, UFLOG_PRI_ALW, facility, kind, hex_args, \
+                                                        false, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+
+/* 扩展日志+强制存储 \Extended format logging and autostore - sUFLOG_* */   
+#define sUFLOG_DBG(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_DBG, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define sUFLOG_INF(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_INF, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define sUFLOG_WAR(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_WAR, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define sUFLOG_ERR(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_ERR, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define sUFLOG_ALT(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_ALT, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define sUFLOG_NOT(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_NOT, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
+#define sUFLOG_ALW(facility, kind, hex_args, fmt, ...)  uflog_log(uflog_default_p, UFLOG_PRI_ALW, facility, kind, hex_args, \
+                                                        true, __FUNCTION__, __FILENAME__, __LINE__, fmt, ##__VA_ARGS__)
 /*port --------------------------------------------------------------*/
 extern void uflog_get_timestamp(char *timestamp, int timestamp_len);
 extern void log_auto_store(char * str);
 extern void log_printf(char * str);
-extern uflog_t *uflog_default_p;
+
 /* user --------------------------------------------------------------*/
 
 /** 

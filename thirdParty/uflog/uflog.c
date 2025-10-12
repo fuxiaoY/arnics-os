@@ -2,10 +2,12 @@
 
 struct _uflog_t
 {    
-    int len;
     int control;
+    bool force_store;
+    int len;
     void (*print)(char* out_str);
     void (*print_cache)(uflog_t *uflog_p, char *out_str);
+
     #ifndef UFLOG_STATIC_MEMORY
     char str_cache[];
     #else
@@ -17,6 +19,24 @@ uflog_t *uflog_default_p;
 #ifdef UFLOG_STATIC_MEMORY
 uflog_t uflog_default;
 #endif
+
+
+#define X(level, color, bold, underline, reverse, blink)  + 1
+#define LEVEL_NUM (0 UFLOG_LEVEL_COLOR_MAP)
+
+static uint32_t get_level_color_num()
+{
+    return (LEVEL_NUM);
+}
+#undef X
+#define X(level, color, bold, underline, reverse, blink) \
+         {level, color, bold, underline, reverse, blink }, 
+
+static uflog_color_t uflog_color[] = 
+{
+    UFLOG_LEVEL_COLOR_MAP
+};
+
 
 void uflog_level_change(uflog_pri_e uflog_level_in)
 {
@@ -47,7 +67,7 @@ static void print_cache(uflog_t *uflog_p, char *out_str)
 uflog_t* uflog_create(int control,uflog_print print)
 {
 #ifndef UFLOG_STATIC_MEMORY
-    if(UFLOG_HAS_FLAG(control,UFLOG_AUTO_STORE))
+    // if(UFLOG_HAS_FLAG(control,UFLOG_AUTO_STORE))
     {
         uflog_t *uflog_p = (uflog_t*)uflog_malloc(sizeof(uflog_t) + UFLOG_STORE_CACHE);
         uflog_p->control = control;
@@ -56,15 +76,15 @@ uflog_t* uflog_create(int control,uflog_print print)
         uflog_p->print_cache = print_cache;
         return uflog_p;
     }
-    else
-    {
-        uflog_t *uflog_p = (uflog_t*)uflog_malloc(sizeof(uflog_t));
-        uflog_p->control = control;
-        uflog_p->print = print;
-        return uflog_p;
-    }
+    // else
+    // {
+    //     uflog_t *uflog_p = (uflog_t*)uflog_malloc(sizeof(uflog_t));
+    //     uflog_p->control = control;
+    //     uflog_p->print = print;
+    //     return uflog_p;
+    // }
 #else
-    if(UFLOG_HAS_FLAG(control,UFLOG_AUTO_STORE))
+    // if(UFLOG_HAS_FLAG(control,UFLOG_AUTO_STORE))
     {
         uflog_default.control = control;
         uflog_default.print = print;
@@ -73,14 +93,14 @@ uflog_t* uflog_create(int control,uflog_print print)
         uflog_default.print_cache = print_cache;
         return &uflog_default;
     }
-    else
-    {
-        uflog_default.control = control;
-        uflog_default.print = print;
-        uflog_default.len = 0;
-        memset(uflog_default.str_cache,0,UFLOG_STORE_CACHE);
-        return &uflog_default;
-    }
+    // else
+    // {
+    //     uflog_default.control = control;
+    //     uflog_default.print = print;
+    //     uflog_default.len = 0;
+    //     memset(uflog_default.str_cache,0,UFLOG_STORE_CACHE);
+    //     return &uflog_default;
+    // }
 #endif
 }
 
@@ -109,7 +129,7 @@ void uflog_control_config(uflog_t *uflog_p, int control)
 static void uflog_printf(uflog_t *uflog_p, char *out_str)
 {
     uflog_p->print(out_str);
-    if(UFLOG_HAS_FLAG(uflog_p->control,UFLOG_AUTO_STORE))
+    if(UFLOG_HAS_FLAG(uflog_p->control,UFLOG_AUTO_STORE)||(uflog_p->force_store))
     {
         if(uflog_p->print_cache != NULL)
         {
@@ -118,7 +138,46 @@ static void uflog_printf(uflog_t *uflog_p, char *out_str)
     }
 
 }
-
+/*---------------------------------------------------------------------*/
+static void color_control(uflog_t *uflog_p,uflog_pri_e log_level,bool is_start)
+{
+    if (!UFLOG_HAS_FLAG(uflog_p->control, UFLOG_USE_COLOR))
+    {
+        return;
+    }
+    if(is_start)
+    {
+        for (uint8_t i = 0; i < get_level_color_num(); i++) 
+        {
+            if (i == log_level) 
+            {
+                uflog_p->print(uflog_color[i].color);
+                if(uflog_color[i].bold)
+                {
+                    uflog_p->print(UFLOG_COLOR_FORMAT_BOLD);
+                }
+                if(uflog_color[i].underline)
+                {
+                    uflog_p->print(UFLOG_COLOR_FORMAT_UNDERLINE);
+                }
+                if(uflog_color[i].reverse)
+                {
+                    uflog_p->print(UFLOG_COLOR_FORMAT_REVERSE);
+                }
+                if(uflog_color[i].blink)
+                {
+                    uflog_p->print(UFLOG_COLOR_FORMAT_BLINK);
+                }
+                
+                break;
+            }
+        }
+    }
+    else
+    {
+        uflog_p->print(UFLOG_COLOR_RESET);
+    }
+}
 // [pri]
 static int add_priority(char *buffer, int len, uflog_pri_e control)
 {
@@ -132,6 +191,9 @@ static int add_priority(char *buffer, int len, uflog_pri_e control)
             break;
         case UFLOG_PRI_WAR:
             SAFE_SNPRINTF(UFLOG_MAX_PREFIX_LEN,buffer, len, "[WAR]");
+            break;
+        case UFLOG_PRI_ERR:
+            SAFE_SNPRINTF(UFLOG_MAX_PREFIX_LEN,buffer, len, "[ERR]");
             break;
         case UFLOG_PRI_ALT:
             SAFE_SNPRINTF(UFLOG_MAX_PREFIX_LEN,buffer, len, "[ALT]");
@@ -292,10 +354,32 @@ static void uflog_fun_line(uflog_t *uflog_p,const char *func, const char *file, 
 
 }
 
-// 主日志函数
+/**
+ * @brief 主日志函数
+ * 
+ * @param uflog_p     指向日志控制结构体的指针
+ * @param log_level   日志级别，决定日志的重要程度
+ * @param facility    日志设施名称，用于标识日志来源
+ * @param kind        日志种类，用于进一步分类日志
+ * @param data        指向要以十六进制格式输出的数据的指针
+ * @param len         数据长度
+ * @param force_store 强制存储标志，为true时强制存储日志
+ * @param func        函数名称，__FUNCTION__
+ * @param file        文件名称，__FILENAME__
+ * @param line        行号，__LINE__
+ * @param fmt         格式化字符串，类似于printf函数的格式
+ * @param ...         
+ * 
+ * @note 该函数会检查日志级别，只有当日志级别允许时才会输出日志
+ * @note 如果启用了自动存储或强制存储，日志信息会被存储到缓存中
+ * @note 函数会自动处理格式化字符串和十六进制数据的输出
+ */ 
 void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility, 
-               const char *kind, uint8_t *data, size_t len, const char *func, const char *file, int line, const char *fmt, ...) 
+               const char *kind, 
+               uint8_t *data, size_t len, bool force_store,
+               const char *func, const char *file, int line, const char *fmt, ...) 
 {
+    uflog_p->force_store = force_store;
 
     if (!(uflog_p && uflog_p->print)) 
     {
@@ -306,7 +390,7 @@ void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility,
     {
         return;
     }
-    if(UFLOG_HAS_FLAG(uflog_p->control,UFLOG_AUTO_STORE))
+    if(UFLOG_HAS_FLAG(uflog_p->control,UFLOG_AUTO_STORE)||uflog_p->force_store)
     {
         if(uflog_p->print_cache != NULL)
         {
@@ -317,6 +401,9 @@ void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility,
 
     char message[UFLOG_USER_MSG_MAX_LEN];  
     int msg_len = 0;
+    //color
+    color_control(uflog_p,log_level,true);
+
     // perfix
     log_prefix(uflog_p,log_level, facility);
     
@@ -352,7 +439,25 @@ void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility,
     uflog_fun_line(uflog_p,func,file,line);
 
     uflog_printf(uflog_p,UFLOG_END);
-    log_auto_store(uflog_p->str_cache);
+
+    //color
+    color_control(uflog_p,log_level,false);
+
+    if(UFLOG_HAS_FLAG(uflog_p->control,UFLOG_AUTO_STORE))
+    {
+        log_auto_store(uflog_p->str_cache);
+        memset(uflog_p->str_cache,0,UFLOG_STORE_CACHE);
+    }
+    else if(uflog_p->force_store)
+    {
+        log_auto_store(uflog_p->str_cache);
+        memset(uflog_p->str_cache,0,UFLOG_STORE_CACHE);
+    }
+    else
+    {
+        //do nothing
+    }
+
 }
 
 
