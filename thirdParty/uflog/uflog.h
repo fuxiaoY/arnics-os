@@ -13,7 +13,7 @@ extern "C" {
 #define UFLOG_VERSION                               1
 
 /** @brief UFLOG日志消息结束标记 / UFLOG log message end marker */
-#define UFLOG_END                                   " .\r\n"
+#define UFLOG_END                                   ".\r\n"
 
 /**
  * UFLOG level

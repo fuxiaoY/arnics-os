@@ -149,7 +149,7 @@ static void color_control(uflog_t *uflog_p,uflog_pri_e log_level,bool is_start)
     {
         for (uint8_t i = 0; i < get_level_color_num(); i++) 
         {
-            if (i == log_level) 
+            if (uflog_color[i].level == log_level) 
             {
                 uflog_p->print(uflog_color[i].color);
                 if(uflog_color[i].bold)
@@ -298,7 +298,7 @@ static int log_kind(uflog_t *uflog_p,const char *kind)
 }
 
 
-static bool uflog_msg_hex(uflog_t *uflog_p,uint8_t *data,size_t data_len)
+static void uflog_msg_hex(uflog_t *uflog_p,uint8_t *data,size_t data_len)
 {
     if(NULL != data && data_len > 0)
     {
@@ -314,11 +314,10 @@ static bool uflog_msg_hex(uflog_t *uflog_p,uint8_t *data,size_t data_len)
         }
         SAFE_SNPRINTF(UFLOG_MSG_STRUCT_LEN, msg_str, len, "<|\r\n");
         uflog_printf(uflog_p,msg_str);
-        return true;
     }
     else
     {
-        return false;
+        // do nothing
     }
 }
 
@@ -351,7 +350,7 @@ static void uflog_fun_line(uflog_t *uflog_p,const char *func, const char *file, 
 
     uflog_printf(uflog_p,fun_line); 
     uflog_printf(uflog_p,")");
-
+    uflog_printf(uflog_p," ");
 }
 
 /**
@@ -428,16 +427,15 @@ void uflog_log(uflog_t *uflog_p,uflog_pri_e log_level, const char *facility,
     if (msg_len > 0) 
     {
         uflog_printf(uflog_p,message);
-    }
-    // msg 
-    if(!uflog_msg_hex(uflog_p,data,len))
-    {
         uflog_printf(uflog_p," ");
     }
+    // msg hex
+    uflog_msg_hex(uflog_p,data,len);
 
-    // end
+    // func line
     uflog_fun_line(uflog_p,func,file,line);
 
+    // end
     uflog_printf(uflog_p,UFLOG_END);
 
     //color
