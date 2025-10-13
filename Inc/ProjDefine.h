@@ -8,15 +8,15 @@
 // +-------------------------------------------------+
 // | 功能分类         | 宏定义              | 描述     |
 // +-------------------------------------------------+
-#define EVENT_TAG      "event"
-#define MEDIA_TAG      "media"
-#define BUSINESS_TAG   "business"
-#define AD_TAG         "administrative"
-#define GUARD_TAG      "guard"
-#define CONSOLE_TAG    "console"
-#define DATAPLAT_TAG   "dataplat"
-#define DEVICES_TAG    "devices"
-#define DRIVERS_TAG    "drivers"
+#define EVENT_TAG      "evet"
+#define MEDIA_TAG      "mdia"
+#define BUSINESS_TAG   "busi"
+#define AD_TAG         "admi"
+#define GUARD_TAG      "guad"
+#define CONSOLE_TAG    "csle"
+#define DATAPLAT_TAG   "dplt"
+#define DEVICES_TAG    "devc"
+#define DRIVERS_TAG    "driv"
 // +-------------------------------------------------+
 // | 框架             | _USE_FREERTOS_      | 使用 FreeRTOS 操作系统 |
 // +-------------------------------------------------+

@@ -1,10 +1,10 @@
 # uflog — Lightweight Embedded Logging Library
-[中文文档](readme.md) | English
+[中文文档](README.md) | English
 
 A lightweight, portable, configurable embedded logging component suitable for MCU firmware projects.
 This library draws inspiration from the Unix device/logging model, providing hierarchical (priority), optional prefixes (facility, timestamp, function, etc.), hexadecimal data output, and optional log caching (auto store) functionality.
 
-This documentation is based on the library source code (`uflog.h`, `uflog.c`, `uflogCfg.h`, `uflogPort.c`) and includes a quick start guide, API reference, customization and porting guidelines, as well as common examples, targeting embedded firmware engineers and BSP porters.
+This documentation is based on the library source code (`uflog.h`, `uflog.c`, `uflogCfg.h`) and includes a quick start guide, API reference, customization and porting guidelines, as well as common examples, targeting embedded firmware engineers and BSP porters.
 
 ---
 
@@ -37,7 +37,7 @@ Its typical output format is:
 
 Example:
 
-[INF] [temp] 2025-09-26 12:00:00 1> [user] Device started (main|main.c|123) .
+[INF] [temp] 2025-09-26 12:00:00 1> [temp] Device started (main|main.c|123) .
 
 ---
 
@@ -75,12 +75,15 @@ UFLOG_ERR("Error occurred: code=%d", err);
 
 ```c
 uint8_t payload[] = {0x01,0x02,0xFF};
-xUFLOG_INF("net", "rx", WITH_HEX(payload, sizeof(payload)), "Received data");
+xUFLOG_INF("mdia", "rx", WITH_HEX(payload, sizeof(payload)), "Received data");
 // No hex to print, just change facility and kind fields
-xUFLOG_INF("net", "rx", NO_HEX, "Received data");
+xUFLOG_INF("mdia", "rx", NO_HEX, "Received data");
 ```
-
-4. Release resources when finished (if using dynamic memory mode):
+4. force save log：
+```c
+sUFLOG_INF("mdia", "rx", NO_HEX, "Received data");
+```
+5. Release resources when finished (if using dynamic memory mode):
 
 ```c
 uflog_close();
@@ -199,7 +202,7 @@ If `UFLOG_STATIC_MEMORY` is not defined, the library will map `uflog_malloc` / `
 
 ## Porting and Port Implementation
 
-The library provides several weak symbol implementations in `uflogPort.c` (can be overridden by users):
+The library provides several weak symbol default implementations in `uflog.c` (can be overridden by users):
 
 - __weak void uflog_get_timestamp(char *timestamp, int timestamp_len)
   - Used to generate timestamp strings. Example implementation calls RTC:
@@ -255,7 +258,8 @@ If you need to customize the output function and create multiple instances:
 ```c
 void my_printer(char *s) { /* write to UART */ }
 uflog_t *mylog = uflog_create(UFLOG_SHOW_DEFAULT, my_printer);
-xUFLOG_INF_HELPER(mylog, "sensor", "sample", NO_HEX, "value=%d", value);
+/* Example: print an INFO log on the custom instance (NO_HEX expands to NULL, 0) */
+uflog_log(mylog, UFLOG_PRI_INF, "sensor", "sample", NO_HEX, false, __FUNCTION__, __FILENAME__, __LINE__, "value=%d", value);
 uflog_delete(mylog);
 ```
 

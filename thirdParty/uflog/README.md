@@ -5,7 +5,7 @@
 轻量、可移植、配置化的嵌入式日志组件，适用于单片机固件项目。
 该库借鉴类 Unix 设备/日志模型，提供分级（priority）、可选前缀（facility、timestamp、function 等）、十六进制数据输出与可选的日志缓存（auto store）功能。
 
-本说明基于库源码（`uflog.h`、`uflog.c`、`uflogCfg.h`、`uflogPort.c`）编写，包含快速上手、API 参考、定制与移植要点以及常见示例，面向嵌入式固件工程师与 BSP 移植者。
+本说明基于库源码（`uflog.h`、`uflog.c`、`uflogCfg.h`）编写，包含快速上手、API 参考、定制与移植要点以及常见示例，面向嵌入式固件工程师与 BSP 移植者。
 
 ---
 
@@ -38,7 +38,7 @@ uflog 是一个针对资源受限平台设计的日志组件：
 
 示例：
 
-[INF] [temp] 2025-09-26 12:00:00 1> [user] Device started (main|main.c|123) .
+[INF] [temp] 2025-09-26 12:00:00 1> [temp] Device started (main|main.c|123) .
 
 ---
 
@@ -50,7 +50,7 @@ uflog 是一个针对资源受限平台设计的日志组件：
 - 可选自动缓存（UFLOG_AUTO_STORE）并通过 `log_auto_store` 回调存储
 - 可自定义输出函数 `log_printf`（默认弱符号实现会用 printf）
 - 支持静态内存模式（`UFLOG_STATIC_MEMORY`）或动态分配（映射到项目的 malloc/free）
-
+- 支持带颜色&格式打印
 ---
 
 ## 快速上手
@@ -76,12 +76,16 @@ UFLOG_ERR("出错: code=%d", err);
 
 ```c
 uint8_t payload[] = {0x01,0x02,0xFF};
-xUFLOG_INF("net", "rx", WITH_HEX(payload, sizeof(payload)), "收到数据");
+xUFLOG_INF("mdia", "rx", WITH_HEX(payload, sizeof(payload)), "收到数据");
 // 无hex需要打印，只需要改变facility和kind字段
-xUFLOG_INF("net", "rx", NO_HEX, "收到数据");
+xUFLOG_INF("mdia", "rx", NO_HEX, "收到数据");
+```
+4. 强制存储日志：
+```c
+sUFLOG_INF("mdia", "rx", NO_HEX, "收到数据");
 ```
 
-4. 结束时释放资源（如果使用动态内存模式）：
+5. 结束时释放资源（如果使用动态内存模式）：
 
 ```c
 uflog_close();
@@ -210,7 +214,7 @@ extern void uflog_close(void);
 
 ## 移植与端口（Port）
 
-库在 `uflogPort.c` 提供了几个弱符号实现（可被用户 override）：
+库在 `uflog.c` 提供了几个弱符号实现（可被用户 override）：
 
 - __weak void uflog_get_timestamp(char *timestamp, int timestamp_len)
   - 用于生成时间戳字符串。示例实现调用 RTC：
@@ -266,7 +270,8 @@ int main(void)
 ```c
 void my_printer(char *s) { /* write to UART */ }
 uflog_t *mylog = uflog_create(UFLOG_SHOW_DEFAULT, my_printer);
-xUFLOG_INF_HELPER(mylog, "sensor", "sample", NO_HEX, "value=%d", value);
+/* 在自定义实例上打印一条 INFO 级别日志（NO_HEX 展开为 NULL, 0） */
+uflog_log(mylog, UFLOG_PRI_INF, "sensor", "sample", NO_HEX, false, __FUNCTION__, __FILENAME__, __LINE__, "value=%d", value);
 uflog_delete(mylog);
 ```
 
