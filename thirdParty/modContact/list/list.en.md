@@ -87,3 +87,59 @@ Frame ID | Timeout | Header | Header Len | Tail | Tail Len | Error Field | Error
 ```
 CMD_HEX_ADD(CMD_CONSOLE_ID_REV2,   2,  &header,sizeof(header),      &tail,sizeof(header),       NULL,0,   RecvSend RevHexFlow),
 ```
+
+## Sticky-frame handling
+Because the mct library includes an automatic sticky-frame handling mechanism, when handling sticky frames the pack/analyze functions automatically receive the STICKY parameter defined in CMD_ADD (for example STICKY_VAR(&echo) or STICKY_CB(get_echo)) as the data pointer, rather than the main-flow parameter.
+
+It is strongly recommended to add this field to any frames that are at risk of sticky-frame issues！
+
+Sticky-frame handling provides two interfaces to obtain the sticky-frame data pointer:
+
+1. Variable mode:
+```
+static uint8_t echo;
+CMD_ADD(CMD_CONSOLE_ID_REV, 2, "$$COMX$$", "*#*#", NULL, RecvSend, RevFlow, STICKY_VAR(&echo)),
+```
+
+2. Callback function mode:
+```
+void* get_echo(void)
+{
+    return &echo;
+}
+CMD_ADD(CMD_CONSOLE_ID_REV, 2, "$$COMX$$", "*#*#", NULL, RecvSend, RevFlow, STICKY_CB(get_echo)),
+```
+
+Note: STICKY_VAR and STICKY_CB are also applicable to CMD_HEX_ADD and work the same way.
+
+## Protocol Adapter Layer
+1. Build the tCmdApi structure list
+```
+static bool cmd_revHandle(MctInstance *inst, void *para)
+{
+    command_t console_cmd = {0};
+    return mct_console_execute(inst, NULL_CMD_SEEK, &console_cmd);
+}
+
+static const tCmdApi funList[] =
+{
+    {.id = CMD_REV_FLOW, .fun = cmd_revHandle},
+};
+
+tCmdApi const *mctConsoleApiGet(void)
+{
+    return funList;
+}
+```
+
+2. Register to mctList
+```
+const tModemList modemList[] =
+{
+    {.name = "CONSOLE", .api = mctConsoleApiGet},
+};
+```
+
+## Important Notes
+1. Specifying a RevSend command ID in the adapter layer will disable the automatic sticky-frame handling; only the requested command ID will be processed and other messages will be ignored automatically.  
+2. The system reserves the command ID: NULL_CMD_SEEK. This command is intended for use with RevSend. When called, the system in RevSend mode will enable sticky-frame handling and return the STICKY data pointer for that command.

@@ -74,14 +74,67 @@ static bool cmd_AnalyzeATcommand(uint8_t* buf, size_t len, void *para)
 ```
 2.构造协议层指令接口：  
 协议使用**tCmd** 结构体来描述，单一指令参数定义如下：  
-**ASCII协议**
-帧ID |超时时间 | 帧头识别字段 | 帧尾识别字段 | 帧错误识别字段 | 帧类型 | 打包&解析函数名   
+**ASCII协议**  
+帧ID |超时时间 | 帧头识别字段 | 帧尾识别字段 | 帧错误识别字段 | 帧类型 | 打包&解析函数名  | 数据处理指针
 
 ```
-CMD_ADD(CMD_CONSOLE_ID_REV, 2,  "$$COMX$$","*#*#",  NULL,  RecvSend,  RevFlow),
+CMD_ADD(CMD_CONSOLE_ID_REV, 2,  "$$COMX$$","*#*#",  NULL,  RecvSend,  RevFlow ,STICKY_VAR(&echo)),
 ```
-**字节流协议**
+**字节流协议**  
 帧ID |超时时间 | 帧头识别字段 | 帧头识别字长| 帧尾识别字段 |帧尾识别字长| 帧错误识别字段 |帧错误识别字长| 帧类型 | 打包&解析函数名
 ```
 CMD_HEX_ADD(CMD_CONSOLE_ID_REV2,   2,  &header,sizeof(header),      &tail,sizeof(header),       NULL,0,   RecvSend RevHexFlow),
 ```
+
+## 粘帧处理
+由于 mct 库存在粘帧自动处理机制，所以在处理粘帧时，pack / Analyze 函数会自动收到在 CMD_ADD 中定义的 STICKY 参数（如 STICKY_VAR(&echo) 或 STICKY_CB(get_echo)）作为数据指针，而不是主流程中传入的参数。
+强烈建议拥有粘帧风险的帧均添加该字段！
+
+粘帧处理提供以下两种获得粘帧数据指针的接口：
+
+1. 变量模式：
+```
+static uint8_t echo;
+CMD_ADD(CMD_CONSOLE_ID_REV, 2, "$$COMX$$", "*#*#", NULL, RecvSend, RevFlow, STICKY_VAR(&echo)),
+```
+
+2. 函数回调模式：
+```
+void* get_echo(void)
+{
+    return &echo;
+}
+CMD_ADD(CMD_CONSOLE_ID_REV, 2, "$$COMX$$", "*#*#", NULL, RecvSend, RevFlow, STICKY_CB(get_echo)),
+```
+
+说明：STICKY_VAR 和 STICKY_CB 在 CMD_HEX_ADD 中同样适用，用法一致。
+
+## 协议适配层
+1.构建tCmdApi结构体列表  
+```
+static bool cmd_revHandle(MctInstance *inst,void *para)
+{
+    command_t console_cmd = {0};
+    return mct_console_execute(inst,NULL_CMD_SEEK,&console_cmd);
+}
+
+static const tCmdApi funList[] =
+{
+    {.id = CMD_REV_FLOW,   .fun = cmd_revHandle},
+        
+};
+
+tCmdApi const *mctConsoleApiGet(void)
+{
+    return funList;
+}
+```
+2.注册到mctList中  
+const tModemList modemList[] =
+    {
+        {.name = "CONSOLE",    .api = mctConsoleApiGet},
+    }
+
+## 特别注意
+1.在适配层中制定RevSend命令ID，将关闭粘帧处理机制，只处理请求的命令ID，自动忽略其他消息。
+2.系统保留命令ID：NULL_CMD_SEEK,该命令适用于RevSend指令，调用该指令，则系统在RevSend模型中，将开启粘帧处理，并返回该指令的STICKY数据指针。

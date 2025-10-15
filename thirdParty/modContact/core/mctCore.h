@@ -5,8 +5,8 @@
   * 
   * 
   * 
-  * @version        : 1.0.2
-  * @date           : 2025-05-26
+  * @version        : 1.0.3
+  * @date           : 2025-10-15
   ******************************************************************************
   * @attention
   *
@@ -33,7 +33,7 @@ extern "C" {
 #define MAX_FRAMES 5
 #define NULL_CMD_SEEK (int32_t)-1
 
-#define MCT_VERSION "1.0.2"
+#define MCT_VERSION "1.0.3"
 /* typedef -----------------------------------------------------------*/
 typedef enum
 {
@@ -111,6 +111,11 @@ typedef enum
     HeX,
 }tFormat_type;
 
+typedef enum
+{
+    USE_VAR = 0,
+    USE_CB,
+} sticky_type;
 
 typedef struct
 {
@@ -126,6 +131,9 @@ typedef struct
     tFormat_type                    format;
     cmd_Pack                        pack;
     cmd_Analyze                     analyze;
+    sticky_type                     stickytype;
+    void                            *para;
+    void*                            (*get_para)(void);
 }tCmd;
 
 

@@ -22,32 +22,65 @@ void initStaticFrameList(StaticFrameList *list)
     memset(list, 0, sizeof(StaticFrameList));
 }
 
-static void addFrameToExpectedFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
+static void clearFrameList(StaticFrameList *list)
 {
+    list->size = 0;
+    memset(list->frames, 0, sizeof(list->frames));
 
-    list->frames_expected.startOffset = startOffset;
-    list->frames_expected.endOffset = endOffset;
-    list->frames_expected.length = endOffset - startOffset;
-    list->frames_expected.tcmd_id = id;
-    list->frames_expected.status = FRAME_NEW;
-
-    list->have_expected = true;
 }
-static void addFrameToFrameList(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset,uint16_t id)
+
+static void clearFrameExpectedFrameList(StaticFrameList *list)
 {
-    if (list->size >= MAX_FRAMES) 
+    list->have_expected = false;
+    memset(&list->frames_expected, 0, sizeof(list->frames_expected));
+}
+
+static void addFrame(StaticFrameList *list, uint16_t startOffset, uint16_t endOffset, uint16_t id, bool is_expected)
+{
+    if (is_expected)
     {
-        return;
+        list->frames_expected.startOffset = startOffset;
+        list->frames_expected.endOffset = endOffset;
+        list->frames_expected.length = (uint16_t)(endOffset - startOffset);
+        list->frames_expected.tcmd_id = id;
+        list->frames_expected.status = FRAME_NEW;
+        list->have_expected = true;
     }
-    list->frames[list->size].startOffset = startOffset;
-    list->frames[list->size].endOffset = endOffset;
-    list->frames[list->size].length = endOffset - startOffset;
-    list->frames[list->size].tcmd_id = id;
-    list->frames[list->size].status = FRAME_NEW;
-
-    list->size++;
+    else
+    {
+        if (list->size >= MAX_FRAMES)
+        {
+            return;
+        }
+        list->frames[list->size].startOffset = startOffset;
+        list->frames[list->size].endOffset = endOffset;
+        list->frames[list->size].length = (uint16_t)(endOffset - startOffset);
+        list->frames[list->size].tcmd_id = id;
+        list->frames[list->size].status = FRAME_NEW;
+        list->size++;
+    }
 }
 
+// 统一读取载荷并更新 remain_len 与 payload_size，返回本次读取长度 
+static uint16_t read_payload_once(MctInstance *inst, uint16_t *remain_len)
+{
+    uint16_t single_len = 0;
+    if (NULL == inst || NULL == inst->mct_read || NULL == inst->payload_cache)
+    {
+        return 0;
+    }
+
+    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
+    if (single_len > 0)
+    {
+        inst->payload_size = (uint16_t)(inst->payload_size + single_len);
+        if (remain_len)
+        {
+            *remain_len = (uint16_t)(*remain_len + single_len);
+        }
+    }
+    return single_len;
+}
 
 /*-------------------------------------------------------------------------------------*/
 
@@ -59,30 +92,36 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
         uint16_t PhaseOffset = 0;
         uint16_t SubphaseOffset = 0;
 
-
         // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
         if (NULL != expected_cmd->errorPhase && true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase, NULL, &PhaseOffset, &SubphaseOffset))
         {
-            *remain_len = 0;
+            if (remain_len)
+            {
+                *remain_len = 0;
+            }
             return match_error;
         }
-        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhasefmct_data_reset 也视为正确响应
+        // 如果响应符合正确阶段
         if (true == cmd_ComformRes(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase, expected_cmd->SubRightPhase, &PhaseOffset, &SubphaseOffset))
         {
-            if(is_expected)
+            // 确保偏移有序，防止下溢
+            if (SubphaseOffset >= PhaseOffset)
             {
-                addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+                addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
+                if (remain_len)
+                {
+                    uint16_t delta = (uint16_t)(SubphaseOffset - PhaseOffset);
+                    *remain_len = (*remain_len > delta) ? (uint16_t)(*remain_len - delta) : 0;
+                }
+                return match_sucess;
             }
             else
             {
-                addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+                // 非法偏移，视为无匹配
+                return match_null;
             }
-
-            *remain_len -= (SubphaseOffset - PhaseOffset);
-            return match_sucess;
         }
-        //什么都没查询到 
-        *remain_len -= (SubphaseOffset - PhaseOffset);
+        // 没查询到
         return match_null;
     
     }
@@ -91,30 +130,31 @@ static frameMacheType frame_mache(MctInstance *inst, const tCmd *expected_cmd,bo
         uint16_t PhaseOffset = 0;
         uint16_t SubphaseOffset = 0;
 
-
-        // 如果指定了错误阶段且响应符合错误阶段，则返回错误等待状态
         if (NULL != expected_cmd->errorPhase && true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->errorPhase,expected_cmd->errorPhaseLen, NULL, 0,&PhaseOffset, &SubphaseOffset))
         {
-            *remain_len = 0;
+            if (remain_len) 
+            {
+                *remain_len = 0;
+            }
             return match_error;
         }
-        // 如果响应符合正确阶段，则返回成功等待状态  如果没有指定rightPhase 也视为正确响应
         if (true == cmd_ComformResUint8(inst->payload_cache, inst->payload_size, expected_cmd->rightPhase,expected_cmd->rightPhaseLen, expected_cmd->SubRightPhase,expected_cmd->SubRightPhaseLen, &PhaseOffset, &SubphaseOffset))
         {
-            if(is_expected)
+            if (SubphaseOffset >= PhaseOffset)
             {
-                addFrameToExpectedFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+                addFrame(payloadlist, PhaseOffset, SubphaseOffset, id, is_expected);
+                if (remain_len)
+                {
+                    uint16_t delta = (uint16_t)(SubphaseOffset - PhaseOffset);
+                    *remain_len = (*remain_len > delta) ? (uint16_t)(*remain_len - delta) : 0;
+                }
+                return match_sucess;
             }
             else
             {
-                addFrameToFrameList(payloadlist, PhaseOffset, SubphaseOffset,id);
+                return match_null;
             }
-
-            *remain_len -= (SubphaseOffset - PhaseOffset);
-            return match_sucess;
         }
-        //什么都没查询到 
-        *remain_len -= (SubphaseOffset - PhaseOffset);
         return match_null;
     }
     else
@@ -151,14 +191,26 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
     uint16_t remain_len = 0;
     bool result = false;
 
+    /* 保护性检查：避免除以零 */
+    uint32_t wait_ms = (WAIT_SCHEDULE_TIME_MS == 0) ? 1U : (uint32_t)WAIT_SCHEDULE_TIME_MS;
+    uint32_t loop_max = 0;
+    if (cmdList[cmdlist_seq_i].timeout > 0) 
+    {
+        uint32_t t_ms = (uint32_t)cmdList[cmdlist_seq_i].timeout * 1000U;
+        loop_max = t_ms / wait_ms;
+    } 
+    else 
+    {
+        loop_max = 0;
+    }
+
     do
     {
         uint16_t single_len = 0;
 
-        //收帧
-        single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
-        inst->payload_size += single_len;
-        remain_len += single_len;
+        // 收帧
+        single_len = read_payload_once(inst, &remain_len);
+
         //有数据更新，则进入一次判断
         if (single_len > 0)
         {
@@ -176,9 +228,9 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
                 break;
             }
         }
-        MCT_DELAY(WAIT_SCHEDULE_TIME_MS);
+        MCT_DELAY(wait_ms);
         cnt++;
-    } while (cnt < (cmdList[cmdlist_seq_i].timeout * 1000 / WAIT_SCHEDULE_TIME_MS));
+    } while (cnt < loop_max);
 
     if(remain_len > 0)
     {
@@ -209,16 +261,15 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
     return result;
 }
 
-static bool unexpected_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t cmdListNum, StaticFrameList *payloadlist)
+static bool all_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t cmdListNum, StaticFrameList *payloadlist)
 {
     uint16_t single_len = 0;
     uint16_t remain_len = 0;
     bool result = false;
 
     // 收帧
-    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
-    inst->payload_size += single_len;
-    remain_len += single_len;
+    single_len = read_payload_once(inst, &remain_len);
+
     // 有数据更新，则进入一次判断
     if (single_len > 0) 
     {
@@ -254,7 +305,7 @@ static bool unexpected_cmd_seek(MctInstance *inst, tCmd const *cmdList, uint16_t
     return result;
 }
 
-static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdList, uint16_t cmdListNum, \
+static bool cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdList, uint16_t cmdListNum, \
                                                                             int32_t expected_tcmd_id, \
                                                                             StaticFrameList *payloadlist)
 {
@@ -263,9 +314,8 @@ static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdLi
     bool result = false;
 
     // 收帧
-    single_len = inst->mct_read(inst->payload_cache + inst->payload_size, inst->PAYLOAD_MAX_SIZE - inst->payload_size);
-    inst->payload_size += single_len;
-    remain_len += single_len;
+    single_len = read_payload_once(inst, &remain_len);
+
     // 有数据更新，则进入一次判断
     if (single_len > 0) 
     {
@@ -275,7 +325,7 @@ static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdLi
             //只匹配预期
             if((RecvSend == cmdList[i].Type)&&(expected_tcmd_id == cmdList[i].id))
             {
-                frameMacheType matcheResult = frame_mache(inst, &cmdList[i], false,cmdList[i].id, payloadlist, &remain_len);
+                frameMacheType matcheResult = frame_mache(inst, &cmdList[i], true,cmdList[i].id, payloadlist, &remain_len);
                 // 如果匹配到，记录结果
                 if(match_sucess == matcheResult)
                 {
@@ -306,9 +356,9 @@ static bool unexpected_cmd_seek_with_pecify(MctInstance *inst, tCmd const *cmdLi
  */
 static bool payload_scan(MctInstance *inst,StaticFrameList *payloadlist, \
                     tCmd const *cmdList,uint16_t cmdListNum, \
-                    bool is_expected,int32_t expected_tcmd_id,uint16_t cmdlist_seq_i)
+                    bool is_send_rev,int32_t expected_tcmd_id,uint16_t cmdlist_seq_i)
 {
-    if(true == is_expected)//有预期帧
+    if(true == is_send_rev)
     {
         //预期帧寻找
         return expected_cmd_seek(inst,cmdList,cmdListNum,expected_tcmd_id,payloadlist,cmdlist_seq_i); 
@@ -317,20 +367,58 @@ static bool payload_scan(MctInstance *inst,StaticFrameList *payloadlist, \
     {
         if(NULL_CMD_SEEK == expected_tcmd_id)
         {
-            return unexpected_cmd_seek(inst, cmdList,cmdListNum,payloadlist);  
+            return all_cmd_seek(inst, cmdList,cmdListNum,payloadlist);  
         }
         else
         {
-            return unexpected_cmd_seek_with_pecify(inst, cmdList,cmdListNum,expected_tcmd_id,payloadlist);  
+            return cmd_seek_with_pecify(inst, cmdList,cmdListNum,expected_tcmd_id,payloadlist);  
         }
 
     }
 
 }
 /**************************************************************************************** */
+static dealprocess singleframeListDeal_expected(MctInstance *inst, StaticFrameList *payloadlist, \
+                                       tCmd const *cmdList, uint16_t cmdListNum, void *para)
+{
+    bool commandFound = false;
+    dealprocess status = FRAME_FAILED;
 
+    for (uint8_t i = 0; i < cmdListNum; i++)
+    {
+        // 检查当前命令项是否与目标ID匹配
+        if (payloadlist->frames_expected.tcmd_id == cmdList[i].id)
+        {
+            commandFound = true;
+
+            if (!cmdList[i].analyze(inst->payload_cache + payloadlist->frames_expected.startOffset,payloadlist->frames_expected.length, para))
+            {
+                break;
+            }
+
+            if (!cmdList[i].pack(inst->cmd_cache,&inst->cmd_size,para))
+            {
+                break;
+            }
+
+            if (0 > inst->mct_write(inst->cmd_cache, inst->cmd_size))
+            {
+                break;
+            }
+
+            status = FRAME_SUCCEED;
+            break;
+        }
+    }
+
+    if (!commandFound)
+    {
+        status = FRAME_FAILED;
+    }
+    return status;
+}
 static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *payloadlist, \
-                                       tCmd const *cmdList, uint16_t payloadlist_id, uint16_t cmdListNum, void *para)
+                                       tCmd const *cmdList, uint16_t payloadlist_id, uint16_t cmdListNum)
 {
     bool commandFound = false;
     dealprocess status = FRAME_FAILED;
@@ -341,8 +429,24 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
         if (payloadlist->frames[payloadlist_id].tcmd_id == cmdList[i].id)
         {
             commandFound = true;
-
-            if (!cmdList[i].analyze(inst->payload_cache + payloadlist->frames[payloadlist_id].startOffset,payloadlist->frames[payloadlist_id].length, para))
+            void *para = NULL;
+            if(USE_VAR == cmdList[i].stickytype)
+            {
+                para = cmdList[i].para;
+            }
+            else if(USE_CB == cmdList[i].stickytype)
+            {
+                if (cmdList[i].get_para)
+                {
+                    para = cmdList[i].get_para();
+                }
+            }
+            else
+            {
+                //do nothing
+            }
+            if (!cmdList[i].analyze(inst->payload_cache + payloadlist->frames[payloadlist_id].startOffset,
+                                    payloadlist->frames[payloadlist_id].length, para))
             {
                 break;
             }
@@ -371,16 +475,16 @@ static dealprocess singleframeListDeal(MctInstance *inst, StaticFrameList *paylo
     return status;
 }
 
-static dealprocess frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum,void *para)
+static dealprocess frameListDeal(MctInstance *inst,StaticFrameList *payloadlist,tCmd const *cmdList,uint16_t cmdListNum)
 {
   dealprocess status = FRAME_FAILED;
   if(payloadlist->size > 0)
   { 
     for(uint8_t i = 0;i < payloadlist->size;i++)
     {
-        if(payloadlist->frames[i].status ==    FRAME_NEW)
+        if(payloadlist->frames[i].status == FRAME_NEW)
         {
-            if(FRAME_SUCCEED == singleframeListDeal(inst,payloadlist,cmdList,i,cmdListNum,para))
+            if(FRAME_SUCCEED == singleframeListDeal(inst,payloadlist,cmdList,i,cmdListNum))
             {
                 status = FRAME_SUCCEED;
             }
@@ -440,7 +544,7 @@ bool CMD_Execute(MctInstance *inst, \
         mct_data_reset(inst);
     }
     uint16_t i = 0;
-    bool is_expected = false;
+    bool is_send_rev = false;
     bool result = false;
     uint16_t cmdlist_seq_i = 0;
 
@@ -453,7 +557,7 @@ bool CMD_Execute(MctInstance *inst, \
             cmdlist_seq_i = i;
             if(List[i].Type == SendRev)
             {
-                is_expected = true;
+                is_send_rev = true;
             }
             break;
         }
@@ -465,28 +569,37 @@ bool CMD_Execute(MctInstance *inst, \
     }
     
     //判断是否是SendRev类型的命令
-    if(is_expected)
+    if(is_send_rev)
     {
         if(expected_cmd_send(inst,&inst->payload_list,List,cmdlist_seq_i,expected_tcmd_id,para))
         {
-            if(payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id,cmdlist_seq_i))
+            if(payload_scan(inst,&inst->payload_list,List,cmdNum,is_send_rev,expected_tcmd_id,cmdlist_seq_i))
             {
                 result = expectframeDeal(inst,&inst->payload_list,List,cmdNum,para); 
                 
             }
-            frameListDeal(inst,&inst->payload_list,List,cmdNum,para);
+            frameListDeal(inst,&inst->payload_list,List,cmdNum);
         }
-
-    
     }
     else
     {
-        payload_scan(inst,&inst->payload_list,List,cmdNum,is_expected,expected_tcmd_id,cmdlist_seq_i);
-        if(FRAME_SUCCEED == frameListDeal(inst,&inst->payload_list,List,cmdNum,para))
+        if(payload_scan(inst,&inst->payload_list,List,cmdNum,is_send_rev,expected_tcmd_id,cmdlist_seq_i))
         {
-            result = true;
+            if(inst->payload_list.have_expected)
+            {
+                singleframeListDeal_expected(inst,&inst->payload_list,List,cmdNum,para);
+            }
+            if(inst->payload_list.size > 0)
+            {
+                if(FRAME_SUCCEED == frameListDeal(inst,&inst->payload_list,List,cmdNum))
+                {
+                    result = true;
+                }
+            }
         }
     }
+    clearFrameList(&inst->payload_list);
+    clearFrameExpectedFrameList(&inst->payload_list);
 
     return result;
 }

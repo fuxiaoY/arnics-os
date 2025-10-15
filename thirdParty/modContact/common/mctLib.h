@@ -40,8 +40,11 @@ extern "C" {
                                                                     ch == '\r' || \
                                                                     ch == '\t' || \
                                                                     ch == '\v')
+                                    
+#define STICKY_VAR(var) .stickytype=USE_VAR, .para=var
+#define STICKY_CB(cb)   .stickytype=USE_CB, .get_para=cb
 
-#define CMD_ADD(index, time, right, subright, error, type, funName) {.id = index, \
+#define CMD_ADD(index, time, right, subright, error, type, funName,...) {.id = index, \
                                                                     .timeout = time, \
                                                                     .rightPhase = right, \
                                                                     .SubRightPhase = subright, \
@@ -49,9 +52,10 @@ extern "C" {
                                                                     .Type = type, \
                                                                     .format =AscII, \
                                                                     .pack = cmd_Pack##funName, \
-                                                                    .analyze = cmd_Analyze##funName}
+                                                                    .analyze = cmd_Analyze##funName, \
+                                                                    __VA_ARGS__}
 
-#define CMD_HEX_ADD(index, time, right,rightlen, subright,subrightlen, error,errorlen, type, funName)  {.id = index, \
+#define CMD_HEX_ADD(index, time, right,rightlen, subright,subrightlen, error,errorlen, type, funName,...)  {.id = index, \
                                                                     .timeout = time, \
                                                                     .rightPhase = right, \
                                                                     .rightPhaseLen = rightlen, \
@@ -62,7 +66,8 @@ extern "C" {
                                                                     .Type = type, \
                                                                     .format =HeX, \
                                                                     .pack = cmd_Pack##funName, \
-                                                                    .analyze = cmd_Analyze##funName}
+                                                                    .analyze = cmd_Analyze##funName, \
+                                                                    __VA_ARGS__}
 
 
 
@@ -131,3 +136,5 @@ extern int cmd_TokenNextInt(uint8_t **p_cur, int *p_out, uint8_t format);
 }
 #endif
 #endif
+
+
