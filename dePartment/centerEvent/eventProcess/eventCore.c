@@ -588,10 +588,6 @@ _WEAK void onResetState()
                 }
             }
         }
-        if(needRsp)
-        {
-            break;
-        }
     }
     CLR_EVENT_FLAG_ALL(EVENT_FLAG);
     CLR_EVENT_FLAG_ALL(MSG_FLAG);
