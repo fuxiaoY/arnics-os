@@ -33,7 +33,7 @@ extern "C" {
 #include <ctype.h>
 
 
-#define ISSPACE(ch)                                             (ch == ' ' || \
+#define ISSPACE(ch)                                                (ch == ' '  || \
                                                                     ch == '\n' || \
                                                                     ch == '\f' || \
                                                                     ch == '\f' || \
@@ -44,42 +44,41 @@ extern "C" {
 #define STICKY_VAR(var) .stickytype=USE_VAR, .para=var
 #define STICKY_CB(cb)   .stickytype=USE_CB, .get_para=cb
 
-#define CMD_ADD(index, time, right, subright, error, type, funName,...) {.id = index, \
-                                                                    .timeout = time, \
-                                                                    .rightPhase = right, \
-                                                                    .SubRightPhase = subright, \
-                                                                    .errorPhase = error, \
-                                                                    .Type = type, \
-                                                                    .format =AscII, \
-                                                                    .pack = cmd_Pack##funName, \
-                                                                    .analyze = cmd_Analyze##funName, \
-                                                                    __VA_ARGS__}
+#define CMD_ADD(index, time, right, subright, error, type, funName,...)           \
+                                      { .id             = index,                  \
+                                        .timeout        = time,                   \
+                                        .rightPhase     = right,                  \
+                                        .SubRightPhase  = subright,               \
+                                        .errorPhase     = error,                  \
+                                        .Type           = type,                   \
+                                        .format         = AscII,                  \
+                                        .pack           = cmd_Pack##funName,      \
+                                        .analyze        = cmd_Analyze##funName,   \
+                                        __VA_ARGS__}
 
-#define CMD_HEX_ADD(index, time, right,rightlen, subright,subrightlen, error,errorlen, type, funName,...)  {.id = index, \
-                                                                    .timeout = time, \
-                                                                    .rightPhase = right, \
-                                                                    .rightPhaseLen = rightlen, \
-                                                                    .SubRightPhase = subright, \
-                                                                    .SubRightPhaseLen = subrightlen, \
-                                                                    .errorPhase = error, \
-                                                                    .errorPhaseLen = errorlen, \
-                                                                    .Type = type, \
-                                                                    .format =HeX, \
-                                                                    .pack = cmd_Pack##funName, \
-                                                                    .analyze = cmd_Analyze##funName, \
-                                                                    __VA_ARGS__}
-
-
-
-
-
+#define CMD_HEX_ADD(index, time, right,rightlen, subright,subrightlen,            \
+                                      error,errorlen, type, funName,...)          \
+                                    {.id               = index,                   \
+                                     .timeout          = time,                    \
+                                     .rightPhase       = right,                   \
+                                     .rightPhaseLen    = rightlen,                \
+                                     .SubRightPhase    = subright,                \
+                                     .SubRightPhaseLen = subrightlen,             \
+                                     .errorPhase       = error,                   \
+                                     .errorPhaseLen    = errorlen,                \
+                                     .Type             = type,                    \
+                                     .format           = HeX,                     \
+                                     .pack             = cmd_Pack##funName,       \
+                                     .analyze          = cmd_Analyze##funName,    \
+                                     __VA_ARGS__}
+                                    
 /*内核辅助函数--------------------------------------------------------------------------*/
 extern bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_dest, uint16_t *offset);
-extern bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,const char *phase, const char *subphase, uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
-extern bool cmd_ComformResUint8(uint8_t *srcaddr, size_t src_len, \
-                            const uint8_t *phase, size_t phase_len, \
-                            const uint8_t *subphase, size_t subphase_len, \
-                            uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
+extern bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,const char *phase, const char *subphase, \
+                                                             uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
+extern bool cmd_ComformResUint8(uint8_t *srcaddr, size_t src_len, const uint8_t *phase, size_t phase_len,  \
+                                                             const uint8_t *subphase, size_t subphase_len, \
+                                                             uint16_t *PhaseOffset, uint16_t *SubphaseOffset);
 
 /*工具函数-----------------------------------------------------------------------------*/
 /**

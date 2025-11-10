@@ -277,7 +277,8 @@ void AsciiToHex(const char *asciiStr, char *hexStr, size_t hexLen)
 
 
 // 将单个十六进制字符转换为对应的数值
-static uint8_t hexCharToValue(char c) {
+static uint8_t hexCharToValue(char c) 
+{
     if (c >= '0' && c <= '9') return c - '0';
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
     if (c >= 'a' && c <= 'f') return c - 'a' + 10;
@@ -285,15 +286,18 @@ static uint8_t hexCharToValue(char c) {
 }
 
 // 将十六进制字符串转换为 ASCII 字符串
-void hexToAscii(const char *hexStr, char *asciiStr, size_t asciiLen) {
+void hexToAscii(const char *hexStr, char *asciiStr, size_t asciiLen) 
+{
     // 确保目标缓冲区足够大
     if (asciiLen == 0) return;
 
     char *out = asciiStr;
     const char *end = hexStr + strlen(hexStr);
 
-    while (hexStr < end && out - asciiStr < asciiLen) {
-        if (hexStr + 1 < end) {
+    while (hexStr < end && out - asciiStr < asciiLen) 
+    {
+        if (hexStr + 1 < end) 
+        {
             uint8_t val = (hexCharToValue(hexStr[0]) << 4) + hexCharToValue(hexStr[1]);
             *out++ = val;
         }

@@ -110,3 +110,6 @@ mctApiExecute(&consoleInstance,CMD_REV_FLOW,NULL);
 #### 五、适配接口：
 
 参考list文件夹下list.md适配说明,为mct增加自定义协议。
+
+#### 六、其他：
+1.0.4 版本后，粘帧解析可选择配置启用或关闭，默认为开启状态

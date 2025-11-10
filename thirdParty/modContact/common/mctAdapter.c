@@ -175,8 +175,16 @@ void mct_init(MctInstance* pInstance,uint8_t *Cmd_cache,size_t cmd_max_size, \
     pInstance->PAYLOAD_MAX_SIZE = payload_max_size;
     pInstance->mct_write = write_callback; // 设置写回调函数
     pInstance->mct_read = read_callback;   // 设置读回调函数
+    pInstance->sticky_frame_enable = true; // 默认启用粘帧处理
 
     pInstance->cmd_size = 0;
     pInstance->payload_size = 0;
     initStaticFrameList(&pInstance->payload_list);
 }    
+/**
+ * @brief 设置粘帧处理状态 \ setting sticky frame status
+ */
+void mct_sticky_frame_action(MctInstance* pInstance,bool enable)
+{
+    pInstance->sticky_frame_enable = enable;
+}

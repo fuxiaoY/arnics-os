@@ -232,7 +232,7 @@ static bool expected_cmd_seek(MctInstance *inst, tCmd const *cmdList,uint16_t cm
         cnt++;
     } while (cnt < loop_max);
 
-    if(remain_len > 0)
+    if(remain_len > 0 && inst->sticky_frame_enable) 
     {
         //处理沾帧，加入链表
         for(uint8_t i = 0;i < cmdListNum;i++)

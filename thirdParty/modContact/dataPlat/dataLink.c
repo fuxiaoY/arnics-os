@@ -6,7 +6,8 @@
 
 
 // 参数表结构体
-typedef struct {
+typedef struct 
+{
     void* pVar;
     uint32_t len;
     mctParaIndex index; // 添加索引字段
@@ -21,7 +22,8 @@ static mctParaList paraTable[] =
 
 void *mctParaGetPtr(mctParaIndex id)
 {
-    if (id >= MCT_DATA_MAX_COUNT ) {
+    if (id >= MCT_DATA_MAX_COUNT ) 
+    {
         return NULL;
     }
 
@@ -30,7 +32,8 @@ void *mctParaGetPtr(mctParaIndex id)
 
 uint32_t mctParaGet(mctParaIndex id, void* outBuf, uint32_t bufLen)
 {
-    if (id >= MCT_DATA_MAX_COUNT || outBuf == NULL || bufLen == 0) {
+    if (id >= MCT_DATA_MAX_COUNT || outBuf == NULL || bufLen == 0) 
+    {
         return 0;
     }
 
@@ -42,7 +45,8 @@ uint32_t mctParaGet(mctParaIndex id, void* outBuf, uint32_t bufLen)
 
 uint32_t mctParaSet(mctParaIndex id, const void* inData, uint32_t dataLen)
 {
-    if (id >= MCT_DATA_MAX_COUNT || inData == NULL || dataLen == 0) {
+    if (id >= MCT_DATA_MAX_COUNT || inData == NULL || dataLen == 0) 
+    {
         return 0;
     }
 

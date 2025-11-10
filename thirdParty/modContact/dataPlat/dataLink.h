@@ -19,17 +19,16 @@ typedef enum {
     MCT_DATA_MAX_COUNT,
 } mctParaIndex;
 
-// 恢复X宏定义
 #undef X
 
 
-extern void *mctParaGetPtr(mctParaIndex id);
+extern void     *mctParaGetPtr(mctParaIndex id);
 extern uint32_t mctParaGet(mctParaIndex id, void* outBuf, uint32_t bufLen);
 extern uint32_t mctParaSet(mctParaIndex id, const void* inData, uint32_t dataLen);
 
-#define MCT_PTR(ID) mctParaGetPtr(MCT(ID))
-#define MCT_GET(ID,OUT_BUF,BUF_LEN) mctParaGet(MCT(ID),OUT_BUF,BUF_LEN)
-#define MCT_SET(ID,IN_DATA,DATA_LEN) mctParaSet(MCT(ID),IN_DATA,DATA_LEN)
+#define MCT_PTR(ID)                          mctParaGetPtr(MCT(ID))
+#define MCT_GET(ID,OUT_BUF,BUF_LEN)          mctParaGet(MCT(ID),OUT_BUF,BUF_LEN)
+#define MCT_SET(ID,IN_DATA,DATA_LEN)         mctParaSet(MCT(ID),IN_DATA,DATA_LEN)
 #else
 #include "../../../dataPlat/dataApi/dataApi.h"
 #define MCT_PTR(ID)                      DATA_PTR(ID)                  

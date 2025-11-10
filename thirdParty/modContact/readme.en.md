@@ -103,3 +103,6 @@ mctApiExecute(&consoleInstance,CMD_REV_FLOW,NULL);
 #### 5. Adaptation Interface
 
 Refer to `list/list.md` for adaptation instructions to add custom protocols to mct.
+
+#### 6. Other
+Since version 1.0.4, sticky-frame parsing can be optionally enabled or disabled. It is enabled by default.

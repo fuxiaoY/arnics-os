@@ -49,9 +49,15 @@ extern bool mctApiExecute(MctInstance *inst,uint16_t id, void *para);
  * 此函数用于初始化mct模块，以便进行后续的读写操作。
  */
 extern void mct_init(MctInstance* pInstance,uint8_t *Cmd_cache,size_t cmd_max_size, \
-                                    uint8_t* Payload_cahe,size_t payload_max_size, \
-                                    int (*write_callback)(void *file, uint16_t len), \
-                                    uint32_t (*read_callback)(uint8_t *buf, uint16_t maxlen));
+                                     uint8_t* Payload_cahe,size_t payload_max_size, \
+                                   int (*write_callback)(void *file, uint16_t len), \
+                           uint32_t (*read_callback)(uint8_t *buf, uint16_t maxlen));
+
+/**
+ * @brief 设置粘帧处理状态 \ setting sticky frame status
+ */
+extern void mct_sticky_frame_action(MctInstance* pInstance,bool enable);
+
 
 #ifdef __cplusplus
 }
