@@ -42,7 +42,7 @@ static unsigned int buf_filelen(unsigned char *ptr)
 {
     int datatype=10, result=0;
 
-    if (ptr[0] == '0' && (ptr[1] == 'x' && ptr[1] == 'X'))
+    if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
     {
         datatype = 16;
         ptr += 2;
