@@ -15,6 +15,7 @@ extern "C" {
 #include "interface_rng.h"
 #include "interface_sdmmc.h"
 #include "interface_tim.h"
+#include "interface_delay.h"
 #ifdef __cplusplus
 }
 #endif

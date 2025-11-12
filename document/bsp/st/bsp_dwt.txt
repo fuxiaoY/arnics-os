@@ -1,0 +1,342 @@
+//h.file
+/* information */
+/**
+  ******************************************************************************
+  * @file           : dwt.h
+  * @brief          : 内核计数器的延时实现
+  * 
+  * @version        : 1.0.0
+  * @date           : 2025-11-12
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 fuxiaoy.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+#ifndef __DWT_H__
+#define __DWT_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes -----------------------------------------------------------------*/
+#include "Inc/typedef.h"
+#include "main.h"
+#include "../../arnics-os/drivers/bsp/bsp_def.h"
+/* function prototypes ------------------------------------------------------*/
+/**
+ * @brief 获取当前时间，单位为DWT CYCLE
+ */
+extern uint32_t dwt_time_get(void);
+
+/**
+ * @brief 清除DWT计数器
+ */
+extern void dwt_time_clear(void);
+/**
+ * @brief 获取经过的时间，单位us
+ */
+extern uint32_t dwt_get_elapsed_time_us(uint32_t start_cycle, uint32_t end_cycle);
+
+/**
+ * @brief bsp delay接口
+ */
+extern void bsp_delay_init(delay_t *delay);
+extern void bsp_delay_deinit(delay_t *delay);
+extern void bsp_delay_ms(delay_t *delay, uint32_t ms);
+extern void bsp_delay_us(delay_t *delay,uint32_t us);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
+// c.file
+#include "dwt.h"
+
+/**
+ * @note 使用宏查找来确认是否支持DWT模块，cortex-m0内核无该模块
+ *       若不支持DWT模块，则使用软件延时，使用80MHz的时钟频率作为例子，精度较低，实际使用需精细调整
+ */
+#if defined (DWT) && defined (CoreDebug)
+
+/**
+ * @brief 初始化DWT
+ */
+void dwt_init(void) 
+{
+    // 清零CYCCNT
+    DWT->CYCCNT       = 0u;
+    // 使能DWT
+    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+    // 使能CYCCNT寄存器
+    DWT->CTRL        |= DWT_CTRL_CYCCNTENA_Msk;
+}
+
+/**
+ * @brief 注销DWT
+ */
+void dwt_deinit(void)
+{
+    // 禁用CYCCNT寄存器
+    DWT->CTRL        &= ~DWT_CTRL_CYCCNTENA_Msk;
+    // 禁用DWT
+    CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk;
+}
+/**
+ * @brief 延时us
+ * @note 最大延时不超过 80Mhz-> 约 53.69秒 (53687091 微秒)
+ */
+#define DWT_MAX_DELAY_US ((uint64_t)0xFFFFFFFF * 1000000 / SystemCoreClock)
+
+static void dwt_delay_us(uint32_t us) 
+{
+    // 检查是否会超过最大延时
+    if (us > DWT_MAX_DELAY_US) 
+    {
+        us = DWT_MAX_DELAY_US; // 限制到最大值
+    }
+    
+
+    uint32_t start = DWT->CYCCNT;
+    uint32_t cycles = (SystemCoreClock / 1000000) * us;
+    
+    while ((DWT->CYCCNT - start) < cycles);
+
+}
+
+/**
+ * @brief 延时ms
+ * @param ms 延时毫秒数
+ */
+static void dwt_delay_ms(uint32_t ms) 
+{
+    // 为了避免单次延时超过DWT最大范围，将延时分段
+    while (ms > 0) 
+    {
+        if (ms >= 1000) 
+        {
+            // 每次延时1秒（使用CYCCNT直接计数，避免多次函数调用误差）
+            uint32_t start_cycle = DWT->CYCCNT;
+            uint32_t cycles = SystemCoreClock;  // 1秒的周期数
+            
+            while ((DWT->CYCCNT - start_cycle) < cycles) 
+            {
+                // 空循环等待
+            }
+            ms -= 1000;
+        } 
+        else 
+        {
+            // 剩余时间使用直接计算
+            uint32_t start_cycle = DWT->CYCCNT;
+            uint32_t cycles = (SystemCoreClock / 1000) * ms;
+            
+            while ((DWT->CYCCNT - start_cycle) < cycles) 
+            {
+                // 空循环等待
+            }
+            ms = 0;
+        }
+    }
+}
+
+/**
+ * @brief 获取当前时间，单位为DWT CYCLE
+ */
+uint32_t dwt_time_get(void)
+{
+    return DWT->CYCCNT;
+}
+/**
+ * @brief 清除DWT计数器
+ */
+void dwt_time_clear(void)
+{
+    DWT->CYCCNT = 0;
+}
+
+/**
+ * @brief 获取经过的时间，单位us
+ */
+uint32_t dwt_get_elapsed_time_us(uint32_t start_cycle, uint32_t end_cycle)
+{
+    uint32_t cycles = end_cycle - start_cycle;
+    return (uint32_t)((uint64_t)cycles * 1000000 / SystemCoreClock);
+}
+#else
+void dwt_init(void) 
+{
+
+}
+static void delay_1us()     //@80MHz
+{
+    unsigned char i;
+
+    __asm__("nop");
+    __asm__("nop");
+    i = 40;  // 调整循环次数以接近1微秒
+    while (--i);
+}
+
+static void delay_1ms()     //@80MHz
+{
+    unsigned int i, j;
+
+    i = 4000;  // 外层循环次数
+    j = 20;    // 内层循环次数
+
+    while (i--) 
+    {
+        j = 20;
+        while (j--);
+    }
+}
+/**
+ * @brief 延时ms
+ * @param ms 延时毫秒数     //@80MHz
+ */
+static void dwt_delay_ms(uint32_t ms) 
+{
+    while (ms--)
+    {
+        Delay1ms();
+    }
+}
+
+/**
+ * @brief 延时us            //@80MHz
+ */
+static void dwt_delay_us(uint32_t us) 
+{
+    while (us--)
+    {
+        Delay1us();
+    }
+}
+/**
+ * @brief 获取当前时间，单位为DWT CYCLE
+ * @note 暂不支持
+ */
+uint32_t dwt_time_get(void)
+{
+    return 0;
+}
+/**
+ * @brief 清除DWT计数器
+ * @note 暂不支持
+ */
+void dwt_time_clear(void)
+{
+
+}
+
+/**
+ * @brief 获取经过的时间，单位us
+ * @note 暂不支持
+ */
+uint32_t dwt_get_elapsed_time_us(uint32_t start_cycle, uint32_t end_cycle)
+{
+    return 0;
+}
+#endif
+
+static void systick_delay_us(uint32_t nus)
+{
+    uint32_t ticks;
+    uint32_t told, tnow, reload, tcnt = 0;
+    reload = SysTick->LOAD;                     // 获取重装载寄存器值
+    ticks = nus * (SystemCoreClock / 1000000);  // 计算需要的计数值
+    told = SysTick->VAL;                        // 获取当前数值寄存器值（开始时数值）
+    while (1) 
+    {
+        tnow = SysTick->VAL;                    // 获取当前数值寄存器值
+        if (tnow != told) 
+        {                                       // 当前值不等于开始值说明已在计数
+            if (tnow < told) 
+            {                                   // 当前值小于开始数值，说明未计到0
+                tcnt += told - tnow;            // 计数值=开始值-当前值
+            } 
+            else 
+            {                                   // 当前值大于开始数值，说明已计到0并重新计数
+                tcnt += reload - tnow + told;   // 计数值=重装载值-当前值+开始值
+            }
+            told = tnow;                        // 更新开始值
+            if (tcnt >= ticks) break;           // 时间超过/等于要延迟的时间,则退出.
+        }
+    }
+}
+
+static void systick_delay_ms(uint32_t ms)
+{
+    uint32_t ticks;
+    uint32_t told, tnow, reload, tcnt = 0;
+    reload = SysTick->LOAD;                       // 获取重装载寄存器值
+    ticks = ms * (SystemCoreClock / 1000);        // 计算需要的计数值
+    told = SysTick->VAL;                          // 获取当前数值寄存器值（开始时数值）
+    while (1) 
+    {
+        tnow = SysTick->VAL;                     // 获取当前数值寄存器值
+
+        if (tnow != told) 
+        {                                        // 当前值不等于开始值说明已在计数
+            if (tnow < told) 
+            {                                    // 当前值小于开始数值，说明未计到0
+                tcnt += told - tnow;             // 计数值=开始值-当前值
+            } 
+            else 
+            {                                    // 当前值大于开始数值，说明已计到0并重新计数
+                tcnt += reload - tnow + told;    // 计数值=重装载值-当前值+开始值
+            }
+            told = tnow;                         // 更新开始值
+            if (tcnt >= ticks) break;            // 时间超过/等于要延迟的时间,则退出.
+        }
+    }
+}
+
+
+void bsp_delay_init(delay_t *delay)
+{
+    if(!delay->use_systick)
+    {
+        dwt_init();
+    }
+}
+void bsp_delay_deinit(delay_t *delay)
+{
+    if(!delay->use_systick)
+    {
+        dwt_deinit();
+    }
+}
+
+void bsp_delay_ms(delay_t *delay, uint32_t ms)
+{
+    if(delay->use_systick)
+    {
+        systick_delay_ms(ms);
+    }
+    else
+    {
+        dwt_delay_ms(ms);
+    }
+
+}
+void bsp_delay_us(delay_t *delay,uint32_t us)
+{
+    if(delay->use_systick)
+    {
+        systick_delay_us(us);
+    }
+    else
+    {
+        dwt_delay_us(us);
+    }
+}
+

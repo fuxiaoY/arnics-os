@@ -102,6 +102,11 @@ extern const param_map_t tim_param_map[];
 extern const size_t tim_param_map_size ;
 extern dev_operations tim_ops;
 #endif
+#ifdef DRIVERS_ENABLE_DELAY
+extern const param_map_t delay_param_map[];
+extern const size_t delay_param_map_size ;
+extern dev_operations delay_ops;
+#endif
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];

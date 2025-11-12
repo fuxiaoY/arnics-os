@@ -506,6 +506,16 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\drivers\component\src\interface_sdmmc.c</FilePath>
             </File>
+            <File>
+              <FileName>interface_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\drivers\component\src\interface_delay.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

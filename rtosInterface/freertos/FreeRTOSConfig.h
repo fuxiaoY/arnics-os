@@ -79,8 +79,6 @@
 printf(" the min free stack size is %d \r\n",(int32_t)uxTaskGetStackHighWaterMark(NULL));  
  */
 #define INCLUDE_uxTaskGetStackHighWaterMark       1 //使能获取任务栈使用情况
-//启用运行时间统计功能 
-#define configGENERATE_RUN_TIME_STATS 1 //使能获取任务运行时间 
 #define configUSE_STATS_FORMATTING_FUNCTIONS 1 //使能获取任务运行时间
 //启用可视化跟踪调试 
 #define configUSE_TRACE_FACILITY 1 
@@ -89,10 +87,12 @@ printf(" the min free stack size is %d \r\n",(int32_t)uxTaskGetStackHighWaterMar
 * vTaskList(),
 * vTaskGetRunTimeStats()
 */
-extern volatile uint32_t CPU_RunTime; 
-
-#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() (CPU_RunTime = 0ul) 
-#define portGET_RUN_TIME_COUNTER_VALUE() CPU_RunTime
+//启用运行时间统计功能 
+extern void dwt_init(void);
+extern uint32_t dwt_time_get(void);
+#define configGENERATE_RUN_TIME_STATS 1 //使能获取任务运行时间
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() dwt_init()
+#define portGET_RUN_TIME_COUNTER_VALUE()         dwt_time_get()
 #else
 #define INCLUDE_uxTaskGetStackHighWaterMark       1 //使能获取任务栈使用情况
 #define configUSE_STATS_FORMATTING_FUNCTIONS 1 //使能获取任务运行时间

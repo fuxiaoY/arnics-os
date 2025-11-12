@@ -211,6 +211,25 @@ dev_operations tim_ops = {
                         tim_irq};
 #endif
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_DELAY
+// 使用 X-macro 生成 rng 参数映射表
+const param_map_t delay_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    DELAY_PARAM_MAP_X
+    #undef X
+};
+const size_t delay_param_map_size = sizeof(delay_param_map) / sizeof(param_map_t);
+
+dev_operations delay_ops = {
+                        delay_open,
+                        delay_close,
+                        NULL,
+                        NULL,
+                        delay_ctl,
+                        NULL};
+#endif
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
 #ifdef DRIVERS_ENABLE_UART
@@ -245,6 +264,9 @@ const device_type_map_t device_type_maps[] = {
 #endif
 #ifdef DRIVERS_ENABLE_TIM
     {"tim_t", tim_param_map, sizeof(tim_param_map) / sizeof(param_map_t),&tim_ops},
+#endif
+#ifdef DRIVERS_ENABLE_DELAY
+    {"delay_t",delay_param_map, sizeof(delay_param_map) / sizeof(param_map_t),&delay_ops},
 #endif
     // 可以添加更多设备类型
 };
