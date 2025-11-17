@@ -124,10 +124,14 @@ void bsp_adc_init(adc_t *adcx)
   {
     Error_Handler();
   }
-  if (HAL_ADC_ConfigChannel(&adcx->hadc, &adcx->sConfig) != HAL_OK)
+  for(uint8_t i = 0; i < adcx->channel_num; i++)
   {
-    Error_Handler();
+    if (HAL_ADC_ConfigChannel(&adcx->hadc, &(adcx->sConfig_p[i])) != HAL_OK)
+    {
+      Error_Handler();
+    }
   }
+
 }
 void bsp_adc_close(adc_t *adcx)
 {
@@ -136,19 +140,26 @@ void bsp_adc_close(adc_t *adcx)
     Error_Handler();
   }
 }
+
 int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
 {
     if (count == 0)
     {
         return 0; // 如果没有要读取的数据，直接返回
     }
-    // 启动自动校准
-    if (HAL_ADCEx_Calibration_Start(&adcx->hadc) != HAL_OK)
-    {
-        Error_Handler();
-        return -1; // 校准失败
-    }
+    // 确保 ADC 处于停止状态
+    HAL_ADC_Stop(&adcx->hadc);
 
+    if (HAL_ADCEx_Calibration_Start(&adcx->hadc, ADC_SINGLE_ENDED) != HAL_OK)
+    {
+        // 错误处理
+        return -1;
+    }
+    // 等待校准完成
+    while (HAL_ADC_GetState(&adcx->hadc) & HAL_ADC_STATE_BUSY)
+    {
+        // 等待
+    }
 
     // 启动单次转换
     if (HAL_ADC_Start(&adcx->hadc) != HAL_OK)
@@ -158,25 +169,16 @@ int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
     }
 
     // 循环进行多次采样
-    for (size_t i = 0; i < count; i++)
+    for(uint8_t i = 0; i < count; i++)
     {
-        // 等待转换完成
         if (HAL_ADC_PollForConversion(&adcx->hadc, HAL_MAX_DELAY) != HAL_OK)
         {
-            Error_Handler();
-            HAL_ADC_Stop(&adcx->hadc); // 停止ADC转换
-            return -1; // 转换超时或失败
+          HAL_ADC_Stop(&adcx->hadc); // 停止ADC转  换
+          return -1; // 转换超时或失败
         }
-
         // 读取转换结果
         uint16_t adc_value = HAL_ADC_GetValue(&adcx->hadc);
-        // 将ADC值转换为电压值
-        float voltage = (float)adc_value / 4095.0 * 3.3;
-        
-        buf[i] = (uint16_t)(voltage * 1000); // 以毫伏为单位存储
-
-
-
+        buf[i] = adc_value;
     }
 
     // 停止ADC转换
@@ -188,6 +190,5 @@ int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
 
     return count; // 返回读取的样本数
 }
-
 
 /* USER CODE END 1 */

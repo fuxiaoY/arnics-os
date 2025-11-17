@@ -163,10 +163,14 @@ void bsp_adc_init(adc_t *adcx)
   {
     Error_Handler();
   }
-  if (HAL_ADC_ConfigChannel(&adcx->hadc, &adcx->sConfig) != HAL_OK)
+  for(uint8_t i = 0; i < adcx->channel_num; i++)
   {
-    Error_Handler();
+    if (HAL_ADC_ConfigChannel(&adcx->hadc, &(adcx->sConfig_p[i])) != HAL_OK)
+    {
+      Error_Handler();
+    }
   }
+
 }
 
 void bsp_adc_close(adc_t *adcx)
@@ -176,6 +180,7 @@ void bsp_adc_close(adc_t *adcx)
     Error_Handler();
   }
 }
+
 
 
 int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
@@ -206,25 +211,16 @@ int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
     }
 
     // 循环进行多次采样
-    for (size_t i = 0; i < count; i++)
+    for(uint8_t i = 0; i < count; i++)
     {
-        // 等待转换完成
         if (HAL_ADC_PollForConversion(&adcx->hadc, HAL_MAX_DELAY) != HAL_OK)
         {
-            Error_Handler();
-            HAL_ADC_Stop(&adcx->hadc); // 停止ADC转换
-            return -1; // 转换超时或失败
+          HAL_ADC_Stop(&adcx->hadc); // 停止ADC转  换
+          return -1; // 转换超时或失败
         }
-
         // 读取转换结果
         uint16_t adc_value = HAL_ADC_GetValue(&adcx->hadc);
-        // 将ADC值转换为电压值
-        float voltage = (float)adc_value / 4095.0f * 3.3f;
-        
-        buf[i] = (uint16_t)(voltage * 1000); // 以毫伏为单位存储
-
-
-
+        buf[i] = adc_value;
     }
 
     // 停止ADC转换
@@ -238,3 +234,4 @@ int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
 }
 
 /* USER CODE END 1 */
+

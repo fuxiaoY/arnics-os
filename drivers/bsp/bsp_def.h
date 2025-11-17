@@ -185,12 +185,13 @@ typedef struct
 typedef struct 
 {
     ADC_HandleTypeDef hadc;
-    ADC_ChannelConfTypeDef sConfig;
+    uint8_t channel_num;
+    ADC_ChannelConfTypeDef *sConfig_p;
 }adc_t;
 
 #define ADC_PARAM_MAP_X \
     X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
-    X("sConfig", adc_t, sConfig, ADC_ChannelConfTypeDef)
+    X("sConfig", adc_t, sConfig_p, ADC_ChannelConfTypeDef *)
 
 
 
@@ -364,12 +365,13 @@ typedef struct
 typedef struct 
 {
     ADC_HandleTypeDef hadc;
-    ADC_ChannelConfTypeDef sConfig;
+    uint8_t channel_num;
+    ADC_ChannelConfTypeDef *sConfig_p;
 }adc_t;
 
 #define ADC_PARAM_MAP_X \
     X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
-    X("sConfig", adc_t, sConfig, ADC_ChannelConfTypeDef)
+    X("sConfig", adc_t, sConfig_p, ADC_ChannelConfTypeDef *)
 
 
 
@@ -585,13 +587,13 @@ typedef struct
 typedef struct 
 {
     ADC_HandleTypeDef hadc;
-    ADC_ChannelConfTypeDef sConfig;
+    uint8_t channel_num;
+    ADC_ChannelConfTypeDef *sConfig_p;
 }adc_t;
 
 #define ADC_PARAM_MAP_X \
     X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
-    X("sConfig", adc_t, sConfig, ADC_ChannelConfTypeDef)
-
+    X("sConfig", adc_t, sConfig_p, ADC_ChannelConfTypeDef *)
 
 
 

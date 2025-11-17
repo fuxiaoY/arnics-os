@@ -178,6 +178,27 @@ rtc_t rtc =
     .hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN
 };
 
+// vbat
+ADC_ChannelConfTypeDef sSconfig[2] = 
+{
+    {
+        .Channel = ADC_CHANNEL_3,
+        .Rank = ADC_REGULAR_RANK_1,
+        .SamplingTime = ADC_SAMPLETIME_247CYCLES_5,
+        .SingleDiff = ADC_SINGLE_ENDED,
+        .OffsetNumber = ADC_OFFSET_NONE,
+        .Offset = 0,
+    },
+    {
+        .Channel = ADC_CHANNEL_VREFINT,
+        .Rank = ADC_REGULAR_RANK_2,
+        .SamplingTime = ADC_SAMPLETIME_247CYCLES_5,
+        .SingleDiff = ADC_SINGLE_ENDED,
+        .OffsetNumber = ADC_OFFSET_NONE,
+        .Offset = 0,
+    }
+};
+
 adc_t adc1 = 
 {
     .hadc.Instance = ADC1,
@@ -196,14 +217,11 @@ adc_t adc1 =
     .hadc.Init.Overrun = ADC_OVR_DATA_PRESERVED,
     .hadc.Init.OversamplingMode = DISABLE,
     /** Configure Regular Channel*/
-    
-    .sConfig.Channel = ADC_CHANNEL_3,
-    .sConfig.Rank = ADC_REGULAR_RANK_1,
-    .sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5,
-    .sConfig.SingleDiff = ADC_SINGLE_ENDED,
-    .sConfig.OffsetNumber = ADC_OFFSET_NONE,
-    .sConfig.Offset = 0
+    .channel_num = 2,
+    .sConfig_p = sSconfig
+
 };
+
 iicSof_t iicsof1 = 
 {
     .SCL.GPIOx = GPIOC,
