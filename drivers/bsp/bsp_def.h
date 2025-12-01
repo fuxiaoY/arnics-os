@@ -38,7 +38,7 @@ extern "C" {
 #include "../common/drivers_common.h"
 #include "../thirdParty/thirdPartyInclude.h"
 #include "../port/arnicsPort.h"
-#ifdef MCU_STM32F1
+
 #define DRIVERS_ENABLE_UART
 #define DRIVERS_ENABLE_GPIO
 #define DRIVERS_ENABLE_SPI
@@ -47,8 +47,17 @@ extern "C" {
 #define DRIVERS_ENABLE_RTC
 #define DRIVERS_ENABLE_ADC
 #define DRIVERS_ENABLE_IICSOF
+#define DRIVERS_ENABLE_RNG
+#define DRIVERS_ENABLE_SDMMC
+#define DRIVERS_ENABLE_TIM
 #define DRIVERS_ENABLE_DELAY
+#define DRIVERS_ENABLE_LTDC
+#define DRIVERS_ENABLE_DMA2D
+#define DRIVERS_ENABLE_SDRAM
+
+#ifdef MCU_STM32F1
 /* typedef -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_GPIO
 // I/O 结构体
 typedef struct
 {
@@ -65,7 +74,10 @@ typedef struct
     X("Pull", io_t, GPIO_InitStruct.Pull, uint32_t) \
     X("Speed", io_t, GPIO_InitStruct.Speed, uint32_t) \
     X("PinState", io_t, PinState, uint32_t)
+	
+#endif /* DRIVERS_ENABLE_GPIO */
 
+#ifdef DRIVERS_ENABLE_UART
 typedef struct 
 {
     uint8_t *buf;
@@ -99,7 +111,9 @@ typedef struct
     X("rx_buf_size", uart_t, rx_buf_size, unsigned int) \
     X("tx_buf_size", uart_t, tx_buf_size, unsigned int)
 
+#endif /* DRIVERS_ENABLE_UART */
 
+#ifdef DRIVERS_ENABLE_SPI
 typedef struct
 {
   SPI_HandleTypeDef hspi;
@@ -122,6 +136,9 @@ typedef struct
     X("CRCCalculation", spi_t, hspi.Init.CRCCalculation, uint32_t) \
     X("CRCPolynomial", spi_t, hspi.Init.CRCPolynomial, uint32_t)
 
+#endif /* DRIVERS_ENABLE_SPI */
+
+#ifdef DRIVERS_ENABLE_FLASH
 typedef struct 
 {
     uint32_t offset;
@@ -142,7 +159,9 @@ typedef struct
     X("NbPages", flash_t, EraseInitStruct.NbPages, uint32_t) \
     X("offset", flash_t, offset, uint32_t) 
 
+#endif /* DRIVERS_ENABLE_FLASH */
 
+#ifdef DRIVERS_ENABLE_IWDG
 typedef struct
 {
     IWDG_HandleTypeDef hiwdg;
@@ -152,7 +171,9 @@ typedef struct
 #define IWDG_PARAM_MAP_X \
     X("hiwdg", iwdg_t, hiwdg, IWDG_HandleTypeDef) 
 
+#endif /* DRIVERS_ENABLE_IWDG */
 
+#ifdef DRIVERS_ENABLE_RTC
 typedef struct
 {       
   uint8_t Year;		  /*!<RTC 年*/
@@ -182,6 +203,9 @@ typedef struct
     X("Second", rtc_t, rtcTimeDate.Second, uint8_t) \
     X("Week", rtc_t, rtcTimeDate.Week, uint8_t)
 
+#endif /* DRIVERS_ENABLE_RTC */
+
+#ifdef DRIVERS_ENABLE_ADC
 typedef struct 
 {
     ADC_HandleTypeDef hadc;
@@ -193,9 +217,9 @@ typedef struct
     X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
     X("sConfig", adc_t, sConfig_p, ADC_ChannelConfTypeDef *)
 
+#endif /* DRIVERS_ENABLE_ADC */
 
-
-
+#ifdef DRIVERS_ENABLE_IICSOF
 typedef struct 
 {
     io_t SCL;
@@ -208,6 +232,9 @@ typedef struct
     X("SDA_OUT", iicSof_t, SDA_OUT, io_t) \
     X("SDA_IN", iicSof_t, SDA_IN, io_t)
     
+#endif /* DRIVERS_ENABLE_IICSOF */
+
+#ifdef DRIVERS_ENABLE_DELAY
 // delay结构体
 typedef struct
 {
@@ -216,21 +243,11 @@ typedef struct
 // IO 参数映射表的 X-macro
 #define DELAY_PARAM_MAP_X \
     X("use_systick", delay_t, use_systick, bool) 
+#endif /* DRIVERS_ENABLE_DELAY */
 
 #elif defined(MCU_STM32L4)
-#define DRIVERS_ENABLE_UART
-#define DRIVERS_ENABLE_GPIO
-#define DRIVERS_ENABLE_SPI
-#define DRIVERS_ENABLE_FLASH
-#define DRIVERS_ENABLE_IWDG
-#define DRIVERS_ENABLE_RTC
-#define DRIVERS_ENABLE_ADC
-#define DRIVERS_ENABLE_IICSOF
-#define DRIVERS_ENABLE_RNG
-#define DRIVERS_ENABLE_SDMMC
-#define DRIVERS_ENABLE_TIM
-#define DRIVERS_ENABLE_DELAY
 /* typedef -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_GPIO
 // I/O 结构体
 typedef struct
 {
@@ -248,6 +265,9 @@ typedef struct
     X("Speed", io_t, GPIO_InitStruct.Speed, uint32_t) \
     X("PinState", io_t, PinState, uint32_t)
 
+#endif /* DRIVERS_ENABLE_GPIO */
+
+#ifdef DRIVERS_ENABLE_UART
 typedef struct 
 {
     uint8_t *buf;
@@ -281,7 +301,9 @@ typedef struct
     X("rx_buf_size", uart_t, rx_buf_size, unsigned int) \
     X("tx_buf_size", uart_t, tx_buf_size, unsigned int)
 
+#endif /* DRIVERS_ENABLE_UART */
 
+#ifdef DRIVERS_ENABLE_SPI
 typedef struct
 {
   SPI_HandleTypeDef hspi;
@@ -304,6 +326,9 @@ typedef struct
     X("CRCCalculation", spi_t, hspi.Init.CRCCalculation, uint32_t) \
     X("CRCPolynomial", spi_t, hspi.Init.CRCPolynomial, uint32_t)
 
+#endif /* DRIVERS_ENABLE_SPI */
+
+#ifdef DRIVERS_ENABLE_FLASH
 typedef struct 
 {
     uint32_t offset;
@@ -322,7 +347,9 @@ typedef struct
     X("Banks", flash_t, EraseInitStruct.Banks, uint32_t) \
     X("offset", flash_t, offset, uint32_t) 
 
+#endif /* DRIVERS_ENABLE_FLASH */
 
+#ifdef DRIVERS_ENABLE_IWDG
 typedef struct
 {
     IWDG_HandleTypeDef hiwdg;
@@ -332,7 +359,9 @@ typedef struct
 #define IWDG_PARAM_MAP_X \
     X("hiwdg", iwdg_t, hiwdg, IWDG_HandleTypeDef) 
 
+#endif /* DRIVERS_ENABLE_IWDG */
 
+#ifdef DRIVERS_ENABLE_RTC
 typedef struct
 {       
   uint8_t Year;		  /*!<RTC 年*/
@@ -362,6 +391,9 @@ typedef struct
     X("Second", rtc_t, rtcTimeDate.Second, uint8_t) \
     X("Week", rtc_t, rtcTimeDate.Week, uint8_t)
 
+#endif /* DRIVERS_ENABLE_RTC */
+
+#ifdef DRIVERS_ENABLE_ADC
 typedef struct 
 {
     ADC_HandleTypeDef hadc;
@@ -373,9 +405,9 @@ typedef struct
     X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
     X("sConfig", adc_t, sConfig_p, ADC_ChannelConfTypeDef *)
 
+#endif /* DRIVERS_ENABLE_ADC */
 
-
-
+#ifdef DRIVERS_ENABLE_IICSOF
 typedef struct 
 {
     io_t SCL;
@@ -388,6 +420,9 @@ typedef struct
     X("SDA_OUT", iicSof_t, SDA_OUT, io_t) \
     X("SDA_IN", iicSof_t, SDA_IN, io_t)
 
+#endif /* DRIVERS_ENABLE_IICSOF */
+
+#ifdef DRIVERS_ENABLE_RNG
 typedef struct 
 {
     RNG_HandleTypeDef hrng;
@@ -396,7 +431,9 @@ typedef struct
 #define RNG_PARAM_MAP_X \
     X("hrng", rng_t, hrng, RNG_HandleTypeDef) \
 
+#endif /* DRIVERS_ENABLE_RNG */
 
+#ifdef DRIVERS_ENABLE_SDMMC
 typedef struct
 {
   uint32_t CardType;          /*!< Specifies the card Type                         */
@@ -416,6 +453,9 @@ typedef struct
 #define SDMMC_PARAM_MAP_X \
     X("hsd", sdmmc_t, hsd, SD_HandleTypeDef) 
 
+#endif /* DRIVERS_ENABLE_SDMMC */
+
+#ifdef DRIVERS_ENABLE_TIM
 typedef struct
 {
     float period; 
@@ -430,6 +470,9 @@ typedef struct
     X("sClockSourceConfig", tim_t, sClockSourceConfig, TIM_ClockConfigTypeDef) \
     X("sMasterConfig", tim_t, sMasterConfig, TIM_MasterConfigTypeDef)
 
+#endif /* DRIVERS_ENABLE_TIM */
+
+#ifdef DRIVERS_ENABLE_DELAY
 // delay结构体
 typedef struct
 {
@@ -438,21 +481,11 @@ typedef struct
 // IO 参数映射表的 X-macro
 #define DELAY_PARAM_MAP_X \
     X("use_systick", delay_t, use_systick, bool) 
+#endif /* DRIVERS_ENABLE_DELAY */
 
 #elif defined(MCU_STM32F4)
-#define DRIVERS_ENABLE_UART
-#define DRIVERS_ENABLE_GPIO
-#define DRIVERS_ENABLE_SPI
-#define DRIVERS_ENABLE_FLASH
-#define DRIVERS_ENABLE_IWDG
-#define DRIVERS_ENABLE_RTC
-#define DRIVERS_ENABLE_ADC
-#define DRIVERS_ENABLE_IICSOF
-#define DRIVERS_ENABLE_RNG
-#define DRIVERS_ENABLE_SDMMC
-#define DRIVERS_ENABLE_TIM
-#define DRIVERS_ENABLE_DELAY
 /* typedef -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_GPIO
 // I/O 结构体
 typedef struct
 {
@@ -470,6 +503,9 @@ typedef struct
     X("Speed", io_t, GPIO_InitStruct.Speed, uint32_t) \
     X("PinState", io_t, PinState, uint32_t)
 
+#endif /* DRIVERS_ENABLE_GPIO */
+
+#ifdef DRIVERS_ENABLE_UART
 typedef struct 
 {
     uint8_t *buf;
@@ -503,7 +539,9 @@ typedef struct
     X("rx_buf_size", uart_t, rx_buf_size, unsigned int) \
     X("tx_buf_size", uart_t, tx_buf_size, unsigned int)
 
+#endif /* DRIVERS_ENABLE_UART */
 
+#ifdef DRIVERS_ENABLE_SPI
 typedef struct
 {
   SPI_HandleTypeDef hspi;
@@ -526,6 +564,9 @@ typedef struct
     X("CRCCalculation", spi_t, hspi.Init.CRCCalculation, uint32_t) \
     X("CRCPolynomial", spi_t, hspi.Init.CRCPolynomial, uint32_t)
 
+#endif /* DRIVERS_ENABLE_SPI */
+
+#ifdef DRIVERS_ENABLE_FLASH
 typedef struct 
 {
     uint32_t offset;
@@ -544,7 +585,9 @@ typedef struct
     X("Banks", flash_t, EraseInitStruct.Banks, uint32_t) \
     X("offset", flash_t, offset, uint32_t) 
 
+#endif /* DRIVERS_ENABLE_FLASH */
 
+#ifdef DRIVERS_ENABLE_IWDG
 typedef struct
 {
     IWDG_HandleTypeDef hiwdg;
@@ -554,7 +597,9 @@ typedef struct
 #define IWDG_PARAM_MAP_X \
     X("hiwdg", iwdg_t, hiwdg, IWDG_HandleTypeDef) 
 
+#endif /* DRIVERS_ENABLE_IWDG */
 
+#ifdef DRIVERS_ENABLE_RTC
 typedef struct
 {       
   uint8_t Year;		  /*!<RTC 年*/
@@ -584,6 +629,9 @@ typedef struct
     X("Second", rtc_t, rtcTimeDate.Second, uint8_t) \
     X("Week", rtc_t, rtcTimeDate.Week, uint8_t)
 
+#endif /* DRIVERS_ENABLE_RTC */
+
+#ifdef DRIVERS_ENABLE_ADC
 typedef struct 
 {
     ADC_HandleTypeDef hadc;
@@ -595,8 +643,9 @@ typedef struct
     X("hadc", adc_t, hadc, ADC_HandleTypeDef) \
     X("sConfig", adc_t, sConfig_p, ADC_ChannelConfTypeDef *)
 
+#endif /* DRIVERS_ENABLE_ADC */
 
-
+#ifdef DRIVERS_ENABLE_IICSOF
 typedef struct 
 {
     io_t SCL;
@@ -609,6 +658,9 @@ typedef struct
     X("SDA_OUT", iicSof_t, SDA_OUT, io_t) \
     X("SDA_IN", iicSof_t, SDA_IN, io_t)
 
+#endif /* DRIVERS_ENABLE_IICSOF */
+
+#ifdef DRIVERS_ENABLE_RNG
 typedef struct 
 {
     RNG_HandleTypeDef hrng;
@@ -617,7 +669,9 @@ typedef struct
 #define RNG_PARAM_MAP_X \
     X("hrng", rng_t, hrng, RNG_HandleTypeDef) \
 
+#endif /* DRIVERS_ENABLE_RNG */
 
+#ifdef DRIVERS_ENABLE_SDMMC
 typedef struct
 {
   uint32_t CardType;          /*!< Specifies the card Type                         */
@@ -637,6 +691,9 @@ typedef struct
 #define SDMMC_PARAM_MAP_X \
     X("hsd", sdmmc_t, hsd, SD_HandleTypeDef) 
 
+#endif /* DRIVERS_ENABLE_SDMMC */
+
+#ifdef DRIVERS_ENABLE_TIM
 typedef struct
 {
     float period; 
@@ -650,7 +707,10 @@ typedef struct
     X("htim", tim_t, htim, TIM_HandleTypeDef) \
     X("sClockSourceConfig", tim_t, sClockSourceConfig, TIM_ClockConfigTypeDef) \
     X("sMasterConfig", tim_t, sMasterConfig, TIM_MasterConfigTypeDef)
-	
+
+#endif /* DRIVERS_ENABLE_TIM */
+
+#ifdef DRIVERS_ENABLE_DELAY
 // delay结构体
 typedef struct
 {
@@ -659,6 +719,103 @@ typedef struct
 // IO 参数映射表的 X-macro
 #define DELAY_PARAM_MAP_X \
     X("use_systick", delay_t, use_systick, bool) 
+#endif /* DRIVERS_ENABLE_DELAY */
+
+#ifdef DRIVERS_ENABLE_LTDC
+typedef struct  
+{                             
+    uint32_t                     pwidth;              // LCD面板的宽度,固定参数,不随显示方向改变,如果为0,说明没有任何RGB屏接入
+    uint32_t                    pheight;              // LCD面板的高度,固定参数,不随显示方向改变
+    uint16_t                        hsw;              // 水平同步宽度
+    uint16_t                        vsw;              // 垂直同步宽度
+    uint16_t                        hbp;              // 水平后廊
+    uint16_t                        vbp;              // 垂直后廊
+    uint16_t                        hfp;              // 水平前廊
+    uint16_t                        vfp;              // 垂直前廊 
+}ltdc_devi; 
+
+typedef struct  
+{
+    uint8_t                      layerx;             // 层序号: 0-第1层(LAYER0), 1-第2层(LAYER1)
+    uint32_t                    bufaddr;             // 帧缓冲区起始地址: 该层图像数据在内存中的首地址
+    uint32_t                  pixformat;             // 像素格式: LTDC_Pixelformat
+    uint8_t                       alpha;             // 层透明度: 取值范围0-255, 0表示完全透明, 255表示完全不透明
+    uint8_t                      alpha0;             // 默认透明度: 当像素无数据时使用的透明度值, 0-255
+    uint8_t                       bfac1;             // 混合因子1: 4-恒定Alpha, 6-像素Alpha × 恒定Alpha
+    uint8_t                       bfac2;             // 混合因子2: 5-恒定Alpha, 7-像素Alpha × 恒定Alpha
+    uint32_t                    bkcolor;             // 背景颜色: 32位RGB888格式, 仅低24位有效, 用作层的默认背景色
+}ltdc_config;
+
+typedef struct
+{
+    // clock
+    uint32_t                    pllsain;
+    uint32_t                    pllsair;
+    uint32_t                 pllsaidivr;
+    // init
+    uint8_t               backcolor_red;
+    uint8_t             backcolor_green;
+    uint8_t              backcolor_blue;
+    uint32_t                 HSPolarity;
+    uint32_t                 VSPolarity;
+    uint32_t                 DEPolarity;
+    uint32_t                 PCPolarity;
+    // config
+    uint8_t             ltdc_config_num;
+    ltdc_config        ltdc_configer[2];
+    // lcd config
+    ltdc_devi                  ltdc_dev;
+    LTDC_HandleTypeDef     LTDC_Handler;	
+}ltdc_t; 
+
+#define LTDC_PARAM_MAP_X \
+    X("pllsain",           ltdc_t, pllsain,           uint32_t)       \
+    X("pllsair",           ltdc_t, pllsair,           uint32_t)       \
+    X("pllsaidivr",        ltdc_t, pllsaidivr,        uint32_t)       \
+    X("backcolor_red",     ltdc_t, backcolor_red,     uint8_t)        \
+    X("backcolor_green",   ltdc_t, backcolor_green,   uint8_t)        \
+    X("backcolor_blue",    ltdc_t, backcolor_blue,    uint8_t)        \
+    X("HSPolarity",        ltdc_t, HSPolarity,        uint32_t)       \
+    X("VSPolarity",        ltdc_t, VSPolarity,        uint32_t)       \
+    X("DEPolarity",        ltdc_t, DEPolarity,        uint32_t)       \
+    X("PCPolarity",        ltdc_t, PCPolarity,        uint32_t)       \
+    X("ltdc_config_num",   ltdc_t, ltdc_config_num,   uint8_t)        \
+    X("ltdc_config",       ltdc_t, ltdc_configer[2],  ltdc_config)    \
+    X("ltdc_dev",          ltdc_t, ltdc_dev,          ltdc_devi)      \
+    X("LTDC_Handler",      ltdc_t, LTDC_Handler,      LTDC_HandleTypeDef)
+
+#endif /* DRIVERS_ENABLE_LTDC */
+
+#ifdef DRIVERS_ENABLE_DMA2D
+typedef struct
+{
+    uint8_t layer_num;
+    uint16_t pixel_size;
+    DMA2D_HandleTypeDef hdma2d;
+    uint16_t *dst_addr;
+    uint16_t width;
+    uint16_t height;
+
+}dma2d_t;
+#define DMA2D_PARAM_MAP_X \
+    X("layer_num",     dma2d_t, layer_num, uint8_t)          \
+    X("hdma2d"   ,     dma2d_t, hdma2d, DMA2D_HandleTypeDef) \
+    X("dst_addr",      dma2d_t, dst_addr, uint32_t *)        
+
+
+#endif /* DRIVERS_ENABLE_DMA2D */
+
+#ifdef DRIVERS_ENABLE_SDRAM
+typedef struct
+{
+    SDRAM_HandleTypeDef     SDRAM_Handler;
+    FMC_SDRAM_TimingTypeDef SDRAM_Timing;
+}sdram_t;
+#define SDRAM_PARAM_MAP_X \
+    X("SDRAM_Handler", sdram_t, SDRAM_Handler, SDRAM_HandleTypeDef) \
+    X("SDRAM_Timing",  sdram_t, SDRAM_Timing, FMC_SDRAM_TimingTypeDef)
+
+#endif /* DRIVERS_ENABLE_SDRAM */
 
 #endif
 #ifdef __cplusplus

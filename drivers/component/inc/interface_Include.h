@@ -16,6 +16,9 @@ extern "C" {
 #include "interface_sdmmc.h"
 #include "interface_tim.h"
 #include "interface_delay.h"
+#include "interface_ltdc.h"
+#include "interface_dma2d.h"
+#include "interface_sdram.h"
 #ifdef __cplusplus
 }
 #endif
