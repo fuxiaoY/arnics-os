@@ -528,12 +528,12 @@ _WEAK void onWaittingOutMessage()
     while (1)
     {
         memset(&mesg_cache,0,sizeof(message_t));
-        eventos_want_sleep = TRUE; // 现在提休眠申请
+        RESET_FLAG(sys_sleep_status.eventos_is_working); // 现在提休眠申请
         ULOG_DEBUG("eventCenter:Waiting for Message...");
         ULOG_DEBUG("-----------------END------------------------");
         if (true == rtosEventosGetMsg(&mesg_cache,100))
         {
-            eventos_want_sleep = FALSE; // 撤销休眠申请
+            SET_FLAG(sys_sleep_status.eventos_is_working); // 撤销休眠申请
             // 清除分析缓存，并存入外部消息
             CLR_EVENT_FLAG_ALL(EVENT_FLAG);
             CLR_EVENT_FLAG_ALL(MSG_FLAG);

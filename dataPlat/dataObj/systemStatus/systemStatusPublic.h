@@ -7,7 +7,7 @@ extern "C" {
 #endif
 /* typedef private ----------------------------------------------------*/
 /**
- * @brief ¶ÔÍâ'¹«ÓĞÎÄµµ'ÔÚ´Ë´¦¶¨Òå
+ * @brief å¯¹å¤–'å…¬æœ‰æ–‡æ¡£'åœ¨æ­¤å¤„å®šä¹‰
  *        Definition of publicly accessible data struct is here.
  */
 
@@ -16,25 +16,25 @@ extern "C" {
 
 typedef struct 
 {
-  uint32_t save_ts;				         //±£´æÊ±¼ä´Á
-  wisdomStackPart_e work_status;          //µ±Ç°ÔËĞĞ×´Ì¬ 
-  wisdomStackPart_e prework_status;      //ÉÏ´ÎµÄÔËĞĞ×´Ì¬
+  uint32_t save_ts;				         //ä¿å­˜æ—¶é—´æˆ³
+  wisdomStackPart_e work_status;          //å½“å‰è¿è¡ŒçŠ¶æ€ 
+  wisdomStackPart_e prework_status;      //ä¸Šæ¬¡çš„è¿è¡ŒçŠ¶æ€
   char  wan_imsi[20];
   char  wan_imei[20];
   char  wan_ver[20];
   char  wan_iccid[25];
 }systemStatus_t;
 
-//MQTTÖ÷Ìâ
+//MQTTä¸»é¢˜
 typedef struct 
 {
-  char upload[128];             //ÉÏĞĞÍÆËÍÖ÷Ìâ£¬×î³¤²»µÃ³¬¹ı128×Ö½Ú
+  char upload[128];             //ä¸Šè¡Œæ¨é€ä¸»é¢˜ï¼Œæœ€é•¿ä¸å¾—è¶…è¿‡128å­—èŠ‚
   
-  char command[128];            //ÏÂĞĞ¶©ÔÄÖ÷Ìâ£¬×î³¤²»µÃ³¬¹ı128×Ö½Ú
-  char response[128];           //ÉÏĞĞÓ¦´ğÖ÷Ìâ£¬×î³¤²»µÃ³¬¹ı128×Ö½Ú
+  char command[128];            //ä¸‹è¡Œè®¢é˜…ä¸»é¢˜ï¼Œæœ€é•¿ä¸å¾—è¶…è¿‡128å­—èŠ‚
+  char response[128];           //ä¸Šè¡Œåº”ç­”ä¸»é¢˜ï¼Œæœ€é•¿ä¸å¾—è¶…è¿‡128å­—èŠ‚
   
-  char config_up[128];          //ÉÏĞĞÅäÖÃÖ÷Ìâ£¬×î³¤²»µÃ³¬¹ı128×Ö½Ú
-  char config_down[128];        //ÏÂĞĞÅäÖÃÖ÷Ìâ£¬×î³¤²»µÃ³¬¹ı128×Ö½Ú
+  char config_up[128];          //ä¸Šè¡Œé…ç½®ä¸»é¢˜ï¼Œæœ€é•¿ä¸å¾—è¶…è¿‡128å­—èŠ‚
+  char config_down[128];        //ä¸‹è¡Œé…ç½®ä¸»é¢˜ï¼Œæœ€é•¿ä¸å¾—è¶…è¿‡128å­—èŠ‚
 }mqttTopic_t;
 
 #undef X 

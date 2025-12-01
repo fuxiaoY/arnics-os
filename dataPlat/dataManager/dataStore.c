@@ -2,6 +2,9 @@
 #include "thirdParty/fal/inc/fal.h"
 #include "thirdParty/AlgorithmLib/crc16.h"
 #include "dataPlat/dataManager/dataManagerList.h"
+#if defined(__CC_ARM) || defined(__GNUC__) 
+#pragma arm section code = "._entry_dataplat_api"
+#endif
 
 bool value_pack_with_crc16(const store_operation_t* op,uint8_t* src_buf,size_t src_len) 
 {

@@ -1,6 +1,8 @@
 #include "dataStruct.h"
 #include "dataCore.h"
-
+#if defined(__CC_ARM) || defined(__GNUC__) 
+#pragma arm section code = "._entry_dataplat_api"
+#endif
 
 
 void* dataParaGetPtrEx(const dataPlatInstance_t* instance, uint32_t id) 

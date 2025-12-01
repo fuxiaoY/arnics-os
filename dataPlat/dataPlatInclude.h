@@ -11,6 +11,7 @@ extern "C" {
 #include "dataPlat/dataApi/dataApi.h"
 #include "dataPlat/dataApi/dataPublic.h"
 #include "dataPlat/dataManager/dataJson.h"
+#include "dataPlat/dataManager/dataEvent.h"
 #ifdef __cplusplus
 }
 #endif

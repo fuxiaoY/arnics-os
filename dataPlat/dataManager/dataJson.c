@@ -3,6 +3,9 @@
 #include "thirdParty/struct2json/inc/s2j.h"
 #include "common/commonInclude.h"
 #include "dataPlat/dataManager/dataManagerList.h"
+#if defined(__CC_ARM) || defined(__GNUC__) 
+#pragma arm section code = "._entry_dataplat_api"
+#endif
 
 
 

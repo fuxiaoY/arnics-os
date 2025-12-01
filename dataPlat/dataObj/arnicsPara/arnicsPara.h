@@ -19,11 +19,6 @@ extern "C" {
 extern bool              arnics_start;
 extern bool              sys_allow_sleep;            // 系统是否允许休眠标志位
 extern uint8_t           virtual_environment;  
-extern bool              eventos_want_sleep;
-extern bool              business_want_sleep;
-extern bool              media_want_sleep;
-extern bool              guard_want_sleep;
-extern bool              console_want_sleep;
 /* typedef datastore ----------------------------------------------*/
 /**
  * @brief 对可持续存储的空间支持

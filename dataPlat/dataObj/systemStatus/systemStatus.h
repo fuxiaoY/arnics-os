@@ -12,7 +12,7 @@ extern "C" {
 #include "dataPlat/dataManager/dataStore.h"
 /* typedef private -------------------------------------------------*/
 /**
- * @brief ¶ÔÄÚ'Ë½ÓĞÎÄµµ'ÔÚ´Ë´¦¶¨Òå
+ * @brief å¯¹å†…'ç§æœ‰æ–‡æ¡£'åœ¨æ­¤å¤„å®šä¹‰
  *        Definition of private accessible data struct is here.
  */
 
@@ -20,12 +20,12 @@ extern "C" {
 extern systemStatus_t g_system_status;
 /* typedef datastore ----------------------------------------------*/
 /**
- * @brief ¶Ô¿É³ÖĞø´æ´¢µÄ¿Õ¼äÖ§³Ö
+ * @brief å¯¹å¯æŒç»­å­˜å‚¨çš„ç©ºé—´æ”¯æŒ
  *        Support for sustainable storage space.
  */
-extern mqttTopic_t g_mqtt_topic;	   // MQTTÖ÷Ìâ¼¯
-extern networkPara_t networkPara;      // Ã½ÌåÖĞĞÄÍøÂç²ÎÊı
-extern char g_mqtt_wan_buf[256];       // MQTTÔ¶³ÌÖ¡»º³åÇø
+extern mqttTopic_t g_mqtt_topic;	   // MQTTä¸»é¢˜é›†
+extern networkPara_t networkPara;      // åª’ä½“ä¸­å¿ƒç½‘ç»œå‚æ•°
+extern char g_mqtt_wan_buf[256];       // MQTTè¿œç¨‹å¸§ç¼“å†²åŒº
 extern bool is_mqtt_wan_buf_ready;
 extern mqttPulish_t g_mqtt_publish;
 #ifdef __cplusplus

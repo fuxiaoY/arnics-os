@@ -86,6 +86,11 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\dataPlat\dataManager\dataStore.c</FilePath>
             </File>
+            <File>
+              <FileName>dataEvent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dataPlat\dataManager\dataEvent.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

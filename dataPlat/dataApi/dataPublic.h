@@ -20,11 +20,7 @@ extern "C" {
 #define arnics_start            ((*(bool*)DATA_PTR(arnics_start)))
 #define virtual_environment     ((*(uint8_t*)DATA_PTR(virtual_environment))) 
 #define sys_allow_sleep         ((*(bool*)DATA_PTR(sys_allow_sleep)))
-#define eventos_want_sleep      ((*(bool*)DATA_PTR(eventos_want_sleep)))
-#define business_want_sleep     ((*(bool*)DATA_PTR(business_want_sleep)))
-#define media_want_sleep        ((*(bool*)DATA_PTR(media_want_sleep)))
-#define guard_want_sleep        ((*(bool*)DATA_PTR(guard_want_sleep)))
-#define console_want_sleep      ((*(bool*)DATA_PTR(console_want_sleep)))
+
 
 
 /* systemCfg  ----------------------------------------------------*/
