@@ -54,6 +54,7 @@ extern "C" {
 #define DRIVERS_ENABLE_LTDC
 #define DRIVERS_ENABLE_DMA2D
 #define DRIVERS_ENABLE_SDRAM
+#define DRIVERS_ENABLE_CAN
 
 #ifdef MCU_STM32F1
 /* typedef -----------------------------------------------------------*/
@@ -244,6 +245,38 @@ typedef struct
 #define DELAY_PARAM_MAP_X \
     X("use_systick", delay_t, use_systick, bool) 
 #endif /* DRIVERS_ENABLE_DELAY */
+
+#ifdef DRIVERS_ENABLE_CAN
+typedef struct
+{
+    CAN_TxHeaderTypeDef txHeader;
+    CAN_HandleTypeDef hcan;
+    CAN_FilterTypeDef  sFilterConfig;
+    ring_buf_t *ring1_rx;
+    ring_buf_t *ring1_tx;
+    unsigned char *rx1_buf;
+    unsigned char *tx1_buf;
+    unsigned int rx_buf1_size;
+    unsigned int tx_buf1_size;
+  /* data */
+}can_t;
+
+// CAN 参数映射表的 X-macro
+#define CAN_PARAM_MAP_X \
+    X("hcan", can_t, hcan, CAN_HandleTypeDef) \
+    X("Instance", can_t, hcan.Instance, CAN_TypeDef) \
+    X("Mode", can_t, hcan.Init.Mode, uint32_t) \
+    X("TimeTriggeredMode", can_t, hcan.Init.TimeTriggeredMode, uint32_t) \
+    X("AutoBusOff", can_t, hcan.Init.AutoBusOff, uint32_t) \
+    X("AutoWakeUp", can_t, hcan.Init.AutoWakeUp, uint32_t) \
+    X("AutoRetransmission", can_t, hcan.Init.AutoRetransmission, uint32_t) \
+    X("ReceiveFifoLocked", can_t, hcan.Init.ReceiveFifoLocked, uint32_t) \
+    X("TransmitFifoPriority", can_t, hcan.Init.TransmitFifoPriority, uint32_t) \
+    X("Prescaler", can_t, hcan.Init.Prescaler, uint32_t) \
+    X("SyncJumpWidth", can_t, hcan.Init.SyncJumpWidth, uint32_t) \
+    X("TimeSeg1", can_t, hcan.Init.TimeSeg1, uint32_t) \
+    X("TimeSeg2", can_t, hcan.Init.TimeSeg2, uint32_t)
+#endif /* DRIVERS_ENABLE_CAN */
 
 #elif defined(MCU_STM32L4)
 /* typedef -----------------------------------------------------------*/

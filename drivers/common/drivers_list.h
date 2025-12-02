@@ -122,6 +122,11 @@ extern const param_map_t sdram_param_map[];
 extern const size_t sdram_param_map_size ;
 extern dev_operations sdram_ops;
 #endif
+#ifdef DRIVERS_ENABLE_CAN
+extern const param_map_t can_param_map[];
+extern const size_t can_param_map_size ;
+extern dev_operations can_ops;
+#endif
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表
 extern const device_map_t device_map[];

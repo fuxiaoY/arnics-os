@@ -287,6 +287,26 @@ dev_operations sdram_ops = {
                         NULL};
 #endif
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_CAN
+// 使用 X-macro 生成 CAN 参数映射表
+const param_map_t can_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    CAN_PARAM_MAP_X
+    #undef X
+};
+const size_t can_param_map_size = sizeof(can_param_map) / sizeof(param_map_t);
+
+dev_operations can_ops = {
+                        can_open,
+                        can_close,
+                        can_read,
+                        can_write,
+                        NULL,
+                        can_irq};
+#endif
+/* Lists--- -----------------------------------------------------------*/
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
 #ifdef DRIVERS_ENABLE_UART
@@ -333,6 +353,9 @@ const device_type_map_t device_type_maps[] = {
 #endif
 #ifdef DRIVERS_ENABLE_SDRAM
     {"sdram_t",sdram_param_map, sizeof(sdram_param_map) / sizeof(param_map_t),&sdram_ops},
+#endif
+#ifdef DRIVERS_ENABLE_CAN
+    {"can_t", can_param_map, sizeof(can_param_map) / sizeof(param_map_t),&can_ops},
 #endif
     // 可以添加更多设备类型
 };
