@@ -66,6 +66,9 @@ COMPONENT_INIT("component", deviceInit);
 
 void driver_init(void)
 {
+    // delay
+    dev_reg("delay",&delay_ds);
+    dev_open(&delay_ds);
 }
 void third_init(void)
 {

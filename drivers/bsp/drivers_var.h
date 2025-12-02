@@ -15,16 +15,19 @@ extern const size_t device_map_size;
 
 
 /* declaration --------------------------------------------------------*/
+// 驱动映射
+extern device_t delay_ds;
 
-
+// 设备实例
+extern delay_t delay;
 
 
 /* Lists--- -----------------------------------------------------------*/
-// 设备总表的 X-macro
-// {设备名称（可任意），设备实例，设备类型结构体名称}
+// 设备树 - 注册接口
+// 设备名称（可任意），  设备实例，   设备类型结构体名称
 #define DEVICE_MAP_X \
-    X("void", NULL, "void") \
-
+    X("void" ,            NULL,              "void") \
+    X("delay",        delay_ds,           "delay_t")
 
 #ifdef __cplusplus
 }

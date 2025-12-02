@@ -8,3 +8,11 @@ const device_map_t device_map[] = {
 };
 const size_t device_map_size = sizeof(device_map) / sizeof(device_map_t);
 
+// 驱动映射
+device_t delay_ds;
+
+// 设备实例
+delay_t delay = 
+{
+    .use_systick = false
+};
