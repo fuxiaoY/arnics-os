@@ -1,4 +1,4 @@
-#include "../dataCore/dataStruct.h"
+#include "dataPlat/dataCore/dataStruct.h"
 #include "dataObj.h"
 
 #define DATA_ALL_STRUCT

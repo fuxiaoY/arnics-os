@@ -6,9 +6,8 @@
 extern "C" {
 #endif
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
-
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
 
 // +-------------------------------------------------+
 // | 平台             | STM32CHIP      | STM32系列 |
@@ -34,6 +33,14 @@ extern "C" {
 #define MCU_GRAN 64
 #define _TOTAL_FLASH_SIZE_ 256 // 芯片容量 （KB）
 #define MCU_START_ADDR 0x08000000
+
+#elif defined(MCU_STM32F4)
+#define STM32CHIP
+#include "stm32f4xx_hal.h"
+#define MCU_GRAN 8
+#define MCU_START_ADDR 0x08000000
+#define _TOTAL_FLASH_SIZE_ 512 // 芯片容量 （KB）
+
 #endif
 
 

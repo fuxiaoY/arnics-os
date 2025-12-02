@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-#include "../Inc/ProjDefine.h"
-#include "../Inc/typedef.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
 #include "common/drivers_common.h"
 /* define --------------------------------------------------------*/
 #include "component/inc/interface_Include.h"

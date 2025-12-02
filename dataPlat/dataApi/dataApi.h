@@ -4,8 +4,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "../dataCore/dataCore.h"
-#include "../dataObj/dataObj.h"
+#include "dataPlat/dataCore/dataCore.h"
+#include "dataPlat/dataObj/dataObj.h"
 /* include struct ------------------------------------------------------*/
 
 

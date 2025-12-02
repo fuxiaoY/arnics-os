@@ -33,9 +33,9 @@
 extern "C" {
 #endif
 
-#include "../../Inc/ProjDefine.h"
-#include "../../Inc/typedef.h"
-#include "../bsp/drivers_var.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
+#include "drivers/bsp/drivers_var.h"
 
 struct device_t
 {
@@ -106,6 +106,21 @@ extern dev_operations tim_ops;
 extern const param_map_t delay_param_map[];
 extern const size_t delay_param_map_size ;
 extern dev_operations delay_ops;
+#endif
+#ifdef DRIVERS_ENABLE_LTDC
+extern const param_map_t ltdc_param_map[];
+extern const size_t ltdc_param_map_size ;
+extern dev_operations ltdc_ops;
+#endif
+#ifdef DRIVERS_ENABLE_DMA2D
+extern const param_map_t dma2d_param_map[];
+extern const size_t dma2d_param_map_size ;
+extern dev_operations dma2d_ops;
+#endif
+#ifdef DRIVERS_ENABLE_SDRAM
+extern const param_map_t sdram_param_map[];
+extern const size_t sdram_param_map_size ;
+extern dev_operations sdram_ops;
 #endif
 /* declaration from outside--------------------------------------------*/
 // 声明设备映射表

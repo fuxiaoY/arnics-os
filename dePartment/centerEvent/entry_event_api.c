@@ -7,7 +7,7 @@
 #undef add_event_flag
 #undef set_event_flag
 
-#include "eventProcess/eventCore.h"
+#include "dePartment/centerEvent/eventProcess/eventCore.h"
 __attribute__((section("._entry_event_api")))
 const tEVENTEntry entry_event_list =
 {

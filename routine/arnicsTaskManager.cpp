@@ -1,6 +1,6 @@
 #include "arnicsTaskManager.h"
 #include "include.h"
-
+#include "devices/devicesInclude.h"
 /* 外设初始化任务清单 */
 const tTaskFunc initTaskList[] =
 {

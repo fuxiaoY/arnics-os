@@ -29,8 +29,8 @@ extern "C"
 {
 #endif
 
-#include "../../Inc/ProjDefine.h"
-#include "../../Inc/typedef.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
 // va_arg 函数用于从可变参数列表中获取参数，但它并不限制只能传递 int 类型的参数。
 // va_arg 可以用于获取各种类型的参数，包括 int、float、指针类型等。
 // 然而，根据 C 标准，某些小整数类型（如 char、short、uint8_t 等）在传递给可变参数函数时会被提升为 int 类型。

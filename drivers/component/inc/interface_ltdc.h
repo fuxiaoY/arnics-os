@@ -3,9 +3,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "../../../Inc/ProjDefine.h"
-#include "../../../Inc/typedef.h"
-#include "../../common/drivers_common.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
+#include "drivers/common/drivers_common.h"
 
 /* function prototypes -----------------------------------------------*/
 

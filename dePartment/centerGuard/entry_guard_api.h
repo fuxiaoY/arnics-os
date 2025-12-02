@@ -1,7 +1,7 @@
 #ifndef ENTRY_GUARD_API_H_
 #define ENTRY_GUARD_API_H_
-#include "../../Inc/typedef.h"
-#include "../../Inc/ProjDefine.h"
+#include "Inc/typedef.h"
+#include "Inc/ProjDefine.h"
 
 
 

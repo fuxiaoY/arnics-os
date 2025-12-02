@@ -1,8 +1,8 @@
 
 #ifndef __PROCESSTASK_H__
 #define __PROCESSTASK_H__
-#include "../../Inc/projDefine.h"
-#include "../../Inc/typedef.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

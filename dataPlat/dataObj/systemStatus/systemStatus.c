@@ -3,17 +3,17 @@
 #include "port/arnicsPort.h"
 /*-------------------------------------------------------------------------------------*/
 
-/*è¿è¡Œå‚æ•°-----------------------------------------------------------------------------*/
-systemStatus_t g_system_status = {0};       // å…¨å±€è¿è¡Œå‚æ•°
-networkPara_t networkPara;                  // åª’ä½“ä¸­å¿ƒç½‘ç»œå‚æ•°
-char g_mqtt_wan_buf[256]       = {0};       // MQTTè¿œç¨‹å¸§ç¼“å†²åŒº
+/*ÔËĞĞ²ÎÊı-----------------------------------------------------------------------------*/
+systemStatus_t g_system_status = {0};       // È«¾ÖÔËĞĞ²ÎÊı
+networkPara_t networkPara;                  // Ã½ÌåÖĞĞÄÍøÂç²ÎÊı
+char g_mqtt_wan_buf[256]       = {0};       // MQTTÔ¶³ÌÖ¡»º³åÇø
 mqttPulish_t g_mqtt_publish    = {0};
-mqttTopic_t g_mqtt_topic       = {0};	     // MQTTä¸»é¢˜é›†
+mqttTopic_t g_mqtt_topic       = {0};	     // MQTTÖ÷Ìâ¼¯
 bool is_mqtt_wan_buf_ready;
 
 /*-------------------------------------------------------------------------------------*/
 
-/*æ•°æ®æ“ä½œ ---------------------------------------------------------------------------*/
+/*Êı¾İ²Ù×÷ ---------------------------------------------------------------------------*/
 void system_status_reset(void)
 {
 
@@ -25,7 +25,7 @@ bool system_status_save(void)
     bool result = false;
     dataStoreSysSta_t* p_sys_status_store = arnicsMalloc(sizeof(dataStoreSysSta_t));
     /*-------------------------------------------*/
-    // å¯¹å•ä¸€æ•°æ®è¿›è¡Œæ ¡éªŒæ‰“åŒ…ï¼Œæ”¾å…¥è¿ç»­ç©ºé—´ä¸­
+    // ¶Ôµ¥Ò»Êı¾İ½øĞĞĞ£Ñé´ò°ü£¬·ÅÈëÁ¬Ğø¿Õ¼äÖĞ
     DATA_ACTION_FUNC(p_sys_status_store,g_system_status,DATA_PACK);
     /*-------------------------------------------*/
     result = data_save(PARTITION_NAME_SYSTEM_STATUS_PARA,0, (uint8_t *)p_sys_status_store, sizeof(dataStoreSysSta_t));
@@ -40,10 +40,10 @@ bool system_status_load(void)
     dataStoreSysSta_t* p_sys_status_store = arnicsMalloc(sizeof(dataStoreSysSta_t));
     data_load(PARTITION_NAME_SYSTEM_STATUS_PARA,0, (uint8_t *)p_sys_status_store, sizeof(dataStoreSysSta_t));
     /*-------------------------------------------*/
-    //  å¯¹å•ä¸€æ•°æ®ä»è¿ç»­ç©ºé—´è¿›è¡Œè§£åŒ…æ ¡éªŒï¼Œå–å€¼
+    //  ¶Ôµ¥Ò»Êı¾İ´ÓÁ¬Ğø¿Õ¼ä½øĞĞ½â°üĞ£Ñé£¬È¡Öµ
     // g_system_cfg
     result = DATA_ACTION_FUNC(p_sys_status_store,g_system_status,DATA_LOAD);
-    if(!result)    //  è§£åŒ…å¤±è´¥ï¼Œéœ€è¦é»˜è®¤å€¼æ¢å¤
+    if(!result)    //  ½â°üÊ§°Ü£¬ĞèÒªÄ¬ÈÏÖµ»Ö¸´
     {
         printf("system_status load fail\r\n");
         need_reset_load = true;
@@ -55,7 +55,7 @@ bool system_status_load(void)
     }
     /*-------------------------------------------*/
     arnicsFree(p_sys_status_store);
-    // é»˜è®¤å€¼å›å†™
+    // Ä¬ÈÏÖµ»ØĞ´
     if(need_reset_load)
     {
         result = system_status_save();

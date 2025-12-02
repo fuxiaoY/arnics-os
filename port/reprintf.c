@@ -1,7 +1,7 @@
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
 #include "arnicsPort.h"
-#include "../drivers/driversInclude.h"
+#include "drivers/driversInclude.h"
 #ifdef STM32CHIP
 
 /*

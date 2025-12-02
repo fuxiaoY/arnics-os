@@ -28,8 +28,8 @@
 extern "C" {
 #endif
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
 /*----------------------------------------------------------------------
  * MACROS AND DEFINITIONS
  *--------------------------------------------------------------------*/

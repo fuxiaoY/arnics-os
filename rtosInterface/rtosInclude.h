@@ -1,13 +1,13 @@
 #ifndef _RTOSINCLUDE_H
 #define _RTOSINCLUDE_H
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
 
-#include "rtosTask.h"
+#include "rtosInterface/rtosTask.h"
 #ifdef _USE_FREERTOS_
-#include "freertos/FreeRTOSConfig.h"
-#include "freertos/freertosDef.h"
+#include "rtosInterface/freertos/FreeRTOSConfig.h"
+#include "rtosInterface/freertos/freertosDef.h"
 #endif
 
-#include "rtosPort.h"
+#include "rtosInterface/rtosPort.h"
 #endif

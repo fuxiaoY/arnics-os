@@ -6,10 +6,10 @@
 extern "C" {
 #endif
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
-
-#include "delay.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
+#include "port/arnicsPort.h"
+#include "port/delay.h"
 
 
 #ifdef __cplusplus

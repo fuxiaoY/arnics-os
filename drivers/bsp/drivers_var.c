@@ -1,5 +1,5 @@
 #include "drivers_var.h"
-#include "../common/drivers_list.h"
+#include "drivers/common/drivers_list.h"
 // 使用 X-macro 定义设备映射表
 const device_map_t device_map[] = {
     #define X(name, device, type) {name, device, type},

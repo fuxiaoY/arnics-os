@@ -4,9 +4,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "../Inc/ProjDefine.h"
-#include "../Inc/typedef.h"
-#include "rtosInterface.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
+#include "rtosInterface/rtosInterface.h"
 
 #ifdef _USE_FREERTOS_
 #include "FreeRTOS.h"

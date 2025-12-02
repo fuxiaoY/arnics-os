@@ -2,8 +2,8 @@
 #define _COMMON_INCLUDE_H_
 
 //软件定时器
-#include "TaskTimer.h"
+#include "common/TaskTimer.h"
 //malloc
-#include "usrMalloc.h"
+#include "common/usrMalloc.h"
 
 #endif

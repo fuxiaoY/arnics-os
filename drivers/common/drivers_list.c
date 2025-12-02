@@ -1,6 +1,6 @@
 
 #include "drivers_list.h"
-#include "../component/inc/interface_Include.h"
+#include "drivers/component/inc/interface_Include.h"
 /* Lists--- -----------------------------------------------------------*/
 #ifdef DRIVERS_ENABLE_UART
 // 使用 X-macro 生成 UART 参数映射表
@@ -230,6 +230,63 @@ dev_operations delay_ops = {
                         NULL};
 #endif
 /* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_LTDC
+// 使用 X-macro 生成 rng 参数映射表
+const param_map_t ltdc_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    LTDC_PARAM_MAP_X
+    #undef X
+};
+const size_t ltdc_param_map_size = sizeof(ltdc_param_map) / sizeof(param_map_t);
+
+dev_operations ltdc_ops = {
+                        ltdc_open,
+                        ltdc_close,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL};
+#endif
+/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_DMA2D
+// 使用 X-macro 生成 rng 参数映射表
+const param_map_t dma2d_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    DMA2D_PARAM_MAP_X
+    #undef X
+};
+const size_t dma2d_param_map_size = sizeof(dma2d_param_map) / sizeof(param_map_t);
+
+dev_operations dma2d_ops = {
+                        dma2d_open,
+                        dma2d_close,
+                        NULL,
+                        NULL,
+                        dma2d_ctl,
+                        NULL};
+#endif
+/* Lists--- -----------------------------------------------------------*/
+#ifdef DRIVERS_ENABLE_SDRAM
+// 使用 X-macro 生成 rng 参数映射表
+const param_map_t sdram_param_map[] = {
+    #define X(name, struct_type, field, field_type) \
+        {name, offsetof(struct_type, field), sizeof(field_type)},
+    SDRAM_PARAM_MAP_X
+    #undef X
+};
+const size_t sdram_param_map_size = sizeof(sdram_param_map) / sizeof(param_map_t);
+
+dev_operations sdram_ops = {
+                        sdram_open,
+                        sdram_close,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL};
+#endif
+/* Lists--- -----------------------------------------------------------*/
 // 设备类型映射表
 const device_type_map_t device_type_maps[] = {
 #ifdef DRIVERS_ENABLE_UART
@@ -267,6 +324,15 @@ const device_type_map_t device_type_maps[] = {
 #endif
 #ifdef DRIVERS_ENABLE_DELAY
     {"delay_t",delay_param_map, sizeof(delay_param_map) / sizeof(param_map_t),&delay_ops},
+#endif
+#ifdef DRIVERS_ENABLE_LTDC
+    {"ltdc_t",ltdc_param_map, sizeof(ltdc_param_map) / sizeof(param_map_t),&ltdc_ops},
+#endif
+#ifdef DRIVERS_ENABLE_DMA2D
+    {"dma2d_t",dma2d_param_map, sizeof(dma2d_param_map) / sizeof(param_map_t),&dma2d_ops},
+#endif
+#ifdef DRIVERS_ENABLE_SDRAM
+    {"sdram_t",sdram_param_map, sizeof(sdram_param_map) / sizeof(param_map_t),&sdram_ops},
 #endif
     // 可以添加更多设备类型
 };

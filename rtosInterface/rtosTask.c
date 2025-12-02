@@ -1,14 +1,14 @@
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
-#include "rtosTask.h"
-#include "rtosPort.h"
-#include "../dePartment/centerEvent/entry_event_api.h"
-#include "../dePartment/centerBusiness/entry_business_api.h"
-#include "../dePartment/centerConsole/entry_console_api.h"
-#include "../dePartment/centerMedia/entry_media_api.h"
-#include "../dePartment/centerGuard/entry_guard_api.h"
-#include "../dePartment/centerAdministrative/entry_ad_api.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
+#include "rtosInterface/rtosTask.h"
+#include "rtosInterface/rtosPort.h"
+#include "dePartment/centerEvent/entry_event_api.h"
+#include "dePartment/centerBusiness/entry_business_api.h"
+#include "dePartment/centerConsole/entry_console_api.h"
+#include "dePartment/centerMedia/entry_media_api.h"
+#include "dePartment/centerGuard/entry_guard_api.h"
+#include "dePartment/centerAdministrative/entry_ad_api.h"
 /* ---------------------------------用户任务 -----------------------------------------------*/
 /**
  * @func StartAdTask

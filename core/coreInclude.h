@@ -1,8 +1,8 @@
 #ifndef _COREINCLUDE_H_
 #define _COREINCLUDE_H_
 
-#include "separateSM/separate_core.h"
-#include "ptThread/pt.h"
-#include "arnicsCore.h"
-#include "processTask/processTask.h"
+#include "core/separateSM/separate_core.h"
+#include "core/ptThread/pt.h"
+#include "core/arnicsCore.h"
+#include "core/processTask/processTask.h"
 #endif

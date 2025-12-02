@@ -1,7 +1,7 @@
 #ifndef ENTRY_BUSINESS_API_H_
 #define ENTRY_BUSINESS_API_H_
-#include "../../Inc/typedef.h"
-#include "../../Inc/ProjDefine.h"
+#include "Inc/typedef.h"
+#include "Inc/ProjDefine.h"
 
 
 // 函数指针类型的定义

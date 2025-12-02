@@ -1,8 +1,8 @@
 #ifndef ENTRY_RTOS_API_H_
 #define ENTRY_RTOS_API_H_
-#include "../Inc/ProjDefine.h"
-#include "../Inc/typedef.h"
-#include "rtosInterface.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
+#include "rtosInterface/rtosInterface.h"
 #ifdef _USE_FREERTOS_
 #define BLOCK_DELAY 0xffffffffUL
 #endif

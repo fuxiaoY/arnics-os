@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
-#include "../core/coreInclude.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
+#include "core/coreInclude.h"
 
 
 extern const tTaskFunc initTaskList[];

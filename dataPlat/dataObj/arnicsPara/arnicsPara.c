@@ -1,13 +1,10 @@
 #include "arnicsPara.h"
 #include "port/arnicsPort.h"
 #include "common/commonInclude.h"
-#if defined(__CC_ARM) || defined(__GNUC__) 
-#pragma arm section code = "._entry_dataplat_api"
-#endif
 
 /*-------------------------------------------------------------------------------------*/
 
-/*ç³»ç»Ÿå‚æ•°-----------------------------------------------------------------------------*/
+/*ÏµÍ³²ÎÊı-----------------------------------------------------------------------------*/
 bool                    arnics_start        = false;
 volatile uint32_t       arnics_systick      = 0;
 uint8_t                 virtual_environment = 0;  
@@ -16,7 +13,7 @@ volatile sleepStatus_t  sys_sleep_status;
 
 /*-------------------------------------------------------------------------------------*/
 
-/*æ•°æ®æ“ä½œ -----------------------------------------------------------------------------*/
+/*Êı¾İ²Ù×÷ -----------------------------------------------------------------------------*/
 static void virtual_environment_reset(void)
 {
     virtual_environment = 0; 
@@ -35,7 +32,7 @@ bool arnics_para_save(void)
     bool result = false;
     dataStoreArnicsPara_t* p_arnics_para_store = arnicsMalloc(sizeof(dataStoreArnicsPara_t));
     /*-------------------------------------------*/
-    // å¯¹å•ä¸€æ•°æ®è¿›è¡Œæ ¡éªŒæ‰“åŒ…ï¼Œæ”¾å…¥è¿ç»­ç©ºé—´ä¸­
+    // ¶Ôµ¥Ò»Êı¾İ½øĞĞĞ£Ñé´ò°ü£¬·ÅÈëÁ¬Ğø¿Õ¼äÖĞ
     DATA_ACTION_FUNC(p_arnics_para_store,virtual_environment,DATA_PACK);
     DATA_ACTION_FUNC(p_arnics_para_store,sys_allow_sleep,DATA_PACK);
     /*-------------------------------------------*/
@@ -51,10 +48,10 @@ bool arnics_para_load(void)
     dataStoreArnicsPara_t* p_arnics_para_store = arnicsMalloc(sizeof(dataStoreArnicsPara_t));
     data_load(PARTITION_NAME_ARNICS_SYS_PARA,0, (uint8_t *)p_arnics_para_store, sizeof(p_arnics_para_store));
     /*-------------------------------------------*/
-    //  å¯¹å•ä¸€æ•°æ®ä»è¿ç»­ç©ºé—´è¿›è¡Œè§£åŒ…æ ¡éªŒï¼Œå–å€¼
+    //  ¶Ôµ¥Ò»Êı¾İ´ÓÁ¬Ğø¿Õ¼ä½øĞĞ½â°üĞ£Ñé£¬È¡Öµ
     // virtual_environment
     result = DATA_ACTION_FUNC(p_arnics_para_store,virtual_environment,DATA_LOAD);
-    if(!result)    //  è§£åŒ…å¤±è´¥ï¼Œéœ€è¦é»˜è®¤å€¼æ¢å¤
+    if(!result)    //  ½â°üÊ§°Ü£¬ĞèÒªÄ¬ÈÏÖµ»Ö¸´
     {
         need_reset_load = true;
         virtual_environment_reset();
@@ -68,7 +65,7 @@ bool arnics_para_load(void)
     }
     /*-------------------------------------------*/
     arnicsFree(p_arnics_para_store);
-    // é»˜è®¤å€¼å›å†™
+    // Ä¬ÈÏÖµ»ØĞ´
     if(need_reset_load)
     {
         result = arnics_para_save();

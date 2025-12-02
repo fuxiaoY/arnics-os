@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-#include "../../Inc/ProjDefine.h"
-#include "../../Inc/typedef.h"
+#include "Inc/ProjDefine.h"
+#include "Inc/typedef.h"
 #include "bsp_def.h"
 
 // 设备类型映射表

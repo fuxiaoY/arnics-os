@@ -31,8 +31,8 @@
 extern "C" {
 #endif
 
-#include "../../../Inc/projDefine.h"
-#include "../../../Inc/typedef.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
 
 #define EVENT_INTERNAL_EMPLOY 1
 #define EVENT_EXTERNAL_EMPLOY 2

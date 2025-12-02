@@ -1,6 +1,6 @@
 
 #include "TaskTimer.h"
-#include "../dataPlat/dataPlatInclude.h"
+#include "dataPlat/dataPlatInclude.h"
 uint32_t arnics_getTick(void)
 {
   return arnics_systick;

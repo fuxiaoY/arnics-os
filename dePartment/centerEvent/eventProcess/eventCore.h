@@ -31,12 +31,12 @@
 extern "C" {
 #endif
 
-#include "../../../Inc/projDefine.h"
-#include "../../../Inc/typedef.h"
-#include "../../../dataPlat/dataPlatInclude.h"
-#include "../../../core/coreInclude.h"
-#include "../../../Common/commonInclude.h"
-#include "../dePartment/centerEvent/centerEvent.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
+#include "dataPlat/dataPlatInclude.h"
+#include "core/coreInclude.h"
+#include "Common/commonInclude.h"
+#include "dePartment/centerEvent/centerEvent.h"
 /* define ------------------------------------------------------------*/
 
 #define EVENT_VERSION "1.0.2"

@@ -31,8 +31,8 @@ extern "C" {
 #endif
 
 /* Includes ----------------------------------------------------------*/
-#include "../Inc/projDefine.h"      ///< 项目定义头文件
-#include "../Inc/typedef.h"         ///< 类型定义头文件
+#include "Inc/projDefine.h"      ///< 项目定义头文件
+#include "Inc/typedef.h"         ///< 类型定义头文件
 
 /* typedef -----------------------------------------------------------*/
 /**

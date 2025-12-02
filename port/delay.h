@@ -4,9 +4,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "../Inc/projDefine.h"
-#include "../Inc/typedef.h"
-#include "arnicsPort.h"
+#include "Inc/projDefine.h"
+#include "Inc/typedef.h"
+#include "port/arnicsPort.h"
 extern void Delay_us(uint32_t us); 
 extern void Delay_ms(uint32_t ms);
 extern void test_delay_check(void);

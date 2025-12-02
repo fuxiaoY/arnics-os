@@ -6,12 +6,12 @@ extern "C" {
 #endif
 /* typedef private ----------------------------------------------------*/
 /**
- * @brief å¯¹å¤–'å…¬æœ‰æ–‡æ¡£'åœ¨æ­¤å¤„å®šä¹‰
+ * @brief ¶ÔÍâ'¹«ÓĞÎÄµµ'ÔÚ´Ë´¦¶¨Òå
  *        Definition of publicly accessible data struct is here.
  */
 /* --------------------------------------------------------------------*/
 /**
- * @struct ç³»ç»Ÿå…¨å±€çŠ¶æ€å­—
+ * @struct ÏµÍ³È«¾Ö×´Ì¬×Ö
  */
 typedef struct
 {    
@@ -29,7 +29,7 @@ typedef struct
 }sleepStatus_t;
 /* event instance ----------------------------------------------------*/
 /**
- * @struct ç³»ç»Ÿäº‹ä»¶
+ * @struct ÏµÍ³ÊÂ¼ş
  */
 typedef uint32_t EVT_STA;
 typedef struct 
