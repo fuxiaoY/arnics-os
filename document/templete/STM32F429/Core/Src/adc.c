@@ -177,7 +177,7 @@ int bsp_adc_read(adc_t *adcx, uint16_t *buf, size_t count)
     // 循环进行多次采样
     for(uint8_t i = 0; i < count; i++)
     {
-        if (HAL_ADC_PollForConversion(&adcx->hadc, HAL_MAX_DELAY) != HAL_OK)
+        if (HAL_ADC_PollForConversion(&adcx->hadc, 1000) != HAL_OK)
         {
           HAL_ADC_Stop(&adcx->hadc); // 停止ADC转  换
           return -1; // 转换超时或失败
