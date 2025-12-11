@@ -1,693 +1,1010 @@
-#include "rollTs.h" // 包含日志数据库的头文件
-#include <string.h> 
+#include "rollTs.h" 
 
-#define VALID_MAGIC 0xA5A5A5A5 // 定义一个有效的魔数，用于验证系统分区的有效性
-
-static bool check_addr_in_sector(uint32_t addr, uint32_t sector_start_addr) 
+#define MAGIC_VALID       0x20251204 // 定义一个有效的魔数，用于验证系统分区的有效性
+#define MAGIC_DATA_VALID  0x20251205
+uint32_t crc_simple(uint8_t *data, size_t len) 
 {
-    return (addr >= sector_start_addr && addr < (sector_start_addr + SINGLE_SECTOR_SIZE)); // 检查地址是否在扇区范围内
+    uint32_t checksum = 0x07;  
+    for (size_t i = 0; i < len; i++) 
+    {
+        checksum += data[i];
+    }
+    return ~checksum;  
 }
 
+/* function-------------------------------------------------------------------*/
 
-// 初始化日志数据库
-bool rollts_init(rollts_sys_t *sys_handle) 
+static void rollts_manager_print(rollts_manager_t *rollts_manager)
 {
-    if (!sys_handle) return false; // 如果句柄为空，直接返回
+    log_debug("magic_valid          : 0x%x", rollts_manager->sys_info.magic_valid);
+    log_debug("data_start_block_num : 0x%x", rollts_manager->sys_info.data_start_block_num);
+    log_debug("data_end_block_num   : 0x%x", rollts_manager->sys_info.data_end_block_num);
+    log_debug("log_size             : 0x%x", rollts_manager->sys_info.log_size);
+    log_debug("rollts_max_size      : 0x%x", rollts_manager->sys_info.rollts_max_size);
+    log_debug("single_block_size    : 0x%x", rollts_manager->sys_info.single_block_size);
+    log_debug("min_write_unit_size  : 0x%x", rollts_manager->sys_info.min_write_unit_size);
+    log_debug("rollts_max_block_num : 0x%x", rollts_manager->sys_info.rollts_max_block_num);
+    log_debug("data_start_addr      : 0x%x", rollts_manager->sys_info.data_start_addr);
+    log_debug("data_end_addr        : 0x%x", rollts_manager->sys_info.data_end_addr);
+}
 
-    memset(sys_handle, 0, sizeof(rollts_sys_t)); 
-    for(uint8_t i= 0; i < SYSINFO_NUM; i++)
+/**
+ * @func: 检查数据库大小配置是否与最小擦除单元对齐
+ *        检查最小大小是否无法完成roll
+ */
+static bool check_if_rollts_size_aligned(void)
+{
+    if(ROLLTS_MAX_SIZE % SINGLE_BLOCK_SIZE != 0)
     {
-        if(false == rolldb_flash_ops.read_data(SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE, sys_handle, sizeof(rollts_sys_t))) // 从 Flash 中读取系统分区数据到 sys_handle 结构体中
-        {
-            return false;
-        }
+        return false;
+    }
+    if(ROLLTS_MAX_SIZE/SINGLE_BLOCK_SIZE < 5)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
 
-        if ((sys_handle->magic_valid != VALID_MAGIC) ||(sys_handle->sys_size != SYSINFO_SIZE )||(sys_handle->log_size != LOG_SECTOR_SIZE))
+/**
+ * @func: 检查系统分区是否能正常分配，
+ *        并初始化系统分区信息
+ */
+static bool check_if_sys_aligned(rollts_manager_t *rollts_manager)
+{
+    bool ret = false;
+    if(0 == rollts_manager->flash_ops.read_data(0, &rollts_manager->sys_info, SYSINFO_SIZE))
+    {
+        //读取成功后，检查magic是否有效
+        if(MAGIC_VALID != rollts_manager->sys_info.magic_valid)
         {
-            continue; // 如果系统分区无效，继续读取下一个扇区
+            ret = false;
+        }
+        if(    rollts_manager->sys_info.data_start_block_num      != 1
+            || rollts_manager->sys_info.data_end_block_num        != ROLLTS_MAX_BLOCK_NUM - 1
+            || rollts_manager->sys_info.log_size                  != ROLLTS_MAX_BLOCK_NUM * SINGLE_BLOCK_SIZE
+            || rollts_manager->sys_info.rollts_max_size           != ROLLTS_MAX_SIZE
+            || rollts_manager->sys_info.single_block_size         != SINGLE_BLOCK_SIZE
+            || rollts_manager->sys_info.min_write_unit_size       != MIN_WRITE_UNIT_SIZE
+            || rollts_manager->sys_info.rollts_max_block_num      != ROLLTS_MAX_BLOCK_NUM)
+        {
+            ret = false;
         }
         else
-        {            
-            //该扇区有效,就循环读取，直到出现无效的系统分区
-            rollts_sys_t sys_handle_temp;
-            memcpy(&sys_handle_temp, sys_handle, sizeof(rollts_sys_t)); // 复制当前系统分区数据到临时变量
-            uint32_t count = 0;
-            do
-            {
-                memcpy(sys_handle, &sys_handle_temp, sizeof(rollts_sys_t)); 
-                // 如果地址超过本扇区范围，则跳出循环
-                // 操作备份区域
-                if(false == check_addr_in_sector(sys_handle_temp.sys_addr_offset,SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE))
-                {
-                    break;
-                }
-                if(false == rolldb_flash_ops.read_data(sys_handle_temp.sys_addr_offset, &sys_handle_temp, sizeof(rollts_sys_t)))
-                {
-                    return false;
-                }
-                count++;
-                if(count > 100)
-                {
-                    sys_handle_temp.magic_valid = 0x00;
-                    break;
-                }
-            }while(sys_handle_temp.magic_valid == VALID_MAGIC);
-            break;
+        {
+            rollts_manager->sys_info.data_start_addr  = rollts_manager->sys_info.data_start_block_num * rollts_manager->sys_info.single_block_size;
+            rollts_manager->sys_info.data_end_addr    = (rollts_manager->sys_info.data_end_block_num)   * rollts_manager->sys_info.single_block_size;
+            ret = true;
         }
     }
 
-    // 检查系统分区是否有效
-    if ((sys_handle->magic_valid != VALID_MAGIC) ||(sys_handle->sys_size != SYSINFO_SIZE )||(sys_handle->log_size != LOG_SECTOR_SIZE))
-    { 
-        log_info(" rollTs invalid! reinit...");
-        // 初始化系统分区
-        sys_handle->magic_valid = VALID_MAGIC; // 设置系统分区有效标志
-        sys_handle->sys_info_len = sizeof(rollts_sys_t); // 设置系统分区数据长度
-        sys_handle->sys_addr_current_sector = SYSINFO_START_ADDR; // 当前系统分区地址偏移
-        sys_handle->sys_addr_offset = SYSINFO_START_ADDR + sizeof(rollts_sys_t);
-        sys_handle->sys_size = SYSINFO_SIZE;    // 设置系统分区大小
-        sys_handle->log_size = LOG_SECTOR_SIZE; // 设置日志分区大小
-        sys_handle->log_data_start = LOG_SECTOR_START_ADDR; // 初始化日志起始地址
-        sys_handle->log_data_end = LOG_SECTOR_START_ADDR; // 初始化日志结束地址
-        sys_handle->log_num = 0; // 初始化日志数量为 0
-        sys_handle->log_action_num = 0;
-        sys_handle->log_current_sector = 0; // 初始化当前写入扇区为第一个扇区
+    return ret;
+}
 
-        // 初始化日志分区状态
-        memset(sys_handle->log_sector_status, SECTOR_EMPTY, sizeof(sys_handle->log_sector_status)); // 将所有扇区状态设置为 EMPTY
+/**
+ * @func: 初始化数据库管理单元
+ */
+static void rollts_manager_init(rollts_manager_t *rollts_manager)
+{
+    rollts_manager->sys_info.magic_valid               = MAGIC_VALID;
+    // 数据分区在系统分区后1 block
+    rollts_manager->sys_info.data_start_block_num      = 1;        
+    rollts_manager->sys_info.data_end_block_num        = ROLLTS_MAX_BLOCK_NUM - 1;  
+    rollts_manager->sys_info.log_size                  = ROLLTS_MAX_BLOCK_NUM * SINGLE_BLOCK_SIZE;
+    rollts_manager->sys_info.rollts_max_size           = ROLLTS_MAX_SIZE; 
+    rollts_manager->sys_info.single_block_size         = SINGLE_BLOCK_SIZE;
+    rollts_manager->sys_info.min_write_unit_size       = MIN_WRITE_UNIT_SIZE;
+    rollts_manager->sys_info.rollts_max_block_num      = ROLLTS_MAX_BLOCK_NUM;
+    rollts_manager->sys_info.data_start_addr           = rollts_manager->sys_info.data_start_block_num * rollts_manager->sys_info.single_block_size;
+    rollts_manager->sys_info.data_end_addr             = (rollts_manager->sys_info.data_end_block_num)  * rollts_manager->sys_info.single_block_size;
+}
+
+/**
+ * @func: 格式化 数据区head
+ */
+static int head_block_force_format(rollts_manager_t *rollts_manager)
+{
+    log_debug("format head block...");
+    block_info_t block_info;
+    memset(&block_info, 0xFF, sizeof(block_info_t));
+    block_info.magic_valid = MAGIC_VALID;
+    block_info.data_num    = -1;
+    // 清除数据分区
+    uint32_t rollts_max_data_block_num = rollts_manager->sys_info.rollts_max_block_num - 1;
+    for (uint32_t i = 0; i < rollts_max_data_block_num; i++) 
+    { 
+        if(0 != rollts_manager->flash_ops.erase_sector(rollts_manager->sys_info.data_start_addr  + \
+                                                      rollts_manager->sys_info.single_block_size * i))
+        {
+            return -1;
+        }
+        else
+        {
+            if(1 == i)
+            {
+                // 写入数据分区起始地址
+                SET_HEAD(block_info);
+            }
+            else if(2 == i)
+            {
+                SET_BACKUP(block_info);
+            }
+            else
+            {
+                SET_NOT_HEAD(block_info);
+            }
+            // 初始化当前数据块
+            if(0 != rollts_manager->flash_ops.write_data(rollts_manager->sys_info.data_start_addr  + \
+                                                     rollts_manager->sys_info.single_block_size * i,
+                                                     &block_info, sizeof(block_info_t)))
+            {
+                return -1;
+            }  
+            else                                       
+            {
+                log_info(" Log Sector erase and init  at : 0x%x ", (rollts_manager->sys_info.data_start_addr  + \
+                                                rollts_manager->sys_info.single_block_size * i));
+            }
+
+        }
+    }
+    rollts_manager->mem_tab.pre_addr         = rollts_manager->sys_info.data_start_addr;
+    rollts_manager->mem_tab.head_addr        = rollts_manager->mem_tab.pre_addr + rollts_manager->sys_info.single_block_size;
+    rollts_manager->mem_tab.head_backup_addr = rollts_manager->mem_tab.head_addr + rollts_manager->sys_info.single_block_size;
+    return 0;
+}
+
+/**
+ * @func: 初始化所有分区信息
+ *        
+ */
+static int rollts_format(rollts_manager_t *rollts_manager)
+{
+    // 对物理地址进行初始化
+    if(0 != head_block_force_format(rollts_manager))
+    {
+        log_info(" Log Sector erase failed! ");
+        return -1;
+    }
+    // 清除系统分区
+    if(0 != rollts_manager->flash_ops.erase_sector(0))
+    {
+        return -1;
+    }
+    else
+    {
+        if(0 != rollts_manager->flash_ops.write_data(0,&rollts_manager->sys_info, sizeof(rollts_sys_t)))
+        {
+            return -1;
+        }  
+        else                                       
+        {
+            log_info(" Sys Sector erase and init  at : 0x%x ", 0);
+        }
+
+    }
+    
+    log_info("rollts_format succeed!");                        
+    return 0;
+}
+
+/* function-------------------------------------------------------------------*/
+/**
+ * @func: 提取上一个block
+ */
+static uint32_t get_pre_block(rollts_manager_t *rollts_manager, uint32_t mem_addr)
+{
+    // 提取上一个block的内存地址
+    mem_addr = mem_addr - rollts_manager->sys_info.single_block_size;
+
+    // 可以在这里添加对mem_addr边界的检查，防止越界访问
+    if (mem_addr < rollts_manager->sys_info.data_start_addr) 
+    {
+        // 处理边界情况，例如回到循环缓冲区的末尾
+        mem_addr = rollts_manager->sys_info.data_end_addr;
+    }
+    return mem_addr;
+}
+
+/**
+ * @func: 提取下一个block
+ */
+static uint32_t get_next_block(rollts_manager_t *rollts_manager, uint32_t mem_addr)
+{
+    // 提取下一个block的内存地址
+    mem_addr = mem_addr + rollts_manager->sys_info.single_block_size;
+
+    // 添加对mem_addr边界的检查，防止越界访问
+    if (mem_addr > rollts_manager->sys_info.data_end_addr) 
+    {
+        // 处理边界情况，例如回到循环缓冲区的起始位置
+        mem_addr = rollts_manager->sys_info.data_start_addr;
+    }
+    
+    return mem_addr;
+}
+
+/**
+ * @func: 获取最旧的数据块
+ *
+ */
+static uint32_t get_oldest_block(rollts_manager_t *rollts_manager)
+{
+    return get_next_block(rollts_manager, rollts_manager->mem_tab.head_backup_addr);
+}
+
+/**
+ * @func: 格式化head block
+ */
+static bool head_block_format(rollts_manager_t *rollts_manager)
+{
+    log_debug("head_block_format start...");
+    uint32_t pre_addr  = 0;
+    uint32_t next_addr = 0;
+    if(rollts_manager->mem_tab.head_addr == rollts_manager->sys_info.data_start_addr) //head在起始块
+    {
+        pre_addr  = rollts_manager->sys_info.data_end_addr;
+        next_addr = rollts_manager->sys_info.data_start_addr + rollts_manager->sys_info.single_block_size;
+    }
+    else if(rollts_manager->mem_tab.head_addr == rollts_manager->sys_info.data_end_addr) //head在结束块
+    {
+        pre_addr  = rollts_manager->sys_info.data_end_addr - rollts_manager->sys_info.single_block_size;
+        next_addr = rollts_manager->sys_info.data_start_addr;
+    }
+    else
+    {
+        pre_addr  = rollts_manager->mem_tab.head_addr - rollts_manager->sys_info.single_block_size;
+        next_addr = rollts_manager->mem_tab.head_addr + rollts_manager->sys_info.single_block_size;
+    }
+    block_info_t pre_block_info;
+    block_info_t next_block_info;
+    memset(&pre_block_info , 0xFF, sizeof(block_info_t));
+    memset(&next_block_info, 0xFF, sizeof(block_info_t));
+
+    rollts_manager->flash_ops.read_data(pre_addr,  &pre_block_info, sizeof(block_info_t));
+    rollts_manager->flash_ops.read_data(next_addr,&next_block_info, sizeof(block_info_t));
+    if(!IS_NOT_HEAD(pre_block_info))
+    {
+        memset(&pre_block_info , 0xFF, sizeof(block_info_t));
+        pre_block_info.magic_valid = MAGIC_VALID;
+        pre_block_info.data_num    = -1;
+        if(0 != rollts_manager->flash_ops.erase_sector(pre_addr))
+        {
+            return false;
+        }
+        if(0 != rollts_manager->flash_ops.write_data(pre_addr, &pre_block_info, sizeof(block_info_t)))
+        {
+            return false;
+        }
+    }
+    if(!IS_BACKUP(next_block_info))
+    {
+        memset(&next_block_info , 0xFF, sizeof(block_info_t));
+        pre_block_info.magic_valid = MAGIC_VALID;
+        pre_block_info.data_num    = -1;
+        SET_BACKUP(next_block_info);
+        if(rollts_manager->flash_ops.erase_sector(next_addr))
+        {
+            return false;
+        }
+        if(rollts_manager->flash_ops.write_data(next_addr, &next_block_info, sizeof(block_info_t)))
+        {
+            return false;
+        }
+    }
+    rollts_manager->mem_tab.head_backup_addr = next_addr;
+    rollts_manager->mem_tab.pre_addr         = pre_addr;
+    return true;
+}
+
+/**
+ * @func: 扫描起始数据块
+ */
+static int scan_head_block(rollts_manager_t *rollts_manager)
+{
+    int num = 0;
+    bool find_in_first                 = false;
+    bool find_in_last                  = false;
+    uint32_t find_head_block_addr     = 0;
+
+    block_info_t block_info;
+    uint32_t rollts_max_data_block_num = rollts_manager->sys_info.rollts_max_block_num - 1;
+    for (uint32_t i = 0; i < rollts_max_data_block_num; i++) 
+    { 
+        block_info.magic_valid = 0;
+        rollts_manager->flash_ops.read_data(rollts_manager->sys_info.data_start_addr  + \
+                                            rollts_manager->sys_info.single_block_size * i,
+                                            &block_info, sizeof(block_info_t));
+        log_debug("----------------------------------------");                                
+        log_debug("block_info.last_data_addr     : 0x%x", block_info.last_data_addr);
+        log_debug("block_info.data_num           : %d", block_info.data_num);
+        log_debug("block_info.magic_valid        : 0x%x", block_info.magic_valid);    
+        log_debug("block_info.is_head            : %d", block_info.is_head);
+        log_debug("----------------------------------------");     
+        if(MAGIC_VALID == block_info.magic_valid)
+        {
+            // 查询是否是启动块
+            if(IS_HEAD(block_info))
+            {
+                num++;
+                rollts_manager->mem_tab.head_addr =rollts_manager->sys_info.data_start_addr  + \
+                                                   rollts_manager->sys_info.single_block_size * i;
+                if(i == 0)
+                {
+                    find_in_first = true;
+                    find_head_block_addr = rollts_manager->mem_tab.head_addr;
+                }                             
+                if(i == rollts_max_data_block_num)
+                {
+                    find_in_last = true;
+                }
+            }
+        }
+        else
+        {
+            continue;
+        }
+    }
+    // 启动块出现在一头一尾
+    if(find_in_last && find_in_first)
+    {
+        rollts_manager->mem_tab.head_addr = find_head_block_addr;
+    }
+    return num;
+
+}
+
+/**
+ * @func: 初始化内存表
+ */
+static int rollts_mem_tab_init(rollts_manager_t *rollts_manager)
+{
+    log_debug(" rollts_mem_tab_init start...");
+    // 扫描 head块
+    if(scan_head_block(rollts_manager) > 0)
+    {
+        log_debug("scan_head_block_addr : 0x%x",rollts_manager->mem_tab.head_addr);
+        if(head_block_format(rollts_manager))
+        {
+            log_debug("rollts_manager->mem_tab.pre_addr        : 0x%x",rollts_manager->mem_tab.pre_addr);
+            log_debug("rollts_manager->mem_tab.head_addr       : 0x%x",rollts_manager->mem_tab.head_addr);
+            log_debug("rollts_manager->mem_tab.head_backup_addr: 0x%x",rollts_manager->mem_tab.head_backup_addr);
+        }
+        else
+        {
+            log_error(" head_block_format failed!");
+            return -1;
+        }
+        return 0;
+    }
+    else
+    {
+        log_alt(" scan_head_block_addr not found!");
+        if(0 == head_block_force_format(rollts_manager))
+        {
+            return 0;
+        }
+        rollts_manager->is_init = 0;
+        return -1;
+    }
+}
+
+/**
+ * @func: 初始化数据块结构体
+ * 
+ */
+static void data_block_loop(rollts_manager_t *rollts_manager)
+{
+    memset(&rollts_manager->rollts_data,0x00,sizeof(rollts_data_t));
+
+    uint32_t start_addr  = rollts_manager->mem_tab.pre_addr + sizeof(block_info_t);
+    uint32_t end_addr    = rollts_manager->mem_tab.pre_addr + rollts_manager->sys_info.single_block_size - 1;
+
+    bool is_block_info_valid = true;
+    // 首先查询block_info是否已经写入了end_addr 和 data_num
+    block_info_t current_block_info;
+    rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.pre_addr, &current_block_info, sizeof(block_info_t));
+    if((0xFFFFFFFF != current_block_info.last_data_addr)
+     &&(-1         != current_block_info.data_num))
+    {
+        rollts_manager->current_block_full = true;
+        // 当前数据块已经写入了数据
+        if((0xFFFFFFFF == current_block_info.last_data_addr)
+                ||(-1  == current_block_info.data_num))
+        {
+            // 完整性检查不通过，需要进行日志修复
+            log_alt("rollts_data_block_loop: block_info integrity check failed");
+            log_alt("repair...");
+            is_block_info_valid = false;
+        }
+        else
+        {
+            // 完整性检查通过，进行数据块数据初始化
+            rollts_manager->flash_ops.read_data(current_block_info.last_data_addr, 
+                                                     &rollts_manager->rollts_data, sizeof(rollts_data_t));
+            rollts_manager->cur_block_data_num = current_block_info.data_num;
+            return;
+        }
+    }
+    else
+    {
+        rollts_manager->current_block_full = false;
+    }
+    rollts_data_t tmp_rollts_data;
+    memset(&tmp_rollts_data,0x00,sizeof(rollts_data_t));
+    // 遍历数据块
+    rollts_manager->cur_block_data_num = 0;
+
+    rollts_manager->flash_ops.read_data(start_addr, &tmp_rollts_data, sizeof(rollts_data_t));
+    if(MAGIC_DATA_VALID != tmp_rollts_data.magic_valid)
+    {
+        // 第一数据区为空
+        log_debug(" tmp_rollts_data find first empty");
+        // 从头开始写数据
+        rollts_manager->rollts_data.magic_valid = MAGIC_DATA_VALID;
+
+        rollts_manager->rollts_data.pre_addr  = 0;
+        rollts_manager->rollts_data.cur_addr  = start_addr;
+    }
+    else
+    {
+        rollts_manager->rollts_data.magic_valid = MAGIC_DATA_VALID;
+        rollts_manager->rollts_data.pre_addr    = tmp_rollts_data.cur_addr;
+        rollts_manager->rollts_data.cur_addr    = tmp_rollts_data.next_addr;
+
+        start_addr  = tmp_rollts_data.next_addr;
+        while(start_addr <= end_addr) //写入时保证有效数据的next不超限制
+        {
+            rollts_manager->flash_ops.read_data(start_addr, &tmp_rollts_data, sizeof(rollts_data_t));
+            
+            if(MAGIC_DATA_VALID == tmp_rollts_data.magic_valid)
+            {
+                // 当前block数据条数增加
+                rollts_manager->cur_block_data_num++;
+                start_addr  = tmp_rollts_data.next_addr;
+                // 保证rollts_data 始终为当前可写空位
+                rollts_manager->rollts_data.magic_valid = MAGIC_DATA_VALID;
+                rollts_manager->rollts_data.pre_addr    = tmp_rollts_data.cur_addr;
+                rollts_manager->rollts_data.cur_addr    = tmp_rollts_data.next_addr;
+            }
+            else
+            {
+                // 当前数据头为空
+                log_debug(" tmp_rollts_data find empty");
+                break;
+            }
+
+        }
+
+    }
+
+    if(false  == is_block_info_valid)
+    {
+        // 修复blcok info
+        // 完整性检查失败，进行数据块数据初始化
+        current_block_info.last_data_addr = start_addr;
+        current_block_info.data_num       = rollts_manager->cur_block_data_num;
+
+        log_debug("writting last_data_addr... 0x%x",current_block_info.last_data_addr);
+        rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.pre_addr + offsetof(block_info_t, last_data_addr),
+                                            &current_block_info.last_data_addr, sizeof(uint32_t));
         
-        // 擦除系统分区
-        for(uint32_t i = 0; i < SYSINFO_NUM; i++) 
-        { 
-            if(false == rolldb_flash_ops.erase_sector(SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE)) // 擦除当前扇区
-            {
-                return false;
-            }
-            else
-            {
-                log_info(" Sysinfo Sector erase  at : 0x%x ", (SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE));
-            }
-        }
-        // 擦除日志分区
-        for (uint32_t i = 0; i < LOG_SECTOR_NUM; i++) 
-        { 
-            if(false == rolldb_flash_ops.erase_sector(LOG_SECTOR_START_ADDR + i * SINGLE_SECTOR_SIZE))
-            {
-                return false;
-            }
-            else
-            {
-                log_info(" Log Sector erase  at : 0x%x ", (LOG_SECTOR_START_ADDR + i * SINGLE_SECTOR_SIZE));
-            }
-        }
-        if(false == rolldb_flash_ops.write_data(SYSINFO_START_ADDR, sys_handle, sizeof(rollts_sys_t))) // 将初始化后的系统分区数据写入 Flash
-        {
-            return false;
-        }
-    }
-    log_info("sys_handle->sys_addr_current_sector:0x%x, sys_handle->sys_addr_offset:0x%x", sys_handle->sys_addr_current_sector, sys_handle->sys_addr_offset); 
-    log_info("sys_handle->log_data_start:0x%x, sys_handle->log_data_end:0x%x", sys_handle->log_data_start, sys_handle->log_data_end); 
-    log_info("sys_handle->log_num:%d", sys_handle->log_num); // 输出日志数量
-    log_info("rollts_init succeed!"); // 输出系统分区有效标志
+        log_debug("writting data_num... %d",current_block_info.data_num);
+        rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.pre_addr + offsetof(block_info_t, data_num),
+                                            &current_block_info.data_num, sizeof(uint32_t));                                       
 
-    return true;
-}
-bool rollts_deinit(rollts_sys_t *sys_handle) 
-{
-    // 擦除系统分区
-    for(uint32_t i = 0; i < SYSINFO_NUM; i++) 
-    { 
-        if(false == rolldb_flash_ops.erase_sector(SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE)) // 擦除当前扇区
-        {
-            return false;
-        }
     }
-	return true;
 }
 
-// 清除所有日志数据
-bool rollts_clear(rollts_sys_t *sys_handle) 
+/* function-------------------------------------------------------------------*/
+/**
+ * @func: head日志块迁移
+ */
+static int head_block_move(rollts_manager_t *rollts_manager)
 {
-    if (!sys_handle) return false; // 如果句柄为空，直接返回
-    log_debug("rollts clear start..."); 
-    task_suspend();
-    // 初始化系统分区
-    sys_handle->magic_valid = VALID_MAGIC; // 设置系统分区有效标志
-    sys_handle->sys_info_len = sizeof(rollts_sys_t); // 设置系统分区数据长度
-    sys_handle->sys_addr_current_sector = SYSINFO_START_ADDR; // 当前系统分区地址偏移
-    sys_handle->sys_addr_offset = SYSINFO_START_ADDR + sizeof(rollts_sys_t);
-    sys_handle->sys_size = SYSINFO_SIZE;    // 设置系统分区大小
-    sys_handle->log_size = LOG_SECTOR_SIZE; // 设置日志分区大小
-    sys_handle->log_data_start = LOG_SECTOR_START_ADDR; // 初始化日志起始地址
-    sys_handle->log_data_end = LOG_SECTOR_START_ADDR; // 初始化日志结束地址
-    sys_handle->log_num = 0; // 初始化日志数量为 0
-    sys_handle->log_action_num = 0;
-    sys_handle->log_current_sector = 0; // 初始化当前写入扇区为第一个扇区
+    log_debug("(pre)memtab:pre_addr        :0x%x",rollts_manager->mem_tab.pre_addr);
+    log_debug("(pre)memtab:head_addr       :0x%x",rollts_manager->mem_tab.head_addr);
+    log_debug("(pre)memtab:head_backup_addr:0x%x",rollts_manager->mem_tab.head_backup_addr);
+    block_info_t block_info;
+    memset(&block_info,0xFF,sizeof(block_info_t));
+    block_info.magic_valid = MAGIC_VALID;
+    block_info.data_num    = -1;
+    // 1. 将head_back 置为head
+    SET_HEAD(block_info);
+    rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.head_backup_addr
+                                              ,&block_info, sizeof(block_info_t));
+    // 2. 将之前head置为数据区
+    SET_NOT_HEAD(block_info);
+    rollts_manager->flash_ops.erase_sector(rollts_manager->mem_tab.head_addr);
+    rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.head_addr
+                                              ,&block_info, sizeof(block_info_t));                               
+    // 3.更新rollts_manager->mem_tab
+    log_debug("mem_tab fresh...");
+    uint32_t pre_addr  = 0;
+    uint32_t cur_addr  = 0;
+    uint32_t next_addr = 0;
+    pre_addr           = rollts_manager->mem_tab.head_addr;
+    cur_addr           = rollts_manager->mem_tab.head_backup_addr;
+    next_addr          = rollts_manager->mem_tab.head_backup_addr + rollts_manager->sys_info.single_block_size;
 
-    // 初始化日志分区状态
-    memset(sys_handle->log_sector_status, SECTOR_EMPTY, sizeof(sys_handle->log_sector_status)); // 将所有扇区状态设置为 EMPTY
-    // 擦除系统分区
-    for(uint32_t i = 0; i < SYSINFO_NUM; i++) 
-    { 
-        if(false == rolldb_flash_ops.erase_sector(SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE)) // 擦除当前扇区
-        {
-            task_resume();
-            return false;
-        }
-    }
-    // 擦除日志分区
-    for (uint32_t i = 0; i < LOG_SECTOR_NUM; i++) 
-    { 
-        if(false == rolldb_flash_ops.erase_sector(LOG_SECTOR_START_ADDR + i * SINGLE_SECTOR_SIZE))
-        {
-            task_resume();
-            return false;
-        }
-    }
-    if(false == rolldb_flash_ops.write_data(SYSINFO_START_ADDR, sys_handle, sizeof(rollts_sys_t))) // 将初始化后的系统分区数据写入 Flash
+    if(next_addr > rollts_manager->sys_info.data_end_addr)
     {
-        task_resume();
+        next_addr = rollts_manager->sys_info.data_start_addr;
+    }
+    
+    rollts_manager->mem_tab.pre_addr         = pre_addr;
+    rollts_manager->mem_tab.head_addr        = cur_addr;
+    rollts_manager->mem_tab.head_backup_addr = next_addr;
+
+    // 4.将之前head_back后1 block置为head_back
+    SET_BACKUP(block_info);
+    rollts_manager->flash_ops.erase_sector(rollts_manager->mem_tab.head_backup_addr);
+    rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.head_backup_addr 
+                                              ,&block_info, sizeof(block_info_t)); 
+    rollts_manager->current_block_full = false;
+    // 打印 memtab信息
+    log_debug("memtab:pre_addr        :0x%x",rollts_manager->mem_tab.pre_addr);
+    log_debug("memtab:head_addr       :0x%x",rollts_manager->mem_tab.head_addr);
+    log_debug("memtab:head_backup_addr:0x%x",rollts_manager->mem_tab.head_backup_addr);
+
+    // 5.从头开始写块数据
+    rollts_manager->rollts_data.magic_valid = MAGIC_DATA_VALID;
+    rollts_manager->rollts_data.pre_addr  = 0;
+    rollts_manager->rollts_data.cur_addr  = rollts_manager->mem_tab.pre_addr + sizeof(block_info_t);
+
+    // test
+    // {
+
+    //     block_info_t block_info_test;  
+
+    //     memset(&block_info_test,0x00,sizeof(block_info_t));     
+    //     rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.pre_addr
+    //                                             ,&block_info_test, sizeof(block_info_t));
+    //     log_debug("pre block_info_test:is_head         :0x%x",block_info_test.is_head);
+    //     log_debug("pre block_info_test:head_addr       :0x%x",block_info_test.magic_valid);                                       
+
+    //     memset(&block_info_test,0x00,sizeof(block_info_t));                                        
+    //     rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.head_addr
+    //                                             ,&block_info_test, sizeof(block_info_t));
+    //     log_debug("head block_info_test:is_head         :0x%x",block_info_test.is_head);
+    //     log_debug("head block_info_test:head_addr       :0x%x",block_info_test.magic_valid);
+
+    //     memset(&block_info_test,0x00,sizeof(block_info_t));                                        
+    //     rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.head_backup_addr
+    //                                             ,&block_info_test, sizeof(block_info_t));   
+    //     log_debug("head back block_info_test:is_head         :0x%x",block_info_test.is_head);
+    //     log_debug("head back block_info_test:head_addr       :0x%x",block_info_test.magic_valid);
+    // }
+    return 0;
+}
+
+/**
+ * @func: 查找最后一个日志位置,并计算是否需要切换日志块
+ */
+static bool find_the_last_position_and_calc(rollts_manager_t *rollts_manager,
+                                                uint32_t    frame_len,
+                                                uint32_t  payload_len)
+{
+    // 当前块是否已经封顶
+    if(rollts_manager->current_block_full)
+    {
+        log_debug("current block is full,need to move to next block");
         return false;
     }
-    log_debug("rollts_init succeed! magic_valid: %x", sys_handle->magic_valid); // 调试输出系统分区有效标志
-    log_debug("sys_handle->log_data_start:%x, sys_handle->log_data_end:%x", sys_handle->log_data_start, sys_handle->log_data_end); 
-    task_resume();
-    return true;
-}
 
-
-static void add_log_action_num(rollts_sys_t *sys_handle)
-{
-    sys_handle->log_action_num++;
-}
-// 静态函数：遍历当前扇区日志数量
-static uint32_t rollts_count_logs_in_sector(uint32_t sector_start_addr) 
-{
-    uint32_t erase_num = 0; // 初始化被擦除日志的数量
-    uint32_t sector_end_addr = sector_start_addr + SINGLE_SECTOR_SIZE; // 当前扇区结束地址
-    uint32_t read_addr = sector_start_addr; // 从扇区起始地址开始读取
-
-    // 遍历该扇区，读取日志头并检查有效性
-    while (read_addr < sector_end_addr) 
+    // 不可超过当前block最后一位
+    if((rollts_manager->rollts_data.cur_addr % rollts_manager->sys_info.single_block_size + frame_len \
+         < rollts_manager->sys_info.single_block_size ))
     {
-        rollts_log_t log; // 定义日志头结构
-        memset(&log, 0, sizeof(rollts_log_t)); // 清空日志头结构
-        if(false == rolldb_flash_ops.read_data(read_addr, (uint8_t *)&log, sizeof(rollts_log_t))) // 从 Flash 中读取日志头
-        {
-            return erase_num; // 如果读取失败，返回已计数日志数量
-        }
-        // 检查日志是否有效
-        if (log.magic_valid != VALID_MAGIC) 
-        {
-            break; // 如果日志无效，停止遍历
-        }
-        // 有效日志，增加计数器
+        // 不需要切换日志块
+        rollts_manager->rollts_data.next_addr     = rollts_manager->rollts_data.cur_addr + frame_len;
+        rollts_manager->rollts_data.payload_len   = payload_len;
+        // 当前block数据条数增加
+        rollts_manager->cur_block_data_num++;
 
-        erase_num++;
-        read_addr = log.addr_offset; // 更新读取地址
-
-    }
-    return erase_num; // 返回扇区内有效日志的数量
-}
-
-// 检查并切换到下一个扇区
-static bool rollts_switch_sector(rollts_sys_t *sys_handle) 
-{
-
-    uint32_t previous_sector = sys_handle->log_current_sector; // 保存之前扇区索引
-    if(sys_handle->log_current_sector + 1 >= LOG_SECTOR_NUM)
-    {
-        sys_handle->log_current_sector = 0; // 如果当前扇区索引超过最大值，则重置为 0
+        log_debug("rollts_data.magic_valid:0x%x",rollts_manager->rollts_data.magic_valid);
+        log_debug("rollts_data.pre_addr   :0x%x",rollts_manager->rollts_data.pre_addr);
+        log_debug("rollts_data.cur_addr   :0x%x",rollts_manager->rollts_data.cur_addr);
+        log_debug("rollts_data.next_addr  :0x%x",rollts_manager->rollts_data.next_addr);
+        log_debug("rollts_data.payload_len:%d"  ,rollts_manager->rollts_data.payload_len);
+        return true;
     }
     else
     {
-        sys_handle->log_current_sector++; // 切换到下一个扇区
-    }
-    log_debug("block jump action triggerd %d->%d", previous_sector,sys_handle->log_current_sector); 
-    // 仅当被擦除的扇区是 log_data_start 所在扇区时，更新 log_data_start 先更新起始地址，再擦除
-    if ((LOG_SECTOR_START_ADDR + sys_handle->log_current_sector * SINGLE_SECTOR_SIZE) == sys_handle->log_data_start) 
-    {
-        if(sys_handle->log_current_sector + 1 < LOG_SECTOR_NUM) //在扇区范围内
+        //需要切换日志块
+        log_debug("no space in current block,need switch to next block");
+
+        // 进行当前block封顶
+        rollts_manager->last_valid_data_addr = rollts_manager->rollts_data.pre_addr; // 更新最后有效数据块
+        //空间不足时,对pre block记录最后数据地址 
+        uint32_t last_data_addr = 0x0a; //随机值观察是否被覆写
+        rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.pre_addr + offsetof(block_info_t, last_data_addr),
+                                               &last_data_addr, sizeof(uint32_t));
+        //空间不足时，对pre block记录日志数量   
+        int32_t data_num = 0x06; //随机值观察是否被覆写
+        rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.pre_addr + offsetof(block_info_t, data_num),
+                                               &data_num, sizeof(int32_t));  
+
+        if(0xFFFFFFFF == last_data_addr) //无数据
         {
-            sys_handle->log_data_start = LOG_SECTOR_START_ADDR + (sys_handle->log_current_sector + 1) * SINGLE_SECTOR_SIZE; // 更新 log_data_start 为下一个扇区的起始地址
+            log_debug("writting last_data_addr... 0x%x",rollts_manager->last_valid_data_addr);
+            rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.pre_addr + offsetof(block_info_t, last_data_addr),
+                                                &rollts_manager->last_valid_data_addr, sizeof(uint32_t));
         }
         else
         {
-            sys_handle->log_data_start = LOG_SECTOR_START_ADDR; // 如果当前扇区是最后一个扇区，则将 log_data_start 重置为第一个扇区的起始地址
+            log_alt("last_data_addr is not 0xFFFFFFFF,you need to check it");
         }
-        log_debug(" new:sys_handle->log_data_start:%x", sys_handle->log_data_start); 
-    }
-
-    // 如果新切换的扇区已满（健壮性处理，不等于 EMPTY），则擦除
-    if (sys_handle->log_sector_status[sys_handle->log_current_sector] != SECTOR_EMPTY) 
-    {
-        uint32_t sector_start_addr = LOG_SECTOR_START_ADDR + sys_handle->log_current_sector * SINGLE_SECTOR_SIZE; // 当前扇区起始地址
-
-        // 调用独立函数计算当前扇区日志数量
-        uint32_t erase_num = rollts_count_logs_in_sector(sector_start_addr);
-
-        // 从系统分区中删除被擦除扇区的日志数量
-        sys_handle->log_num -= erase_num;
-        if (sys_handle->log_num < 0) 
+        if(-1 == data_num)  
         {
-            sys_handle->log_num = 0; // 防止日志数量变为负数
-        }
-        log_debug("erase_num:%d, sys_handle->log_num:%d", erase_num, sys_handle->log_num);
-        if(false == rolldb_flash_ops.erase_sector(sector_start_addr)) // 擦除当前扇区
-        {
-            return false; 
-        }
-        sys_handle->log_sector_status[sys_handle->log_current_sector] = SECTOR_EMPTY; // 更新扇区状态为 EMPTY
-    }
-
-    // 更新日志分区结束地址
-    sys_handle->log_data_end = LOG_SECTOR_START_ADDR + sys_handle->log_current_sector * SINGLE_SECTOR_SIZE; // 更新 log_data_end 为当前扇区的起始地址
-    log_debug("sys_handle->log_data_start:%x, sys_handle->log_data_end:%x", sys_handle->log_data_start, sys_handle->log_data_end); 
-    return true;
-}
-
-// 写入日志头
-static bool rollts_write_log_header(rollts_sys_t *sys_handle, rollts_log_t *log_handle,uint16_t length) 
-{
-    log_handle->magic_valid = VALID_MAGIC; // 设置日志有效标志
-    add_log_action_num(sys_handle);
-    log_handle->number = sys_handle->log_action_num; // 设置日志操作序号
-    log_handle->len = length + sizeof(rollts_log_t); // 设置日志长度
-    log_handle->addr_offset = sys_handle->log_data_end + log_handle->len; // 设置日志地址偏移
-    if(false == rolldb_flash_ops.write_data(sys_handle->log_data_end, (uint8_t *)log_handle, sizeof(rollts_log_t))) // 写入日志头到 Flash
-    {
-        return false; // 写入失败
-    }
-    return true; // 写入成功
-}
-
-// 写入日志数据
-static bool rollts_write_log_data(rollts_sys_t *sys_handle, uint8_t *data, uint16_t length) 
-{
-    if(false == rolldb_flash_ops.write_data(sys_handle->log_data_end, data, length)) // 写入日志数据到 Flash
-    {
-        return false; // 写入失败
-    }
-    return true; // 写入成功
-}
-
-// 更新系统分区数据
-// 定义一个静态函数 rollts_update_sysinfo，用于更新系统信息
-// 参数 sys_handle 是一个指向 rollts_sys_t 类型的指针，表示系统信息的句柄
-static bool rollts_update_sysinfo(rollts_sys_t *sys_handle) 
-{
-
-    uint32_t addr_end_offset = sys_handle->sys_addr_offset + sizeof(rollts_sys_t); // 计算当前系统分区地址偏移
-    if(check_addr_in_sector(addr_end_offset, sys_handle->sys_addr_current_sector))
-    {
-        uint32_t addr_offset = sys_handle->sys_addr_offset;
-        sys_handle->sys_addr_offset += sizeof(rollts_sys_t); // 更新下一个系统分区地址偏移
-        //偏移后地址在扇区内 可以直接写入
-        if(false == rolldb_flash_ops.write_data(addr_offset, sys_handle, sizeof(rollts_sys_t))) // 将系统分区数据写入 Flash
-        {
-            return false; // 写入失败
-        }
-    }
-    else
-    {
-        //下一个扇区
-        // 擦除当前系统分区所在的 Flash 扇区
-        if(false == rolldb_flash_ops.erase_sector(sys_handle->sys_addr_current_sector)) 
-        {
-            return false; // 擦除失败
-        }
-        sys_handle->sys_addr_current_sector += SINGLE_SECTOR_SIZE;    //更新
-        if(sys_handle->sys_addr_current_sector >= SYSINFO_START_ADDR + SYSINFO_NUM * SINGLE_SECTOR_SIZE)
-        {
-            sys_handle->sys_addr_current_sector = SYSINFO_START_ADDR; // 如果当前系统分区地址超过最大值，则重置为起始地址
-        }
-        sys_handle->sys_addr_offset = sys_handle->sys_addr_current_sector + sizeof(rollts_sys_t);  // 下一个系统分区地址偏移
-        // 将系统分区数据写入下一个 Flash
-        if(false == rolldb_flash_ops.write_data(sys_handle->sys_addr_current_sector, sys_handle, sizeof(rollts_sys_t))) 
-        {
-            return false; // 写入失败
-        }
-    }
-    return true; // 写入成功
-}
-static bool log_goto_next_sector(rollts_sys_t *sys_handle)
-{
-    return ((0 == sys_handle->log_data_end % SINGLE_SECTOR_SIZE) && (((sys_handle->log_data_end - LOG_SECTOR_START_ADDR)/SINGLE_SECTOR_SIZE)!= sys_handle->log_current_sector));
-}
-// 追加日志
-bool rollts_add(rollts_sys_t *sys_handle, rollts_log_t *log_handle, uint8_t *data, uint16_t length) {
-    if (!sys_handle || !log_handle || !data || length == 0) return false; // 如果参数无效，直接返回
-    if (VALID_MAGIC != sys_handle->magic_valid) return false; // 如果系统分区无效，直接返回 
-    if(length > ROLLTS_MAX_SIZE)
-    {
-        return false; // 如果日志长度超过最大限制，直接返回
-    }
-    task_suspend();
-    // 检查当前扇区是否有足够空间 或偏移地址已经跨页到另一个扇区
-    uint32_t sector_offset = sys_handle->log_data_end % SINGLE_SECTOR_SIZE; // 当前扇区的写入偏移量
-
-    if ((sector_offset + sizeof(rollts_log_t) + length > SINGLE_SECTOR_SIZE) || (log_goto_next_sector(sys_handle) == true))
-    { // 如果当前扇区空间不足
-        sys_handle->log_sector_status[sys_handle->log_current_sector] = SECTOR_FULL; // 当前扇区写满，标记为 FULL
-        if(false == rollts_switch_sector(sys_handle)) // 切换到下一个扇区
-        {
-            return false;
-        }
-    }
-
-    // 写入日志头
-    if(false == rollts_write_log_header(sys_handle, log_handle, length)) 
-    {
-        task_resume();
-        return false; // 写入失败
-    }
-    sys_handle->log_data_end += sizeof(rollts_log_t); 
-    // 写入日志数据
-    if(false == rollts_write_log_data(sys_handle, data, length))
-    {
-        task_resume();
-        return false; // 写入失败
-    }
-    sys_handle->log_data_end += length; 
-    // 更新当前扇区状态为 WRITING
-    sys_handle->log_sector_status[sys_handle->log_current_sector] = SECTOR_WRITTING; 
-    sys_handle->log_num++; 
-    log_debug("rollts_add log_num:%d, sys_handle->log_data_start:%x, sys_handle->log_data_end:%x log->number:%d", sys_handle->log_num, sys_handle->log_data_start, sys_handle->log_data_end,log_handle->number);
-    // 更新系统分区数据
-    if(false == rollts_update_sysinfo(sys_handle))
-    {
-        task_resume();
-        return false; // 更新失败
-    }
-    task_resume();
-    return true;
-}
-
-static uint8_t data[SINGLE_ROLLTS_MAX_SIZE] = {0}; // 定义日志数据缓冲区
-// 批量读取日志
-bool rollts_read_all(rollts_sys_t *sys_handle, rollts_log_t *log_handle, rollTscb cb) 
-{
-    if (!sys_handle || !log_handle || !cb) return false; // 如果参数无效，直接返回
-    if (VALID_MAGIC != sys_handle->magic_valid) return false; // 如果系统分区无效，直接返回 
-    task_suspend();
-    uint32_t log_count = 0; // 初始化日志计数器
-    uint32_t read_addr = sys_handle->log_data_start; // 从日志起始地址开始读取
-    while (read_addr != sys_handle->log_data_end) 
-    { // 遍历所有日志
-        rollts_log_t log; // 定义日志头结构
-        memset(&log, 0, sizeof(rollts_log_t)); // 清空日志头结构
-
-        if(false == rolldb_flash_ops.read_data(read_addr, (uint8_t *)&log, sizeof(rollts_log_t))) // 从 Flash 中读取日志头
-        {
-            task_resume();
-            return false;
-        }
-        // 检查日志是否有效
-        if (log.magic_valid != VALID_MAGIC) 
-        {
-            log_debug("invalid log block, try next sector!"); // 调试输出日志无效
-            // 跳转到下一个扇区的起始地址
-            uint32_t current_sector = (read_addr - LOG_SECTOR_START_ADDR) / SINGLE_SECTOR_SIZE;
-            if (current_sector + 1 < LOG_SECTOR_NUM) 
-            {
-                read_addr = LOG_SECTOR_START_ADDR + (current_sector + 1) * SINGLE_SECTOR_SIZE;
-            } 
-            else 
-            {
-                // 如果已经是最后一个扇区，回到第一个扇区
-                read_addr = LOG_SECTOR_START_ADDR;
-            }
-            continue; // 继续下一次循环
-
-        }
-        read_addr += sizeof(rollts_log_t); // 更新读取地址
-        memset(data, 0, SINGLE_ROLLTS_MAX_SIZE);
-        if(false == rolldb_flash_ops.read_data(read_addr, data, (log.len-sizeof(rollts_log_t)))) // 从 Flash 中读取日志数据
-        {
-            task_resume();
-            return false;
-        }
-        read_addr = log.addr_offset; // 更新读取地址
-        log_count++; // 增加日志计数器
-        // 调用回调函数处理日志数据
-        if (!cb(data, (log.len-sizeof(rollts_log_t)))) break; // 如果回调函数返回 false，则停止读取
-        // 如果日志计数器超过总日志数量，停止读取
-        if (log_count >= sys_handle->log_num) break;
-    }
-    log_debug("rollts num is :%d!", sys_handle->log_num); 
-    task_resume();
-    return true;
-}
-
-// 按范围读取日志
-bool rollts_read_pick(rollts_sys_t *sys_handle, rollts_log_t *log_handle, uint32_t start_num, uint32_t end_num, rollTscb cb) {
-    if (!sys_handle || !log_handle || !cb || start_num > end_num || end_num > sys_handle->log_num) return false; // 如果参数无效，直接返回
-    if (VALID_MAGIC != sys_handle->magic_valid) return false; // 如果系统分区无效，直接返回 
-    task_suspend();
-    uint32_t read_addr = sys_handle->log_data_start; // 从日志起始地址开始读取
-    uint32_t log_count = 0; // 初始化日志计数器
-    //计算真实的log_num范围
-    uint32_t valid_num = 0;
-    uint32_t read_num = 0;
-    while (read_addr != sys_handle->log_data_end) 
-    { // 遍历所有日志
-        rollts_log_t log; // 定义日志头结构
-        memset(&log, 0, sizeof(rollts_log_t)); // 清空日志头结构
-        if(false == rolldb_flash_ops.read_data(read_addr, (uint8_t *)&log, sizeof(rollts_log_t))) // 从 Flash 中读取日志头
-        {
-            task_resume();
-            return false;
-        }
-        // 检查日志是否有效
-        if (log.magic_valid != VALID_MAGIC) 
-        {
-            log_debug("invalid log block, try next sector!"); // 调试输出日志无效
-            // 跳转到下一个扇区的起始地址
-            uint32_t current_sector = (read_addr - LOG_SECTOR_START_ADDR) / SINGLE_SECTOR_SIZE;
-            if (current_sector + 1 < LOG_SECTOR_NUM) 
-            {
-                read_addr = LOG_SECTOR_START_ADDR + (current_sector + 1) * SINGLE_SECTOR_SIZE;
-            } 
-            else 
-            {
-                // 如果已经是最后一个扇区，回到第一个扇区
-                read_addr = LOG_SECTOR_START_ADDR;
-            }
-            continue; // 继续下一次循环
-
-        }
+            log_debug("writting data_num... %d",rollts_manager->cur_block_data_num);
+            rollts_manager->flash_ops.write_data(rollts_manager->mem_tab.pre_addr + offsetof(block_info_t, data_num),
+                                                &rollts_manager->cur_block_data_num, sizeof(uint32_t));                                       
+        }  
         else
         {
-            valid_num++;
+            log_alt("data_num is not -1,you need to check it");
         }
-        if(valid_num >= start_num && valid_num <= end_num)
-        {
-            memset(data, 0, SINGLE_ROLLTS_MAX_SIZE);
-            if(false == rolldb_flash_ops.read_data(read_addr + sizeof(rollts_log_t), data, (log.len-sizeof(rollts_log_t)))) // 从 Flash 中读取日志数据
-            {
-                task_resume();
-                return false;
-            }
-            // 调用回调函数处理日志数据
-            if (!cb(data, (log.len-sizeof(rollts_log_t)))) break; // 如果回调函数返回 false，则停止读取
-            read_num++;
-        }
-        read_addr = log.addr_offset; // 更新读取地址
-        log_count++; // 增加日志计数器
-
-        // 如果读取量达到，停止读取
-        if (read_num >= end_num - start_num + 1) break;
-        // 如果日志计数器超过总日志数量，停止读取
-        if (log_count >= sys_handle->log_num) break;
+        // test
+        // { 
+        //     block_info_t pre_block_info;
+        //     memset(&pre_block_info , 0xFF, sizeof(block_info_t));
+        //     rollts_manager->flash_ops.read_data(rollts_manager->mem_tab.pre_addr,  &pre_block_info, sizeof(block_info_t));
+        //     log_debug("writting pre_block_info:last_data_addr :0x%x",pre_block_info.last_data_addr);
+        //     log_debug("writting pre_block_info:data_num       :0x%x",pre_block_info.data_num);
+        // }
+        return false;
     }
-    task_resume();
-    return true;
 }
-
-// 当前日志数
-uint32_t rollts_num(rollts_sys_t *sys_handle) 
+/* function-------------------------------------------------------------------*/
+/**
+ * @func: 添加数据
+ */
+bool rollts_add(rollts_manager_t *rollts_manager, uint8_t *data, uint32_t payload_len)
 {
-    if (!sys_handle) return 0; // 如果句柄为空，直接返回 0
-    if (VALID_MAGIC != sys_handle->magic_valid) return 0; // 如果系统分区无效，直接返回 
-    return sys_handle->log_num; // 返回日志数量
-}
-
-// 当前剩余容量 返回百分比
-uint32_t rollts_capacity(rollts_sys_t *sys_handle) 
-{
-    if (!sys_handle) return 0; // 如果句柄为空，直接返回 0
-    if (VALID_MAGIC != sys_handle->magic_valid) return 0; // 如果系统分区无效，直接返回 
-    // 通过查询sys_handle 结构体中的 log_sector_status，计算当前容量
-    uint32_t capacity = 0;
-    for (int i = 0; i < LOG_SECTOR_NUM; i++) 
-    {
-        if (sys_handle->log_sector_status[i] == SECTOR_EMPTY) 
-        {
-            capacity++; // 如果当前扇区为空，则计数
-        }   
-    }
-    return (capacity * 100) / LOG_SECTOR_NUM; // 返回当前容量百分比
-}
-
-// 当前剩余容量大小 返回字节数
-uint32_t rollts_capacity_size(rollts_sys_t *sys_handle) 
-{
-    if (!sys_handle) return 0; // 如果句柄为空，直接返回 0
-    if (VALID_MAGIC != sys_handle->magic_valid) return 0; // 如果系统分区无效，直接返回 
-    // 通过查询sys_handle 结构体中的 log_sector_status，计算当前容量
-    uint32_t capacity = 0;
-    for (int i = 0; i < LOG_SECTOR_NUM; i++) 
-    {
-        if (sys_handle->log_sector_status[i] == SECTOR_EMPTY) 
-        {
-            capacity += SINGLE_SECTOR_SIZE; // 如果当前扇区为空，则计数
-        }   
-    }
-    return capacity; // 返回当前容量大小
-}
-
-// 添加日志修复功能
-bool rollts_repair_logs(rollts_sys_t *sys_handle,rollts_log_t *log_handle)
-{
-    log_info("rollts_repair_logs start...");
-    if (!sys_handle || !log_handle) return false; // 如果参数无效，直接返回
-    task_suspend();
-    rollts_log_t log; // 定义日志头结构
-    // 修复结果
-    uint32_t repair_log_num_record = 0;
-    uint32_t repair_log_start_addr = LOG_SECTOR_START_ADDR;
-    uint32_t repair_log_end_addr = LOG_SECTOR_START_ADDR;
-    uint32_t repair_current_sector = 0;
-
-    uint32_t loop_addr = LOG_SECTOR_START_ADDR; // 循环地址
-    uint32_t current_sector = 0; // 当前扇区索引
-    uint32_t count_number = 0;
-    uint8_t get_first_valid = 0;
-    do
-    {
-        if(false == rolldb_flash_ops.read_data(loop_addr, (uint8_t *)&log, sizeof(rollts_log_t))) // 从 Flash 中读取日志头
-        {
-            task_resume();
-            return false;
-        }
-
-        // 检查日志是否有效
-        if (VALID_MAGIC == log.magic_valid) 
-        {
-            if(0 == get_first_valid)
-            {
-                count_number = log.number; // 记录第一个有效日志的数量
-                get_first_valid = 1;
-            }
-            else
-            {
-                if(1 == get_first_valid)
-                {
-                    if(log.number - count_number != 1)
-                    {
-                        //检测到日志号断点，更新日志起始结束地址
-                        repair_log_start_addr = loop_addr; // 更新修复日志起始地址
-                        repair_current_sector = current_sector; // 当前系统分区地址偏移
-                        get_first_valid = 2;
-                        log_info("log number is not continuous, repair log start addr is :0x%x!", repair_log_start_addr); // 输出日志起始地址
-                    }
-                    else
-                    {
-                        // 检测到日志号连续，更新日志结束地址
-                        repair_log_end_addr = log.addr_offset; // 更新修复日志结束地址
-                        count_number = log.number; 
-
-                    }
-
-                }
-            }
-
-            if(log.addr_offset / SINGLE_SECTOR_SIZE - SYSINFO_SIZE   != current_sector)
-            {
-                //地址偏移在当前扇区内
-                sys_handle->log_sector_status[current_sector] = SECTOR_WRITTING; 
-            }
-            else
-            {
-                //地址偏移出当前扇区
-                sys_handle->log_sector_status[current_sector] = SECTOR_FULL; 
-            }
-
-            repair_log_num_record++; // 记录修复日志数量
-            loop_addr = log.addr_offset; // 更新读取地址
-
-        }   
-        else
-        {
-            if(0xFFFFFFFF == log.magic_valid)
-            {
-                if(0 == loop_addr%SINGLE_SECTOR_SIZE)// 如果地址在扇区头部
-                {
-                    sys_handle->log_sector_status[current_sector] = SECTOR_EMPTY; 
-                    if(current_sector > 0)
-                    {
-                        sys_handle->log_sector_status[current_sector - 1] = SECTOR_FULL; 
-                    }
-
-                }
-                else
-                {
-                    sys_handle->log_sector_status[current_sector] = SECTOR_WRITTING; 
-                }
-
-            }
-            else
-            {
-                sys_handle->log_sector_status[current_sector] = SECTOR_FULL; // 如果日志头不为全F，则标记当前扇区为满
-            }
-            // 跳转到下一个扇区的起始地址
-            current_sector = (loop_addr - LOG_SECTOR_START_ADDR) / SINGLE_SECTOR_SIZE;
-            log_debug("invalid log block, try next sector! 0x%x",current_sector); // 调试输出日志无效
-            if (current_sector + 1 < LOG_SECTOR_NUM) 
-            {
-                loop_addr = LOG_SECTOR_START_ADDR + (current_sector + 1) * SINGLE_SECTOR_SIZE;
-            } 
-            else 
-            {
-                log_debug("last sector! break."); // 调试输出最后一个扇区
-                break; // 如果已经是最后一个扇区，退出循环
-            }
-        }
-
-    }while(loop_addr <= (LOG_SECTOR_START_ADDR + LOG_SECTOR_NUM * SINGLE_SECTOR_SIZE - sizeof(rollts_log_t))); // 遍历所有日志
-
-    // 擦除系统分区
-    for(uint32_t i = 0; i < SYSINFO_NUM; i++) 
-    { 
-        if(false == rolldb_flash_ops.erase_sector(SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE)) // 擦除当前扇区
-        {
-            return false;
-        }
-        else
-        {
-            log_info(" Sysinfo Sector erase  at : 0x%x ", (SYSINFO_START_ADDR + i * SINGLE_SECTOR_SIZE));
-        }
-    }
-    sys_handle->magic_valid = VALID_MAGIC; // 设置系统分区有效标志
-    sys_handle->sys_info_len = sizeof(rollts_sys_t); // 设置系统分区数据长度
-    sys_handle->sys_addr_current_sector = SYSINFO_START_ADDR; // 当前系统分区地址偏移
-    sys_handle->sys_addr_offset = SYSINFO_START_ADDR + sizeof(rollts_sys_t);
-    sys_handle->sys_size = SYSINFO_SIZE;    // 设置系统分区大小
-    sys_handle->log_size = LOG_SECTOR_SIZE; // 设置日志分区大小
-
-    sys_handle->log_data_start = repair_log_start_addr; // 初始化日志起始地址
-    sys_handle->log_data_end = repair_log_end_addr; // 初始化日志结束地址
-    sys_handle->log_num = repair_log_num_record; // 初始化日志数量
-    sys_handle->log_current_sector = repair_current_sector; // 初始化当前写入扇区为第一个扇区
-    sys_handle->log_action_num = count_number;
-    log_info("repair log num is :%d!", repair_log_num_record); // 输出修复日志数量
-    log_info("repair log start addr is :0x%x!", repair_log_start_addr); // 输出修复日志起始地址
-    log_info("repair log end addr is :0x%x!", repair_log_end_addr); // 输出修复日志结束地址
-    log_info("log_action_num:%d", sys_handle->log_action_num); // 输出日志数量
-    if(false == rolldb_flash_ops.write_data(SYSINFO_START_ADDR, sys_handle, sizeof(rollts_sys_t))) // 将初始化后的系统分区数据写入 Flash
+    if(MAGIC_VALID != rollts_manager->is_init)
     {
         return false;
     }
-    task_resume();
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    // 数据帧总长计算
+    uint32_t data_frame_len = sizeof(rollts_data_t) + payload_len;
+    // 检查数据长度是否超过单个块数据上限大小 冗余4字节
+    if(data_frame_len >= rollts_manager->sys_info.single_block_size - sizeof(block_info_t) - 4)
+    {
+        log_alt(" rollts_add: (data_frame_len :%d, you need to split data less than %d",
+                    data_frame_len,rollts_manager->sys_info.single_block_size - sizeof(block_info_t) - 4);
+#ifdef RTOS_MUTEX_ENABLE
+        rollts_manager->flash_ops.mutex_unlock();
+#endif
+        return false;
+    }
+    // 查找当前最后日志位置
+    if(false == find_the_last_position_and_calc(rollts_manager,data_frame_len,payload_len))
+    {
+        // 空间不足，切换日志块
+        head_block_move(rollts_manager);
+        // 切换完成 rollts_data已置为首个位置
+
+        rollts_manager->last_valid_data_addr = rollts_manager->rollts_data.cur_addr; // 更新最后有效数据块
+        rollts_manager->cur_block_data_num = 0;
+        if(false == find_the_last_position_and_calc(rollts_manager,data_frame_len,payload_len))
+        {
+            log_error(" rollts_add: something wrong when find_the_last_position_and_calc");
+#ifdef RTOS_MUTEX_ENABLE
+            rollts_manager->flash_ops.mutex_unlock();
+#endif
+            return false;
+        }
+    }
+
+    // 空间足够写入当前数据
+    // WAL机制
+    // 1.写入magic + offset + 数据len
+    rollts_manager->flash_ops.write_data(rollts_manager->rollts_data.cur_addr,&rollts_manager->rollts_data,sizeof(rollts_data_t));
+    // 2.写入数据
+    rollts_manager->flash_ops.write_data(rollts_manager->rollts_data.cur_addr + sizeof(rollts_data_t),data,payload_len);
+    // test
+    // {
+    //     uint8_t data_test[110] = {0};
+    //     memset(data_test,0x00,sizeof(data));
+    //     rollts_manager->flash_ops.read_data(rollts_manager->rollts_data.cur_addr + sizeof(rollts_data_t), 
+    //                                         &data_test, 100);
+    // }
+    // 3.更新数据信息
+    rollts_manager->rollts_data.pre_addr = rollts_manager->rollts_data.cur_addr;
+    rollts_manager->rollts_data.cur_addr = rollts_manager->rollts_data.next_addr;
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
     return true;
+}
+
+
+/**
+ * @func: 获取总日志条数
+ *
+ */
+int32_t rollts_get_total_record_number(rollts_manager_t *rollts_manager)
+{
+    if (MAGIC_VALID != rollts_manager->is_init) 
+    {
+        return -1;
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    int32_t total = 0;
+
+    /* 当前写入 block(pre_addr)始终参与计数 */
+    total += rollts_manager->cur_block_data_num;
+
+    /* 满的 block：从 pre 的上一个 block 逆向遍历到 oldest_block 的上一个 */
+    uint32_t cur_block = get_pre_block(rollts_manager, rollts_manager->mem_tab.pre_addr); /* 刚满的那个 block */
+
+    while (cur_block != get_oldest_block(rollts_manager)) 
+    {
+        int32_t num = -1;
+        rollts_manager->flash_ops.read_data(cur_block + offsetof(block_info_t, data_num),
+                                            &num, sizeof(num));
+
+        if (num >= 0)
+        {
+            total += num;
+        }
+        cur_block = get_pre_block(rollts_manager, cur_block);
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
+    return total;
+}
+
+/**
+ * @func:整体读取所有日志
+ */
+bool rollts_get_all(rollts_manager_t *rollts_manager, uint8_t *data, uint32_t max_payload_len,rollTscb cb)
+{
+    if (MAGIC_VALID != rollts_manager->is_init) 
+    {
+        return false;
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    rollts_data_t tmp;
+    /* 最旧 block = head_backup 的下一个 */
+    uint32_t current_block_addr = get_oldest_block(rollts_manager);  
+
+    /* 循环直到遇到 head */
+    while (current_block_addr != rollts_manager->mem_tab.head_addr) 
+    {
+        uint32_t data_addr = current_block_addr + sizeof(block_info_t);
+
+        /* 正向遍历当前 block 的链表 */
+        while (data_addr + sizeof(rollts_data_t) <= current_block_addr + rollts_manager->sys_info.single_block_size) 
+        {
+            rollts_manager->flash_ops.read_data(data_addr, &tmp, sizeof(rollts_data_t));
+
+            if (tmp.magic_valid != MAGIC_DATA_VALID) 
+            {
+                break;   /* 本 block 数据结束 */
+            }
+
+            uint32_t copy_len = (tmp.payload_len <= max_payload_len) ? tmp.payload_len : max_payload_len;
+
+            rollts_manager->flash_ops.read_data(data_addr + sizeof(rollts_data_t),
+                                                data, copy_len);
+            cb(data,copy_len);
+            // test
+            // data[copy_len - 1] = '\0';
+            // log_info("%s", (char*)data);
+
+            data_addr = tmp.next_addr;
+        }
+
+        /* 下一个 block */
+        current_block_addr = get_next_block(rollts_manager, current_block_addr);
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
+    return true;
+}
+
+/**
+ * @func:选择性读取从旧到新编号，1=最旧，total=最新
+ */
+bool rollts_read_pick(rollts_manager_t *rollts_manager,
+                      uint32_t start_num, 
+                      uint32_t end_num,
+                      uint8_t *data, 
+                      uint32_t max_payload_len,
+                      rollTscb cb)
+{
+    if (MAGIC_VALID != rollts_manager->is_init || start_num == 0 || start_num > end_num) 
+    {
+        return false;
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    rollts_data_t tmp;
+    uint32_t block_addr = get_oldest_block(rollts_manager);
+    uint32_t current_number = 0;
+    bool found_any = false;
+
+    while (block_addr != rollts_manager->mem_tab.head_addr) 
+    {
+        uint32_t data_addr = block_addr + sizeof(block_info_t);
+
+        /* 内层遍历当前 block 的链表 */
+        while (data_addr + sizeof(rollts_data_t) <= block_addr + rollts_manager->sys_info.single_block_size) 
+        {
+            rollts_manager->flash_ops.read_data(data_addr, &tmp, sizeof(rollts_data_t));
+
+            if (tmp.magic_valid != MAGIC_DATA_VALID) 
+            {
+                break;  /* 本 block 数据结束，跳出内层循环，继续下一个 block */
+            }
+
+            current_number++;
+
+            if (current_number >= start_num && current_number <= end_num) 
+            {
+                uint32_t copy_len = (tmp.payload_len <= max_payload_len) ? tmp.payload_len : max_payload_len;
+                rollts_manager->flash_ops.read_data(data_addr + sizeof(rollts_data_t), data, copy_len);
+
+                found_any = true;
+                cb(data,copy_len);
+                // test
+                // data[copy_len - 1] = '\0';
+                // log_info("[PICK %lu] %s", current_number, (char*)data);
+            }
+
+            /* 如果已经超过所需范围，可以提前结束整个遍历(优化) */
+            if (current_number >= end_num) 
+            {
+#ifdef RTOS_MUTEX_ENABLE
+                rollts_manager->flash_ops.mutex_unlock();
+#endif
+                return true;
+            }
+
+            data_addr = tmp.next_addr;
+        }
+
+        /* 跳到下一个 block(顺时针) */
+        block_addr = get_next_block(rollts_manager, block_addr);
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
+    return found_any;
+}
+
+/**
+ * @brief 日志使用容量 百分比
+ */
+uint8_t rollts_capacity(rollts_manager_t *rollts_manager)
+{
+
+    if (MAGIC_VALID != rollts_manager->is_init) 
+    {
+        return false;
+    }
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    uint8_t percent = 0;
+    uint32_t used_sectors = 0;
+    uint32_t block_addr = get_oldest_block(rollts_manager);
+
+    while (block_addr != rollts_manager->mem_tab.head_addr) 
+    {
+        if (block_addr == rollts_manager->mem_tab.pre_addr) 
+        {
+            if (rollts_manager->cur_block_data_num > 0) 
+            {
+                used_sectors++;
+            }
+
+        } 
+        else 
+        {
+            int32_t num = 0;
+            rollts_manager->flash_ops.read_data(block_addr + offsetof(block_info_t, data_num),
+                                                &num, sizeof(num));
+            if (num > 0) 
+            {
+                used_sectors++;
+            }
+        }
+        block_addr = get_next_block(rollts_manager, block_addr);
+    }
+
+    uint32_t total = rollts_manager->sys_info.rollts_max_block_num - 3;
+    percent = total ? (used_sectors * 100 + total / 2) / total : 0;  // 四舍五入算法
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
+    return (100 - percent);
+}
+
+
+uint32_t rollts_capacity_size(rollts_manager_t *rollts_manager)
+{
+    return (rollts_manager->sys_info.rollts_max_block_num * rollts_manager->sys_info.single_block_size - 1) /1024;
+}
+
+/**
+ * @func: 初始化 rollts
+ */
+int rollts_init(rollts_manager_t *rollts_manager)
+{
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    int ret = -1;
+    if(check_if_rollts_size_aligned())
+    {
+        if(check_if_sys_aligned(rollts_manager))
+        {
+            ret = 0;
+        }
+        else
+        {
+            rollts_manager_print(rollts_manager);
+            //重新初始化数据库
+            log_info(" rollTs invalid! reinit...");
+            rollts_manager_init(rollts_manager);
+            ret = rollts_format(rollts_manager);
+        }
+    }
+    //打印 rollts_manager信息
+    rollts_manager_print(rollts_manager);
+    if(0 == rollts_mem_tab_init(rollts_manager))
+    {
+        rollts_manager->is_init = MAGIC_VALID;
+    }
+    memset(&rollts_manager->rollts_data,0,sizeof(rollts_data_t));
+    //初始化当前块数据数量
+    data_block_loop(rollts_manager);
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
+    return ret;
+}
+
+/**
+ * @func: 清除所有日志数据
+ */
+bool rollts_clear(rollts_manager_t *rollts_manager)
+{
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_lock();
+#endif
+    int ret = -1;
+    rollts_manager_print(rollts_manager);
+    //重新初始化数据库
+    log_debug(" rollTs invalid! reinit...");
+    rollts_manager_init(rollts_manager);
+    ret = rollts_format(rollts_manager);
+    //打印 rollts_manager信息
+    rollts_manager_print(rollts_manager);
+    if(0 == rollts_mem_tab_init(rollts_manager))
+    {
+        rollts_manager->is_init = MAGIC_VALID;
+    }
+    memset(&rollts_manager->rollts_data,0,sizeof(rollts_data_t));
+    //初始化当前块数据数量
+    data_block_loop(rollts_manager);
+#ifdef RTOS_MUTEX_ENABLE
+    rollts_manager->flash_ops.mutex_unlock();
+#endif
+    return ret;
 }

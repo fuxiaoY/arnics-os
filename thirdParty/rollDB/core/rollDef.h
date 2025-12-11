@@ -16,6 +16,8 @@ extern "C" {
 
 #define ROLLDB_LOG_INFO_ENABLE 
 
+#define ROLLDB_LOG_ALT_ENABLE 
+
 // #define ROLLDB_LOG_DEBUG_ENABLE
 
 
@@ -43,6 +45,17 @@ extern "C" {
 #else
 #define log_info(...)
 #endif
+
+// alt level log 
+#ifdef  log_alt
+#undef  log_alt
+#endif
+#ifdef ROLLDB_LOG_ALT_ENABLE
+#define log_alt(...)                     ROLLDB_PRINTF("ROLLDB[ALT]:(%s:%d) ", __func__, __LINE__);ROLLDB_PRINTF(__VA_ARGS__);ROLLDB_PRINTF("\r\n")
+#else
+#define log_alt(...)
+#endif
+
 
 // error level log 
 #ifdef  log_error
