@@ -20,7 +20,7 @@ English Documentation | [中文文档](README.md)
 
 This architecture brings exceptional **modularity, pluggability, and maintainability**. Whether running on bare-metal, an RTOS (like FreeRTOS), or a high-level OS (Linux/Windows), it provides a consistent development experience.
 
-![Bionic Social Model](document/picture/arnics.png)
+![Bionic Social Model](arnics-os/document/picture/arnics.png)
 
 ## 2. Core Architecture Design
 

@@ -20,7 +20,7 @@ ________________________________________________
 
 这种架构带来了极高的**模块化、可插拔性和易维护性**，无论是裸机 (Bare-metal)、RTOS (如 FreeRTOS)，还是高级系统 (Linux/Windows)，都能提供一致的开发体验。
 
-![社会仿生模型](document/picture/arnics.png)
+![社会仿生模型](arnics-os/document/picture/arnics.png)
 
 ## 2. 核心架构设计 (Architecture Design)
 
