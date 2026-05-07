@@ -1,0 +1,89 @@
+# arnicsCore：一张表，驱动整个系统
+
+arnicsCore 是一个极轻量的“表驱动执行内核”。你把系统能力写进一张函数表里，运行时再按规则去查表并执行。
+
+源码入口：
+- 核心接口与宏： [arnicsCore.h](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.h)
+- 核心实现： [arnicsCore.c](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.c)
+
+## 你能用它做什么
+
+- 把“初始化链”变成可扩展的注册表：谁要参与启动，直接加一条表项
+- 把“命令/功能分发”从 if/else、switch 中解放出来：新增功能不改分发器
+- 把模块化做成约定：按部门（tag）组织能力，天然可插拔
+- 用一套统一入口覆盖不同平台与业务：同一套调用方式，换表就换行为
+
+## 核心思想
+
+
+### 1) 注册表（Registry Table）
+
+把系统能力描述成一条条“可执行条目”。每条条目最重要的四个信息是：
+- department：能力属于哪个域/部门（例如 `INIT_TAG`、`MEDIA_TAG` 等，见 [ProjDefine.h](file:///d:/Code/arnics-os-max/arnics-os/Inc/projDefine.h)）
+- name：这条能力的名字（用于精确点名调用）
+- level：等级/阶段（用于分层触发、分阶段初始化）
+- func：真正执行的回调（带一个通用参数 `argv`，让调用方能透传上下文）
+
+### 2) 分发器（Dispatcher）
+
+分发器只做三件事：
+- 按 department 执行：同一部门的条目批量触发
+- 按 name 执行：点名触发某一条
+- 按 level 执行：按阶段触发某一条
+
+你可以把它理解成一个“极简插件系统”：插件就是表项，插件管理就是查表执行。
+
+## 最常见的用法：把系统启动做成“初始化注册表”
+
+仓库里的默认启动入口是 [arnics_core_init](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.c#L98-L102)：
+
+- 执行 `INIT_TAG`（即 `"init"`）部门的所有条目
+- 打印 Logo 与版本号（见 [logo_print](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.c#L3-L13)）
+
+这套模式的价值在于：启动顺序与参与者从“写死的调用链”变成“可扩展的清单”。
+
+## 用户如何接入（推荐流程）
+
+只需要三步，优先把注意力放在“怎么组织能力”，而不是怎么写分发代码。
+
+### 第一步：给你的模块选一个 department
+
+用项目已经定义好的 tag（见 [ProjDefine.h](file:///d:/Code/arnics-os-max/arnics-os/Inc/projDefine.h)），例如：
+- `INIT_TAG`：启动初始化
+- `MEDIA_TAG`：媒体相关
+- `DEVICES_TAG`：设备相关
+
+### 第二步：把能力注册成表项
+
+在一个集中位置维护“注册清单”（建议按模块拆分为多个 registry，再汇总成一个表）。arnicsCore 支持用 X-macro 把清单写成一处，然后自动生成表与句柄（宏定义在 [arnicsCore.h](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.h)）。
+
+只要确保每条表项明确回答这四个问题：
+- 这是谁的能力（department）？
+- 叫什么（name）？
+- 属于哪个阶段（level）？
+- 执行入口是什么（func）？
+
+### 第三步：在业务侧按“规则”调用
+
+你可以选择三种触发方式（按你的产品形态选）：
+- 运行一组能力：按 department 批量执行（适合 init、一次性任务、模块启动）
+- 运行一个能力：按 name 精确执行（适合 console 命令、RPC、事件回调）
+- 运行一个阶段：按 level 执行（适合“分阶段初始化/升级/自检”）
+
+## 典型应用场景
+
+### 场景 A：模块化初始化（强推荐）
+
+- 每个模块注册自己的 init 条目
+- 核心只负责执行 `INIT_TAG`，不用关心模块数量和调用顺序的细节
+- 新增模块不改核心，只加表项
+
+### 场景 B：控制台/命令系统
+
+- 每条命令是一条表项：department 用 `CONSOLE_TAG`，name 就是命令名
+- 分发器统一处理命令查找与执行
+
+### 场景 C：可插拔功能与编译裁剪
+
+- 某些功能是否启用由“是否把表项编进来”决定
+- 在 MCU/Win/Linux 等多平台上用同一套接口，换表即可
