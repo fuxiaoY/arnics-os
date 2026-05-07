@@ -29,12 +29,12 @@ The architecture of `arnics-os` is divided into the following layers from bottom
 ### 2.1 Driver Framework
 - **Unix-like Device Model**: Provides unified `open`, `close`, `read`, `write`, `ctl` interfaces.
 - **Hardware Decoupling**: Separation of the BSP layer from the driver abstraction layer makes application code completely hardware-independent.
-- [Learn more about the Driver Framework](drivers/drivers.en.md)
+- [Learn more about the Driver Framework](arnics-os/drivers/drivers.en.md)
 
 ### 2.2 Core Kernel (arnicsCore)
 - **Table-Driven Execution Kernel**: The system is no longer flooded with `if/else` or `switch/case`. All capabilities (initialization, command distribution, module functions) are registered in a function table.
 - **Dispatcher**: Accurately executes system capabilities based on `Department`, `Name`, and `Level`.
-- [Learn more about the Core Kernel](core/arnicsCore.md)
+- [Learn more about the Core Kernel](arnics-os/core/arnicsCore.md)
 
 ### 2.3 OS Abstraction Layer (OSAL / rtosInterface)
 - **Unified Interfaces**: Smooths out differences between operating systems (thread creation, delay, queues, mutexes).
@@ -43,14 +43,14 @@ The architecture of `arnics-os` is divided into the following layers from bottom
 ### 2.4 Data Platform
 - **Public/Private Separation**: Unified parameters, configuration, and state management with data isolation between modules.
 - **Persistent Storage**: Flash persistence mechanism with built-in CRC validation to ensure data security after power loss.
-- [Learn more about the Data Platform](dataPlat/dataPlat.en.md)
+- [Learn more about the Data Platform](arnics-os/dataPlat/dataPlat.en.md)
 
 ### 2.5 Department Abstraction
 System functions are materialized into four core departments:
-- **Event Center**: Acts as the scheduling hub, using an "employee model" (hired, internal, external employees) to allocate and process system events. [Details](dePartment/centerEvent/centerEvent.en.md)
-- **Decision Layer (Center Business)**: Handles core decision logic, focusing on product-specific feature implementation. [Details](dePartment/centerBusiness/centerBusiness.md)
-- **Media Center**: Responsible for all Human-Machine Interaction (HMI), UI display, audio prompts, and multimedia strategies. [Details](dePartment/centerMedia/centerMedia.md)
-- **Guard Center**: Manages the system watchdog, exception monitoring, error recovery, and audit logs. [Details](dePartment/centerGuard/centerGuard.md)
+- **Event Center**: Acts as the scheduling hub, using an "employee model" (hired, internal, external employees) to allocate and process system events. [Details](arnics-os/dePartment/centerEvent/centerEvent.en.md)
+- **Decision Layer (Center Business)**: Handles core decision logic, focusing on product-specific feature implementation. [Details](arnics-os/dePartment/centerBusiness/centerBusiness.md)
+- **Media Center**: Responsible for all Human-Machine Interaction (HMI), UI display, audio prompts, and multimedia strategies. [Details](arnics-os/dePartment/centerMedia/centerMedia.md)
+- **Guard Center**: Manages the system watchdog, exception monitoring, error recovery, and audit logs. [Details](arnics-os/dePartment/centerGuard/centerGuard.md)
 
 ## 3. Directory Structure
 

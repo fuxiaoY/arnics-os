@@ -29,12 +29,12 @@ ________________________________________________
 ### 2.1 驱动框架 (Driver Framework)
 - **类 Unix 设备模型**：提供统一的 `open`, `close`, `read`, `write`, `ctl` 接口。
 - **硬件解耦**：BSP 层与驱动抽象层分离，使应用层代码完全与硬件无关。
-- [了解更多驱动框架细节](drivers/drivers.md)
+- [了解更多驱动框架细节](arnics-os/drivers/drivers.md)
 
 ### 2.2 核心内核 (arnicsCore)
 - **表驱动执行内核**：系统不再充斥着海量的 `if/else` 或 `switch/case`，所有能力（初始化、命令分发、模块功能）都被注册为一张函数表。
 - **分发器 (Dispatcher)**：基于 `Department (部门)`、`Name (名称)`、`Level (层级)` 精确执行系统能力。
-- [了解内核设计](core/arnicsCore.md)
+- [了解内核设计](arnics-os/core/arnicsCore.md)
 
 ### 2.3 操作系统抽象层 (OSAL / rtosInterface)
 - **统一接口**：抹平不同操作系统之间的差异（线程创建、延迟、队列、互斥锁）。
@@ -43,14 +43,14 @@ ________________________________________________
 ### 2.4 数据管理平台 (Data Platform)
 - **公私有分离**：统一的参数、配置、状态管理，模块间数据隔离。
 - **持久化存储**：自带 CRC 校验的 Flash 持久化机制，确保掉电数据安全。
-- [了解数据平台细节](dataPlat/dataPlat.md)
+- [了解数据平台细节](arnics-os/dataPlat/dataPlat.md)
 
 ### 2.5 部门抽象 (Departments)
 系统功能被具象化为四大核心部门：
-- **事件中心 (Center Event)**：作为调度枢纽，采用“员工模型（雇佣工、内部员工、外部员工）”分配和处理系统事件。[查看详情](dePartment/centerEvent/centerEvent.md)
-- **决策层 (Center Business)**：处理核心决策与业务逻辑，专注于产品特定功能的实现。[查看详情](dePartment/centerBusiness/centerBusiness.md)
-- **媒体中心 (Center Media)**：负责所有对外的人机交互（HMI）、UI 显示、音频提示与多媒体策略。[查看详情](dePartment/centerMedia/centerMedia.md)
-- **督察中心 (Center Guard)**：负责系统看门狗、异常监控、错误恢复与日志审计。[查看详情](dePartment/centerGuard/centerGuard.md)
+- **事件中心 (Center Event)**：作为调度枢纽，采用“员工模型（雇佣工、内部员工、外部员工）”分配和处理系统事件。[查看详情](arnics-os/dePartment/centerEvent/centerEvent.md)
+- **决策层 (Center Business)**：处理核心决策与业务逻辑，专注于产品特定功能的实现。[查看详情](arnics-os/dePartment/centerBusiness/centerBusiness.md)
+- **媒体中心 (Center Media)**：负责所有对外的人机交互（HMI）、UI 显示、音频提示与多媒体策略。[查看详情](arnics-os/dePartment/centerMedia/centerMedia.md)
+- **督察中心 (Center Guard)**：负责系统看门狗、异常监控、错误恢复与日志审计。[查看详情](arnics-os/dePartment/centerGuard/centerGuard.md)
 
 ## 3. 目录结构 (Directory Structure)
 
