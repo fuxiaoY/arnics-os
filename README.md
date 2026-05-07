@@ -85,14 +85,16 @@ arnics-os/
 #include "core/arnicsCore.h"
 
 int main(void) {
-    // 1. 硬件级底层初始化
-    bsp_early_init();
-    
-    // 2. 执行所有注册到 INIT_TAG 的初始化能力
+
+    // 1. 执行所有注册到 INIT_TAG 的初始化能力
     arnics_core_init();
     
-    // 3. 启动 OS 调度器 (或进入裸机主循环)
-    rtos_start_scheduler();
+    // 2. 启动 OS 调度
+    arnics_task_init();
+
+    while(1);
+
+    return 0;
 }
 ```
 

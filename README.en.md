@@ -85,14 +85,16 @@ System startup is extremely simple. Thanks to the table-driven kernel, you only 
 #include "core/arnicsCore.h"
 
 int main(void) {
-    // 1. Hardware-level low-level initialization
-    bsp_early_init();
     
-    // 2. Execute all initialization capabilities registered under INIT_TAG
+    // 1. Execute all initialization capabilities registered under INIT_TAG
     arnics_core_init();
     
-    // 3. Start the OS scheduler (or enter the bare-metal main loop)
-    rtos_start_scheduler();
+    // 2. Start the OS scheduler (or enter the bare-metal main loop)
+    arnics_task_init();
+    
+    while(1);
+    
+    return 0;
 }
 ```
 
