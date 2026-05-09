@@ -16,6 +16,9 @@ int main()
 {
     arnics_core_init();
 	arnics_task_init();
-	while (1);
+	while (1)
+    {
+        rtosThreadDelay(1000);
+    }
 	return 0;
 }

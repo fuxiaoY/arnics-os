@@ -48,7 +48,10 @@ extern "C" {
 
 // X-Macro 表
 #define REGISTER_ENTRIES \
-    X(NULL, EVENT_EXTERNAL_EMPLOY, false) 
+    X(NULL, EVENT_EXTERNAL_EMPLOY, false) \
+    X(led0_toggle, EVENT_INTERNAL_EMPLOY, false) \
+    X(led1_action, EVENT_EXTERNAL_EMPLOY, false) 
+    
 
 
 #define HIRD_EMPLOY_STATIC_REFERENCE \
