@@ -1,5 +1,4 @@
-﻿// arnics-os.cpp: 定义应用程序的入口点。
-//
+﻿// example for arnics-os.
 
 #include "Inc/include.h"
 #include "Inc/typedef.h"
