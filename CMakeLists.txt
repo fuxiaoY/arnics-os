@@ -120,4 +120,8 @@ if (MSVC)
   target_compile_options(arnics-os PRIVATE /utf-8)
 endif()
 
+if (UNIX)
+  target_link_libraries(arnics-os PRIVATE m)
+endif()
+
 # TODO: 如有需要，请添加测试并安装目标。
