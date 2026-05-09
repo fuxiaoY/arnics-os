@@ -83,7 +83,7 @@ void StartEventTask(void const *argument)
 
   while (1)
   {
-    //event_process();
+    event_process();
     rtosThreadDelay(100);
   }
 
