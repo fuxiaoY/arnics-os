@@ -1,7 +1,7 @@
 #ifndef SOFT_MUTEX_H
 #define SOFT_MUTEX_H 
 #include "Inc/typedef.h"
-#include "Inc/ProjDefine.h"
+#include "Inc/projDefine.h"
 
 #ifdef __cplusplus
 extern "C" {
