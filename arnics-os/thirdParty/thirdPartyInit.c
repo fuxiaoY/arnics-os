@@ -22,7 +22,7 @@ void unity_test(void)
 void thirdPartyInit(void)
 {
    ts_init();
-   uflog_init(UFLOG_LEVEL_ALL,UFLOG_SHOW_FULL);
+   uflog_init(UFLOG_LEVEL_NORMAL,UFLOG_SHOW_FULL);
 
    unity_test();
 }

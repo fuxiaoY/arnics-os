@@ -36,7 +36,6 @@ void business_init()
 
     while(1)
     {        
-         UFLOG_INF("business tick!");
          rtosThreadDelay(1000);
     }
 

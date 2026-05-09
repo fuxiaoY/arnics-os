@@ -9,14 +9,3 @@
 #endif
 
 
-void led0_toggle(void *argv)
-{
-    UFLOG_ALW("led0_toggle trigger");
-    rtosThreadDelay(1000);
-}
-
-void led1_action(void *argv)
-{
-    UFLOG_ALW("led1_action trigger");
-}
-
