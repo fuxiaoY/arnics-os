@@ -82,19 +82,27 @@ arnics-os/
 System startup is extremely simple. Thanks to the table-driven kernel, you only need to call:
 
 ```c
-#include "core/arnicsCore.h"
+#include "Inc/include.h"
 
-int main(void) {
-    
-    // 1. Execute all initialization capabilities registered under INIT_TAG
-    arnics_core_init();
-    
-    // 2. Start the OS scheduler (or enter the bare-metal main loop)
-    arnics_task_init();
-    
-    while(1);
-    
-    return 0;
+#define ARNICS_GLOBAL_REGISTRY(X)                                     \
+    X("peripheralInit", peripheralInit, INIT_TAG, 1)                  \
+    X("preLoadInit",       preLoadInit, INIT_TAG, 1)                  \
+    X("deviceInit",         deviceInit, INIT_TAG, 1)
+
+
+ARNICS_KERNEL_DECLARE_AND_BUILD_TABLE(arnics_init, ARNICS_GLOBAL_REGISTRY);
+
+int main()
+{
+    // 1. 执行所有注册到 INIT_TAG 的初始化能力
+  arnics_core_init();
+  // 2. 启动 OS 调度
+	arnics_task_init();
+	while (1)
+    {
+        rtosThreadDelay(1000);
+    }
+	return 0;
 }
 ```
 

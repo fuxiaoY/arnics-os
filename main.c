@@ -1,7 +1,6 @@
 ﻿// example for arnics-os.
 
 #include "Inc/include.h"
-#include "Inc/typedef.h"
 
 #define ARNICS_GLOBAL_REGISTRY(X)                                     \
     X("peripheralInit", peripheralInit, INIT_TAG, 1)                  \
