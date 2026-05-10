@@ -61,6 +61,15 @@ set(ARNICS_OS_EXCLUDE_DIRS
 #  "${PROJECT_SOURCE_DIR}/arnics-os/rtosInterface/win"
 )
 
+
+#
+# =========================
+# 4) 可选：自动搜集源文件（更省事，但不如显式稳定）
+# =========================
+#
+# 如果你不想每次新增 .c 都手动加到 ARNICS_OS_SOURCES，可以改用下面这种方式：
+# 注意：它依赖 CMake 重新配置来识别新增文件；CONFIGURE_DEPENDS 可让多数场景自动触发重配
+#
 file(GLOB_RECURSE ARNICS_OS_GLOB_SOURCES
   CONFIGURE_DEPENDS
   "${PROJECT_SOURCE_DIR}/arnics-os/**/*.c"
@@ -75,22 +84,6 @@ endforeach()
 
 list(APPEND ARNICS_OS_SOURCES ${ARNICS_OS_GLOB_SOURCES})
 target_sources(arnics-os PRIVATE ${ARNICS_OS_SOURCES})
-#
-# =========================
-# 4) 可选：自动搜集源文件（更省事，但不如显式稳定）
-# =========================
-#
-# 如果你不想每次新增 .c 都手动加到 ARNICS_OS_SOURCES，可以改用下面这种方式：
-# 注意：它依赖 CMake 重新配置来识别新增文件；CONFIGURE_DEPENDS 可让多数场景自动触发重配
-#
-# file(GLOB_RECURSE ARNICS_OS_SOURCES
-#   CONFIGURE_DEPENDS
-#   "${PROJECT_SOURCE_DIR}/main.c"
-#   "${PROJECT_SOURCE_DIR}/arnics-os/**/*.c"
-#   "${PROJECT_SOURCE_DIR}/arnics-os/**/*.cpp"
-# )
-# target_sources(arnics-os PRIVATE ${ARNICS_OS_SOURCES})
-
 #
 # =========================
 # 5) 编译标准（按需改）
@@ -125,4 +118,4 @@ if (UNIX)
   target_link_libraries(arnics-os PRIVATE m)
 endif()
 
-# TODO: 如有需要，请添加测试并安装目标。
+
