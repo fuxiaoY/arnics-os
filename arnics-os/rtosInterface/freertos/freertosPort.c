@@ -14,31 +14,31 @@
 
 
 /* Private define ------------------------------------------------------------*/
-osThreadId consleTaskHandle;
-osThreadId GuardTaskHandle;
-osThreadId mainTaskHandle;
-osThreadId eventTaskHandle;
-osThreadId sleepTaskHandle;
-osThreadId MediaTaskHandle;
+osThreadId                  consleTaskHandle;
+osThreadId                   GuardTaskHandle;
+osThreadId                    mainTaskHandle;
+osThreadId                   eventTaskHandle;
+osThreadId                   sleepTaskHandle;
+osThreadId                   MediaTaskHandle;
 //消息中心队列
-QueueHandle_t eventosReqQueue;
-QueueHandle_t eventosRspQueue;
+QueueHandle_t                eventosReqQueue;
+QueueHandle_t                eventosRspQueue;
 //媒体中心队列
-QueueHandle_t MediaReqQueue;
-QueueHandle_t MediaRspQueue;
+QueueHandle_t                  MediaReqQueue;
+QueueHandle_t                  MediaRspQueue;
 //行政中心队列
-QueueHandle_t adReqQueue;
-QueueHandle_t adRspQueue;
+QueueHandle_t                     adReqQueue;
+QueueHandle_t                     adRspQueue;
 
 // 消息中心信号量
 SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
-SemaphoreHandle_t eventosID_mutex;   //消息ID锁
+SemaphoreHandle_t            eventosID_mutex;   //消息ID锁
 // 媒体中心信号量
-SemaphoreHandle_t MediaRspQueue_xSemaphore; //读媒体中心队列锁
+SemaphoreHandle_t   MediaRspQueue_xSemaphore; //读媒体中心队列锁
 // 行政中心信号量
-SemaphoreHandle_t AdRspQueue_xSemaphore; //读行政中心队列锁
+SemaphoreHandle_t      AdRspQueue_xSemaphore; //读行政中心队列锁
 //sfud锁
-SemaphoreHandle_t flashDB_mutex;  
+SemaphoreHandle_t              flashDB_mutex;  
 /*---------------------------------------------------------------------------------------*/
 
 /*-系统监控-------------------------------------------------------------------------------*/
@@ -412,10 +412,10 @@ void initSemaphore()
 {
     // Create the semaphore
     eventosRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    eventosID_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    MediaRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    AdRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    flashDB_mutex = xSemaphoreCreateMutex(); // Create a mutex semaphore
+    eventosID_mutex            = xSemaphoreCreateMutex(); // Create a mutex semaphore
+    MediaRspQueue_xSemaphore   = xSemaphoreCreateMutex(); // Create a mutex semaphore
+    AdRspQueue_xSemaphore      = xSemaphoreCreateMutex(); // Create a mutex semaphore
+    flashDB_mutex              = xSemaphoreCreateMutex(); // Create a mutex semaphore
 }
 /**
   * @brief  队列初始化
@@ -428,11 +428,11 @@ void initQueue()
     eventosReqQueue = xQueueCreate(3, sizeof(message_t));  // 创建一个可以存储 3 个 message_t 类型消息的队列
     eventosRspQueue = xQueueCreate(3, sizeof(message_t));     // 创建一个可以存储 3 个 message_t 类型消息的队列
 
-    MediaReqQueue = xQueueCreate(3, sizeof(mediaMessage_t));  // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列
-    MediaRspQueue = xQueueCreate(3, sizeof(mediaMessage_t));     // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列  
+    MediaReqQueue   = xQueueCreate(3, sizeof(mediaMessage_t));  // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列
+    MediaRspQueue   = xQueueCreate(3, sizeof(mediaMessage_t));     // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列  
 
-    adReqQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
-    adRspQueue = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
+    adReqQueue      = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
+    adRspQueue      = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
 }
 
 /**

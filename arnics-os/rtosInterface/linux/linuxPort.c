@@ -18,15 +18,15 @@
 
 typedef struct
 {
-    uint32_t length;
-    uint32_t item_size;
-    uint8_t* buffer;
-    uint32_t head;
-    uint32_t tail;
-    uint32_t count;
-    pthread_mutex_t lock;
-    pthread_cond_t not_empty;
-    pthread_cond_t not_full;
+    uint32_t             length;
+    uint32_t          item_size;
+    uint8_t*             buffer;
+    uint32_t               head;
+    uint32_t               tail;
+    uint32_t              count;
+    pthread_mutex_t        lock;
+    pthread_cond_t    not_empty;
+    pthread_cond_t     not_full;
 } linux_queue_t;
 
 static inline uint64_t linux_now_ms(void)
@@ -312,17 +312,17 @@ static void* linux_task_entry(void* param)
     return NULL;
 }
 
-static linux_queue_t g_eventos_req_queue;
-static linux_queue_t g_eventos_rsp_queue;
-static linux_queue_t g_media_req_queue;
-static linux_queue_t g_media_rsp_queue;
-static linux_queue_t g_ad_req_queue;
-static linux_queue_t g_ad_rsp_queue;
+static    linux_queue_t    g_eventos_req_queue;
+static    linux_queue_t    g_eventos_rsp_queue;
+static    linux_queue_t    g_media_req_queue;
+static    linux_queue_t    g_media_rsp_queue;
+static    linux_queue_t    g_ad_req_queue;
+static    linux_queue_t    g_ad_rsp_queue;
 
-static pthread_mutex_t* g_eventos_rsp_queue_mutex;
-static pthread_mutex_t* g_eventos_id_mutex;
-static pthread_mutex_t* g_media_rsp_queue_mutex;
-static pthread_mutex_t* g_ad_rsp_queue_mutex;
+static pthread_mutex_t*    g_eventos_rsp_queue_mutex;
+static pthread_mutex_t*    g_eventos_id_mutex;
+static pthread_mutex_t*    g_media_rsp_queue_mutex;
+static pthread_mutex_t*    g_ad_rsp_queue_mutex;
 
 void cpuInfo(void)
 {
@@ -361,10 +361,10 @@ void rtosThreadDelay(uint32_t ms)
 }
 
 void rtosTaskCreate(char* name,
-                            rtosPriority_e priority,
-                            void* func,
-                            uint32_t stackSize,
-                            void* arg)
+                    rtosPriority_e priority,
+                    void* func,
+                    uint32_t stackSize,
+                    void* arg)
 {
     (void)name;
     if (func == NULL || stackSize == 0u)
@@ -569,23 +569,23 @@ void linux_os_init(void)
     (void)linux_queue_init(&g_eventos_req_queue, 3u, (uint32_t)sizeof(message_t));
     (void)linux_queue_init(&g_eventos_rsp_queue, 3u, (uint32_t)sizeof(message_t));
 
-    (void)linux_queue_init(&g_media_req_queue, 3u, (uint32_t)sizeof(mediaMessage_t));
-    (void)linux_queue_init(&g_media_rsp_queue, 3u, (uint32_t)sizeof(mediaMessage_t));
+    (void)linux_queue_init(&g_media_req_queue,   3u, (uint32_t)sizeof(mediaMessage_t));
+    (void)linux_queue_init(&g_media_rsp_queue,   3u, (uint32_t)sizeof(mediaMessage_t));
 
-    (void)linux_queue_init(&g_ad_req_queue, 1u, ad_item_size_fallback);
-    (void)linux_queue_init(&g_ad_rsp_queue, 1u, ad_item_size_fallback);
+    (void)linux_queue_init(&g_ad_req_queue,      1u, ad_item_size_fallback);
+    (void)linux_queue_init(&g_ad_rsp_queue,      1u, ad_item_size_fallback);
 
     g_eventos_rsp_queue_mutex = linux_mutex_create();
-    g_eventos_id_mutex = linux_mutex_create();
-    g_media_rsp_queue_mutex = linux_mutex_create();
-    g_ad_rsp_queue_mutex = linux_mutex_create();
+    g_eventos_id_mutex        = linux_mutex_create();
+    g_media_rsp_queue_mutex   = linux_mutex_create();
+    g_ad_rsp_queue_mutex      = linux_mutex_create();
 
-    rtosTaskCreate("ConsleTask", rtosPriorityNormal, (void*)StartConsleTask, 1024u, NULL);
-    rtosTaskCreate("EventTask", rtosPriorityNormal, (void*)StartEventTask, 640u, NULL);
-    rtosTaskCreate("MediaTask", rtosPriorityNormal, (void*)StartMediaTask, 640u, NULL);
-    rtosTaskCreate("MainTask", rtosPriorityNormal, (void*)StartMaintTask, 640u, NULL);
-    rtosTaskCreate("GuardTask", rtosPriorityLow, (void*)StartGuardTask, 512u, NULL);
-    rtosTaskCreate("AdTask", rtosPriorityRealtime, (void*)StartAdTask, 128u, NULL);
+    rtosTaskCreate("ConsleTask", rtosPriorityNormal,  (void*)StartConsleTask, 1024u, NULL);
+    rtosTaskCreate("EventTask",   rtosPriorityNormal, (void*)StartEventTask,   640u, NULL);
+    rtosTaskCreate("MediaTask",   rtosPriorityNormal, (void*)StartMediaTask,   640u, NULL);
+    rtosTaskCreate("MainTask",    rtosPriorityNormal, (void*)StartMaintTask,   640u, NULL);
+    rtosTaskCreate("GuardTask",      rtosPriorityLow, (void*)StartGuardTask,   512u, NULL);
+    rtosTaskCreate("AdTask",    rtosPriorityRealtime, (void*)StartAdTask,      128u, NULL);
 
     printf(" Linux os initialized successfully.\r\n");
 }

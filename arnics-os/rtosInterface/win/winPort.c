@@ -13,15 +13,15 @@
 
 typedef struct
 {
-    uint32_t length;
-    uint32_t item_size;
-    uint8_t* buffer;
-    uint32_t head;
-    uint32_t tail;
-    uint32_t count;
-    CRITICAL_SECTION lock;
-    CONDITION_VARIABLE not_empty;
-    CONDITION_VARIABLE not_full;
+    uint32_t                length;
+    uint32_t             item_size;
+    uint8_t*                buffer;
+    uint32_t                  head;
+    uint32_t                  tail;
+    uint32_t                 count;
+    CRITICAL_SECTION          lock;
+    CONDITION_VARIABLE   not_empty;
+    CONDITION_VARIABLE    not_full;
 } win_queue_t;
 
 static DWORD win_delay_to_timeout_ms_u32(uint32_t delay)
@@ -325,17 +325,17 @@ static unsigned __stdcall win_task_entry(void* param)
     return 0u;
 }
 
-static win_queue_t g_eventos_req_queue;
-static win_queue_t g_eventos_rsp_queue;
-static win_queue_t g_media_req_queue;
-static win_queue_t g_media_rsp_queue;
-static win_queue_t g_ad_req_queue;
-static win_queue_t g_ad_rsp_queue;
+static  win_queue_t     g_eventos_req_queue;
+static  win_queue_t     g_eventos_rsp_queue;
+static  win_queue_t     g_media_req_queue;
+static  win_queue_t     g_media_rsp_queue;
+static  win_queue_t     g_ad_req_queue;
+static  win_queue_t     g_ad_rsp_queue;
 
-static HANDLE g_eventos_rsp_queue_mutex;
-static HANDLE g_eventos_id_mutex;
-static HANDLE g_media_rsp_queue_mutex;
-static HANDLE g_ad_rsp_queue_mutex;
+static       HANDLE     g_eventos_rsp_queue_mutex;
+static       HANDLE     g_eventos_id_mutex;
+static       HANDLE     g_media_rsp_queue_mutex;
+static       HANDLE     g_ad_rsp_queue_mutex;
 
 /*-系统监控-------------------------------------------------------------------------------*/
 void cpuInfo(void)
@@ -622,7 +622,7 @@ void win_os_init(void)
     rtosTaskCreate("MediaTask",  rtosPriorityNormal,        (void*)StartMediaTask,    640u,  NULL);
     rtosTaskCreate("MainTask",   rtosPriorityNormal,        (void*)StartMaintTask,    640u,  NULL);
     rtosTaskCreate("GuardTask",     rtosPriorityLow,        (void*)StartGuardTask,    512u,  NULL);
-    rtosTaskCreate("AdTask",   rtosPriorityRealtime,           (void*)StartAdTask,    128u,  NULL);
+    rtosTaskCreate("AdTask",   rtosPriorityRealtime,        (void*)StartAdTask,       128u,  NULL);
 
     printf(" Windows os initialized successfully.\r\n");
 }
