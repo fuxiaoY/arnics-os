@@ -55,6 +55,7 @@ set(ARNICS_OS_SOURCES
 # 设置排除路径（用于源文件搜集过滤，便于后期拓展）
 set(ARNICS_OS_EXCLUDE_DIRS
   "${PROJECT_SOURCE_DIR}/arnics-os/document"
+  "${PROJECT_SOURCE_DIR}/arnics-os/thirdParty/packages"
 #  "${PROJECT_SOURCE_DIR}/arnics-os/rtosInterface/freertos"
 #  "${PROJECT_SOURCE_DIR}/arnics-os/rtosInterface/linux"
 #  "${PROJECT_SOURCE_DIR}/arnics-os/rtosInterface/win"
