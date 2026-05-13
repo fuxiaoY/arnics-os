@@ -116,4 +116,4 @@ int main()
 
 ## 6. 开源协议 (License)
 
-本项目遵循 MIT 开源协议。详情请参阅 [LICENSE](LICENSE) 文件。
+本项目遵循 Apache 2.0 开源协议。详情请参阅 [LICENSE](LICENSE) 文件。

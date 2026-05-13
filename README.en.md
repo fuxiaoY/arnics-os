@@ -116,4 +116,4 @@ When adding a new module, please follow these rules:
 
 ## 6. License
 
-This project is licensed under the MIT License. For details, please see the [LICENSE](LICENSE) file.
+This project is licensed under the Apache 2.0 License. For details, please see the [LICENSE](LICENSE) file.
