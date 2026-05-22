@@ -10,7 +10,7 @@ ________________________________________________
 ________________________________________________
 ```
 
-**General Bionic Social Program Architecture (强大的社会仿生业务系统架构)**
+**Artificial Socialnics Program Operation System(社会仿生业务系统架构)**
 
 [English Documentation](README.en.md) | 中文文档
 
