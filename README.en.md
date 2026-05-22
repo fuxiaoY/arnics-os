@@ -16,7 +16,7 @@ English Documentation | [中文文档](README.md)
 
 ## 1. Introduction
 
-`arnics-os` is an innovative **Bionic Social Model** embedded/cross-platform system architecture. It abandons traditional strongly-coupled task division and abstracts the system into a "corporate society". In this society, different functional modules are divided into distinct "Departments", collaborating through standardized "documents (messaging mechanisms)" and "functions (APIs)".
+`arnics-os` is an innovative **Socialnics Model** embedded/cross-platform system architecture. It abandons traditional strongly-coupled task division and abstracts the system into a "corporate society". In this society, different functional modules are divided into distinct "Departments", collaborating through standardized "documents (messaging mechanisms)" and "functions (APIs)".
 
 This architecture brings exceptional **modularity, pluggability, and maintainability**. Whether running on bare-metal, an RTOS (like FreeRTOS), or a high-level OS (Linux/Windows), it provides a consistent development experience.
 
