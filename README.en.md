@@ -10,7 +10,7 @@ ________________________________________________
 ________________________________________________
 ```
 
-**General Bionic Social Program Architecture**
+**Artificial Socialnics Program Operation System**
 
 English Documentation | [中文文档](README.md)
 
