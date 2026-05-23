@@ -17,6 +17,8 @@ extern "C" {
 #include "drivers/driversInclude.h"
 // 接口
 #include "port/portInclude.h"
+// 初始化任务
+#include "routine/arnicsTaskManager.h"
 // 三方组件
 #include "thirdParty/thirdPartyInclude.h"
 

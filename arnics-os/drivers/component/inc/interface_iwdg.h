@@ -5,15 +5,15 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_IWDG
-#include "drivers/common/drivers_common.h"
+
 
 /* function prototypes -----------------------------------------------*/
 enum IWDG_CTL
 {
   IWDG_RELOAD = 0,
 };
-
+#ifdef DRIVERS_ENABLE_IWDG
+#include "drivers/common/drivers_common.h"
 extern int iwdg_open(device_t *self);
 extern int iwdg_close(device_t *self);
 extern int iwdg_ctl(device_t *self, int cmd, va_list ap);

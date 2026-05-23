@@ -5,8 +5,7 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_RTC
-#include "drivers/common/drivers_common.h"
+
 
 /* function prototypes -----------------------------------------------*/
 enum RTC_CTL
@@ -20,7 +19,8 @@ enum RTC_CTL
   RTC_WAKEUP_CLEAR,
 };
 
-
+#ifdef DRIVERS_ENABLE_RTC
+#include "drivers/common/drivers_common.h"
 extern int rtc_open(device_t *self);
 extern int rtc_close(device_t *self);
 

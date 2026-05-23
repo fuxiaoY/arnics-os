@@ -8,7 +8,7 @@
 #include "rtosInterface/rtosInterfacePublic.h"
 #include "dePartment/centerEvent/centerEvent.h"
 #include "dePartment/centerMedia/centerMedia.h"
-
+#include "dePartment/centerAdministrative/centerAdministrative.h"
 
 
 typedef struct
@@ -594,10 +594,8 @@ bool CheckMediaQueueSpacesAvailable(void)
     return win_queue_spaces_available(&g_media_req_queue) != 0u;
 }
 
-void win_os_init(void)
+void os_task_create(void)
 {
-    const uint32_t ad_item_size_fallback = 64u;
-
     /* 事件中心队列初始化 */
     (void)win_queue_init(&g_eventos_req_queue, 3u, (uint32_t)sizeof(message_t));
     (void)win_queue_init(&g_eventos_rsp_queue, 3u, (uint32_t)sizeof(message_t));
@@ -607,8 +605,8 @@ void win_os_init(void)
     (void)win_queue_init(&g_media_rsp_queue, 3u, (uint32_t)sizeof(mediaMessage_t));
 
     /* 行政管理部门队列初始化 */
-    (void)win_queue_init(&g_ad_req_queue, 1u, ad_item_size_fallback);
-    (void)win_queue_init(&g_ad_rsp_queue, 1u, ad_item_size_fallback);
+    (void)win_queue_init(&g_ad_req_queue, 1u, (uint32_t)sizeof(adMessage_t));
+    (void)win_queue_init(&g_ad_rsp_queue, 1u, (uint32_t)sizeof(adMessage_t));
 
     /* 互斥信号量创建 */
     g_eventos_rsp_queue_mutex = win_mutex_create();
@@ -625,6 +623,11 @@ void win_os_init(void)
     rtosTaskCreate("AdTask",   rtosPriorityRealtime,        (void*)StartAdTask,       128u,  NULL);
 
     printf(" Windows os initialized successfully.\r\n");
+}
+
+void win_os_init(void)
+{
+    rtosTaskCreate("initTask",   rtosPriorityRealtime,        (void*)StartInitTask,       500u,  NULL);
 }
 
 

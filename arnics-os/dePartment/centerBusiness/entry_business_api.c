@@ -2,8 +2,9 @@
 
 #undef business_process
 #include "business_process.h"
-
-//__attribute__((section("._entry_business_api")))
+#if PLATFORM_MCU
+__attribute__((section("._entry_business_api")))
+#endif
 const tBUSINESSEntry entry_business_list =
 {
 

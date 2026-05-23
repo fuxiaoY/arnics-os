@@ -24,8 +24,8 @@ typedef struct
   uint16_t          update_port;               
 
 }systemCfg_t;
-
-
+extern bool system_config_save(void);
+extern bool system_config_load(void);
 #undef X 
 #define X(auth,index,type,subtype,var,len,key) + 1
 #define SYSTEM_CFG_ENTRIES \

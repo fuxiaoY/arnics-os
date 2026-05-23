@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#include "drivers/bsp/bsp_def.h"
 #ifdef DRIVERS_ENABLE_GPIO
 #include "interface_gpio.h"
 #endif

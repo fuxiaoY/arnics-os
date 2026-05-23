@@ -5,8 +5,7 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_SPI
-#include "drivers/common/drivers_common.h"
+
 
 /* function prototypes -----------------------------------------------*/
 enum SPI_CTL
@@ -14,7 +13,8 @@ enum SPI_CTL
   SPI_GETSATATE = 0,
 };
 
-
+#ifdef DRIVERS_ENABLE_SPI
+#include "drivers/common/drivers_common.h"
 extern int spi_open(device_t *self);
 extern int spi_close(device_t *self);
 extern int spi_read(device_t *self,void *buf, size_t count);

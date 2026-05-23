@@ -5,8 +5,7 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_IICSOF
-#include "drivers/common/drivers_common.h"
+
 
 //I2C方向，将决定发送的地址的bit0
 #ifndef I2C_Direction_Transmitter
@@ -30,7 +29,8 @@ typedef enum
   ADDR_8BIT,
   ADDR_16BIT,
 }addr_type_e;
-
+#ifdef DRIVERS_ENABLE_IICSOF
+#include "drivers/common/drivers_common.h"
 extern int iic_open(device_t *self);
 extern int iic_close(device_t *self);
 extern int iic_ctl(device_t *self, int cmd,va_list ap);

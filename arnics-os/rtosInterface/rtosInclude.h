@@ -3,5 +3,5 @@
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
 
-
+#include "rtosInterface/entry_rtos_api.h"
 #endif

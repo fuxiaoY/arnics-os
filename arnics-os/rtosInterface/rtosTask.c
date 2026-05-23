@@ -1,11 +1,12 @@
 #include "rtosInterfacePublic.h"
 #include "rtosInterface.h"
-//#include "dePartment/centerEvent/entry_event_api.h"
+#include "core/arnicsCore.h"
+#include "dePartment/centerEvent/entry_event_api.h"
 #include "dePartment/centerBusiness/entry_business_api.h"
 //#include "dePartment/centerConsole/entry_console_api.h"
-//#include "dePartment/centerMedia/entry_media_api.h"
-//#include "dePartment/centerGuard/entry_guard_api.h"
-//#include "dePartment/centerAdministrative/entry_ad_api.h"
+#include "dePartment/centerMedia/entry_media_api.h"
+#include "dePartment/centerGuard/entry_guard_api.h"
+#include "dePartment/centerAdministrative/entry_ad_api.h"
 
 #if PLATFORM_MCU
 extern void freertos_task_init(void);
@@ -15,7 +16,7 @@ extern void linux_os_init(void);
 extern void win_os_init(void);
 #else
 #endif
-
+extern void os_task_create(void);
 /*---------------------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------------------*/
@@ -38,6 +39,18 @@ void arnics_task_init(void)
 /*---------------------------------------------------------------------------------------*/
 // 任务列表
 /**
+ * @func StartConsleTask
+ * @brief 初始化线程
+ * @note 无
+ */
+void StartInitTask(void const *argument)
+{
+  arnics_core_init();
+  os_task_create();
+  rtosTaskSelfDelete();
+}
+
+/**
  * @func StartAdTask
  * @brief 行政管理线程
  * @note 无
@@ -47,7 +60,7 @@ void StartAdTask(void const *argument)
 
   while (1)
   {
-    //ad_process();
+    ad_process();
     rtosThreadDelay(100);
   }
 }
@@ -101,7 +114,7 @@ void StartMediaTask(void const *argument)
 
   while (1)
   {
-    //media_process();
+    media_process();
     rtosThreadDelay(1000);
   }
 }
@@ -137,7 +150,7 @@ void StartGuardTask(void const *argument)
 {
   while (1)
   {
-    //guard_process();
+    guard_process();
     rtosThreadDelay(1000);
   }
 }

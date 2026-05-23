@@ -54,5 +54,5 @@ void log_printf(char *out_str)
 
 void log_auto_store(char * str)
 {
-    ts_record(str,strlen(str));
+    ts_record((uint8_t*)str,strlen(str));
 }

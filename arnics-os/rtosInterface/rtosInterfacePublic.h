@@ -27,6 +27,13 @@ typedef enum
 // 任务列表
 /**
  * @func StartConsleTask
+ * @brief 初始化线程
+ * @note 无
+ */
+extern void StartInitTask(void const *argument);
+
+/**
+ * @func StartConsleTask
  * @brief 行政管理线程
  * @note 无
  */

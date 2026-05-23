@@ -5,14 +5,14 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_FLASH
-#include "drivers/common/drivers_common.h"
+
 /* function prototypes -----------------------------------------------*/
 enum FLASH_CTL
 {
   FLASH_EREASE = 0,
 };
-
+#ifdef DRIVERS_ENABLE_FLASH
+#include "drivers/common/drivers_common.h"
 extern int flash_open(device_t *self);
 extern int flash_close(device_t *self);
 extern int flash_read(device_t *self,void *buf, size_t count);

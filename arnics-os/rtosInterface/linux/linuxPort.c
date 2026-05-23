@@ -15,6 +15,7 @@
 #include "rtosInterface/rtosInterfacePublic.h"
 #include "dePartment/centerEvent/centerEvent.h"
 #include "dePartment/centerMedia/centerMedia.h"
+#include "dePartment/centerAdministrative/centerAdministrative.h"
 
 typedef struct
 {
@@ -562,18 +563,16 @@ bool CheckMediaQueueSpacesAvailable(void)
     return linux_queue_spaces_available(&g_media_req_queue) != 0u;
 }
 
-void linux_os_init(void)
+void os_task_create(void)
 {
-    const uint32_t ad_item_size_fallback = 64u;
-
     (void)linux_queue_init(&g_eventos_req_queue, 3u, (uint32_t)sizeof(message_t));
     (void)linux_queue_init(&g_eventos_rsp_queue, 3u, (uint32_t)sizeof(message_t));
 
     (void)linux_queue_init(&g_media_req_queue,   3u, (uint32_t)sizeof(mediaMessage_t));
     (void)linux_queue_init(&g_media_rsp_queue,   3u, (uint32_t)sizeof(mediaMessage_t));
 
-    (void)linux_queue_init(&g_ad_req_queue,      1u, ad_item_size_fallback);
-    (void)linux_queue_init(&g_ad_rsp_queue,      1u, ad_item_size_fallback);
+    (void)linux_queue_init(&g_ad_req_queue,      1u, (uint32_t)sizeof(adMessage_t));
+    (void)linux_queue_init(&g_ad_rsp_queue,      1u, (uint32_t)sizeof(adMessage_t));
 
     g_eventos_rsp_queue_mutex = linux_mutex_create();
     g_eventos_id_mutex        = linux_mutex_create();
@@ -588,6 +587,11 @@ void linux_os_init(void)
     rtosTaskCreate("AdTask",    rtosPriorityRealtime, (void*)StartAdTask,      128u, NULL);
 
     printf(" Linux os initialized successfully.\r\n");
+}
+
+void linux_os_init(void)
+{
+    rtosTaskCreate("initTask",   rtosPriorityRealtime,        (void*)StartInitTask,       500u,  NULL);
 }
 
 #endif

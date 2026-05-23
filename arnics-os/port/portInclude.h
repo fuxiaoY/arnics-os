@@ -9,8 +9,10 @@ extern "C" {
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
 #include "port/arnicsPort.h"
-#include "arnicsMalloc.h"
-// #include "port/delay.h"
+#include "port/arnicsMalloc.h"
+#if PLATFORM_MCU
+#include "port/portMcu/arnicsMcu.h"
+#endif
 
 
 #ifdef __cplusplus

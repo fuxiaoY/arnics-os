@@ -5,8 +5,7 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_TIM
-#include "drivers/common/drivers_common.h"
+
 
 /* function prototypes -----------------------------------------------*/
 
@@ -15,7 +14,8 @@ enum TIM_CTL
   TIM_RELOAD = 0,
 };
 
-
+#ifdef DRIVERS_ENABLE_TIM
+#include "drivers/common/drivers_common.h"
 extern int tim_open(device_t *self);
 extern int tim_close(device_t *self);
 extern int tim_ctl(device_t *self, int cmd, va_list ap);

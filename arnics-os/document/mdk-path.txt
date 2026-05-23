@@ -3,13 +3,8 @@
           <Files>
             <File>
               <FileName>TaskTimer.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\common\TaskTimer.c</FilePath>
-            </File>
-            <File>
-              <FileName>usrMalloc.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\common\usrMalloc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -18,18 +13,13 @@
           <Files>
             <File>
               <FileName>separate_core.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\core\separateSM\separate_core.c</FilePath>
             </File>
             <File>
               <FileName>arnicsCore.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\core\arnicsCore.c</FilePath>
-            </File>
-            <File>
-              <FileName>processTask.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\arnics-os\core\processTask\processTask.c</FilePath>
+              <FilePath>..\arnics-os\core\arnicsCore.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -117,9 +107,9 @@
           <GroupName>arnics/routine</GroupName>
           <Files>
             <File>
-              <FileName>arnicsTaskManager.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\routine\arnicsTaskManager.cpp</FilePath>
+              <FileName>arnicsTaskManager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\routine\arnicsTaskManager.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -128,23 +118,18 @@
           <Files>
             <File>
               <FileName>rtosTask.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\rtosInterface\rtosTask.c</FilePath>
             </File>
             <File>
-              <FileName>freertos.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\rtosInterface\freertos\freertos.c</FilePath>
+              <FileName>freertosPort.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\rtosInterface\freertos\freertosPort.c</FilePath>
             </File>
             <File>
               <FileName>entry_rtos_api.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\rtosInterface\entry_rtos_api.c</FilePath>
-            </File>
-            <File>
-              <FileName>rtosPort.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\rtosInterface\rtosPort.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -152,14 +137,14 @@
           <GroupName>arnics/port</GroupName>
           <Files>
             <File>
-              <FileName>delay.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\port\delay.c</FilePath>
+              <FileName>arnicsStore.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\port\arnicsStore.c</FilePath>
             </File>
             <File>
-              <FileName>reprintf.c</FileName>
+              <FileName>arnicsMcu.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\arnics-os\port\reprintf.c</FilePath>
+              <FilePath>..\arnics-os\port\portMcu\arnicsMcu.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -183,7 +168,7 @@
           <Files>
             <File>
               <FileName>usr_assert.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\Assert\usr_assert.c</FilePath>
             </File>
           </Files>
@@ -219,26 +204,11 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>arnics/thirdParty/ulog</GroupName>
-          <Files>
-            <File>
-              <FileName>ulog.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\ulog\ulog.c</FilePath>
-            </File>
-            <File>
-              <FileName>ulogDef.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\thirdParty\ulog\ulogDef.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>arnics/thirdParty/unity</GroupName>
           <Files>
             <File>
               <FileName>api_unity_def.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\unity\api_unity_def.c</FilePath>
             </File>
             <File>
@@ -342,49 +312,9 @@
               <FilePath>..\arnics-os\thirdParty\modContact\list\console\command_consoleAdapter.c</FilePath>
             </File>
             <File>
-              <FileName>command_A7680C.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\list\A7680C\command_A7680C.c</FilePath>
-            </File>
-            <File>
-              <FileName>command_A7680CAdapter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\list\A7680C\command_A7680CAdapter.c</FilePath>
-            </File>
-            <File>
               <FileName>dataLink.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\modContact\dataPlat\dataLink.c</FilePath>
-            </File>
-            <File>
-              <FileName>command_Y7025.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\list\Y7025\command_Y7025.c</FilePath>
-            </File>
-            <File>
-              <FileName>command_Y7025Adapter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\list\Y7025\command_Y7025Adapter.c</FilePath>
-            </File>
-            <File>
-              <FileName>command_modbus.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\list\modbus\command_modbus.c</FilePath>
-            </File>
-            <File>
-              <FileName>command_modbusAdapter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\modContact\list\modbus\command_modbusAdapter.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>arnics/thirdParty/upgrade</GroupName>
-          <Files>
-            <File>
-              <FileName>upgradeManager.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\upgrade\upgradeManager.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -401,20 +331,10 @@
               <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\rollDB\rolldbPort.c</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>arnics/thirdParty/syslog</GroupName>
-          <Files>
             <File>
-              <FileName>syslogCore.c</FileName>
+              <FileName>rolldbApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\syslog\syslogCore.c</FilePath>
-            </File>
-            <File>
-              <FileName>syslogPort.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\arnics-os\thirdParty\syslog\syslogPort.c</FilePath>
+              <FilePath>..\arnics-os\thirdParty\rollDB\rolldbApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -538,7 +458,7 @@
           <Files>
             <File>
               <FileName>thirdPartyInit.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\thirdParty\thirdPartyInit.c</FilePath>
             </File>
           </Files>
@@ -548,17 +468,17 @@
           <Files>
             <File>
               <FileName>entry_event_api.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\dePartment\centerEvent\entry_event_api.c</FilePath>
             </File>
             <File>
               <FileName>eventCore.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventCore.c</FilePath>
             </File>
             <File>
               <FileName>eventList.c</FileName>
-              <FileType>8</FileType>
+              <FileType>1</FileType>
               <FilePath>..\arnics-os\dePartment\centerEvent\eventProcess\eventList.c</FilePath>
             </File>
           </Files>
@@ -567,29 +487,14 @@
           <GroupName>arnics/department/centerBusiness</GroupName>
           <Files>
             <File>
-              <FileName>business_process.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerBusiness\business_process.cpp</FilePath>
+              <FileName>business_process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerBusiness\business_process.c</FilePath>
             </File>
             <File>
-              <FileName>entry_business_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerBusiness\entry_business_api.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>arnics/department/centerConsole</GroupName>
-          <Files>
-            <File>
-              <FileName>console_process.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerConsole\console_process.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>entry_console_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerConsole\entry_console_api.cpp</FilePath>
+              <FileName>entry_business_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerBusiness\entry_business_api.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -597,14 +502,14 @@
           <GroupName>arnics/department/centerMedia</GroupName>
           <Files>
             <File>
-              <FileName>entry_media_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerMedia\entry_media_api.cpp</FilePath>
+              <FileName>entry_media_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerMedia\entry_media_api.c</FilePath>
             </File>
             <File>
-              <FileName>media_process.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerMedia\media_process.cpp</FilePath>
+              <FileName>media_process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerMedia\media_process.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -612,14 +517,14 @@
           <GroupName>arnics/department/centerGuard</GroupName>
           <Files>
             <File>
-              <FileName>entry_guard_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerGuard\entry_guard_api.cpp</FilePath>
+              <FileName>entry_guard_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerGuard\entry_guard_api.c</FilePath>
             </File>
             <File>
-              <FileName>guard_process.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerGuard\guard_process.cpp</FilePath>
+              <FileName>guard_process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerGuard\guard_process.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -627,19 +532,14 @@
           <GroupName>arnics/department/centerAdministrative</GroupName>
           <Files>
             <File>
-              <FileName>ad_process.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerAdministrative\ad_process.cpp</FilePath>
+              <FileName>entry_ad_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerAdministrative\entry_ad_api.c</FilePath>
             </File>
             <File>
-              <FileName>entry_ad_api.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerAdministrative\entry_ad_api.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>sleep_wkcycle.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\arnics-os\dePartment\centerAdministrative\sleepStrategy\sleep_wkcycle.cpp</FilePath>
+              <FileName>ad_process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerAdministrative\ad_process.c</FilePath>
             </File>
           </Files>
         </Group>

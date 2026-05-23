@@ -1,7 +1,7 @@
 #include "../../common/drivers_list.h"
 #include "../inc/interface_iicSof.h"
 #ifdef DRIVERS_ENABLE_IICSOF
-#include "../../../port/delay.h"
+#include "../../../port/portInclude.h"
 #include "../../bsp/bsp_def.h"
 #include "gpio.h"
 

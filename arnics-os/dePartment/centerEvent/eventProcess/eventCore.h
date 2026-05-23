@@ -141,7 +141,7 @@ extern bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) 
  *
  */
 extern bool set_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) ;
-extern void event_process();
+extern void event_process(void);
 
 
 #ifdef __cplusplus

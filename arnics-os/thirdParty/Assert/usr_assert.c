@@ -5,7 +5,6 @@
 void critical_enter(void)
 {
 #if PLATFORM_MCU
-    void     __disable_irq();
     __disable_irq();
 #elif PLATFORM_LINUX
 

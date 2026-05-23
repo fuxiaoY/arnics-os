@@ -5,8 +5,7 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_SDMMC
-#include "drivers/common/drivers_common.h"
+
 
 /* function prototypes -----------------------------------------------*/
 enum SDMMC_CTL
@@ -18,7 +17,8 @@ enum SDMMC_CTL
     SDMMC_GET_CARD_STATUS,
 };
 
-
+#ifdef DRIVERS_ENABLE_SDMMC
+#include "drivers/common/drivers_common.h"
 extern int sdmmc_open(device_t *self);
 extern int sdmmc_close(device_t *self);
 extern int sdmmc_ctl(device_t *self, int cmd, va_list ap);

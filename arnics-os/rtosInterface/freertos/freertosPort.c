@@ -14,6 +14,7 @@
 
 
 /* Private define ------------------------------------------------------------*/
+osThreadId                    initTaskHandle;
 osThreadId                  consleTaskHandle;
 osThreadId                   GuardTaskHandle;
 osThreadId                    mainTaskHandle;
@@ -435,6 +436,32 @@ void initQueue()
     adRspQueue      = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
 }
 
+void os_task_create(void)
+{
+    initSemaphore();
+    initQueue();
+    /* definition and creation of defaultTask */
+    osThreadDef(ConsleTask, StartConsleTask, osPriorityNormal, 0, 1024);
+    consleTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
+  
+    osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
+    eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
+    
+    osThreadDef(MediaTask, StartMediaTask, osPriorityNormal, 0, 640);
+    MediaTaskHandle = osThreadCreate(osThread(MediaTask), NULL);
+  
+    osThreadDef(mainTask, StartMaintTask, osPriorityNormal, 0, 640);
+    mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
+  
+    osThreadDef(GuardTask, StartGuardTask, osPriorityLow, 0, 512);
+    GuardTaskHandle = osThreadCreate(osThread(GuardTask), NULL);
+  #ifdef _USE_FREERTOS_MONITOR_
+    osThreadDef(CPUTask, CPU_Task, osPriorityHigh, 0, 256);
+    cpuTaskHandle = osThreadCreate(osThread(CPUTask), NULL);
+  #endif
+    osThreadDef(AdTask, StartAdTask, osPriorityRealtime, 0, 128);
+    sleepTaskHandle = osThreadCreate(osThread(AdTask), NULL);
+}
 /**
   * @brief  FreeRTOS initialization
   * @param  None
@@ -442,30 +469,10 @@ void initQueue()
   */
 void freertos_task_init(void) 
 {
-  initSemaphore();
-  initQueue();
-  /* definition and creation of defaultTask */
-  osThreadDef(ConsleTask, StartConsleTask, osPriorityNormal, 0, 1024);
-  consleTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
-
-  osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
-  eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
-  
-  osThreadDef(MediaTask, StartMediaTask, osPriorityNormal, 0, 640);
-  MediaTaskHandle = osThreadCreate(osThread(MediaTask), NULL);
-
-  osThreadDef(mainTask, StartMaintTask, osPriorityNormal, 0, 640);
-  mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
-
-  osThreadDef(GuardTask, StartGuardTask, osPriorityLow, 0, 512);
-  GuardTaskHandle = osThreadCreate(osThread(GuardTask), NULL);
-#ifdef _USE_FREERTOS_MONITOR_
-  osThreadDef(CPUTask, CPU_Task, osPriorityHigh, 0, 256);
-  cpuTaskHandle = osThreadCreate(osThread(CPUTask), NULL);
-#endif
-  osThreadDef(AdTask, StartAdTask, osPriorityRealtime, 0, 128);
-  sleepTaskHandle = osThreadCreate(osThread(AdTask), NULL);
+    osThreadDef(initTask, StartInitTask, osPriorityRealtime, 0, 500);
+    initTaskHandle = osThreadCreate(osThread(initTask), NULL);
 }
+
 
 
 

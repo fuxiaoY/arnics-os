@@ -5,8 +5,6 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
-#ifdef DRIVERS_ENABLE_DELAY
-#include "drivers/common/drivers_common.h"
 
 /* function prototypes -----------------------------------------------*/
 
@@ -19,6 +17,8 @@ enum DELAYCTL
   DELAY_MONITOR_GET,
   DELAY_MONITOR_CLR,
 };
+#ifdef DRIVERS_ENABLE_DELAY
+#include "drivers/common/drivers_common.h"
 
 extern int delay_open(device_t *self);
 extern int delay_close(device_t *self);
