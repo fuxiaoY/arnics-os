@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 #include "Inc/typedef.h"
-#include "Inc/ProjDefine.h"
+#include "Inc/projDefine.h"
 
 
 typedef struct 
