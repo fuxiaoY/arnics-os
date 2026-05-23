@@ -18,10 +18,10 @@ extern "C" {
  * MACROS AND DEFINITIONS
  *--------------------------------------------------------------------*/
 
- #define ARNICS_CORE_VERSION_NUMBER                           "V2.0.0"
+ #define ARNICS_CORE_VERSION_NUMBER                           "V2.0.1"
  #define ARNICS_CORE_VERSION_MAJOR                                   2
  #define ARNICS_CORE_VERSION_MINOR                                   0
- #define ARNICS_CORE_VERSION_BUILD                                   0
+ #define ARNICS_CORE_VERSION_BUILD                                   1
 
 /* typedef -----------------------------------------------------------*/
 #define TASK_FUNC(func)                                          {func}
