@@ -6,6 +6,7 @@
 #include <process.h>
 
 #include "rtosInterface/rtosInterfacePublic.h"
+#include "common/TaskTimer.h"
 #include "dePartment/centerEvent/centerEvent.h"
 #include "dePartment/centerMedia/centerMedia.h"
 #include "dePartment/centerAdministrative/centerAdministrative.h"
@@ -624,9 +625,79 @@ void os_task_create(void)
 
     printf(" Windows os initialized successfully.\r\n");
 }
+/**
+ * @brief 请求1ms定时器分辨率
+ * @return unsigned int 0 成功，其他值 失败
+ * @note 该函数在Windows系统中使用timeBeginPeriod API请求1ms定时器分辨率
+ * @note 该函数在Windows系统中仅在系统启动时调用一次，后续调用将返回0
+*/
+typedef unsigned int(WINAPI* winmm_time_begin_period_fn)(unsigned int uPeriod);
 
+static void win_request_1ms_timer_resolution(void)
+{
+    HMODULE h_winmm = LoadLibraryA("winmm.dll");
+    if (h_winmm == NULL)
+    {
+        return;
+    }
+    winmm_time_begin_period_fn timeBeginPeriodFn = (winmm_time_begin_period_fn)GetProcAddress(h_winmm, "timeBeginPeriod");
+    if (timeBeginPeriodFn != NULL)
+    {
+        (void)timeBeginPeriodFn(1u);
+    }
+}
+
+static unsigned __stdcall win_systick_thread(void* arg)
+{
+    (void)arg;
+    win_request_1ms_timer_resolution();
+
+    HANDLE h_timer = CreateWaitableTimer(NULL, FALSE, NULL);
+    if (h_timer == NULL)
+    {
+        return 0u;
+    }
+
+    LARGE_INTEGER due_time;
+    due_time.QuadPart = -10000LL;
+    if (!SetWaitableTimer(h_timer, &due_time, 1, NULL, NULL, FALSE))
+    {
+        CloseHandle(h_timer);
+        return 0u;
+    }
+
+    uint64_t last_ms = GetTickCount64();
+    while (1)
+    {
+        (void)WaitForSingleObject(h_timer, INFINITE);
+        const uint64_t now_ms = GetTickCount64();
+        const uint64_t delta_ms = now_ms - last_ms;
+        if (delta_ms != 0ull)
+        {
+            arnics_addTick((uint32_t)((delta_ms > (uint64_t)UINT32_MAX) ? (uint64_t)UINT32_MAX : delta_ms));
+            last_ms = now_ms;
+        }
+    }
+    return 0u;
+}
+
+static void arnics_systick_start(void)
+{
+    static volatile LONG started = 0;
+    if (InterlockedCompareExchange(&started, 1, 0) != 0)
+    {
+        return;
+    }
+
+    uintptr_t handle = _beginthreadex(NULL, 0u, win_systick_thread, NULL, 0u, NULL);
+    if (handle != 0u)
+    {
+        CloseHandle((HANDLE)handle);
+    }
+}
 void win_os_init(void)
 {
+    arnics_systick_start();
     rtosTaskCreate("initTask",   rtosPriorityRealtime,        (void*)StartInitTask,       500u,  NULL);
 }
 
