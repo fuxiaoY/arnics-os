@@ -388,7 +388,7 @@ void hird_employ_message_handle(size_t mapping_id,messge_deliver_t *event_mesg_c
     // 等待雇佣工执行完成
     do
     {
-        rtosThreadDelay(100);
+        rtosThreadDelay(10);
     }while(true == eventBitMapping[mapping_id].is_running);
 
     memcpy((uint8_t*)event_mesg_cache + eventBitMapping[mapping_id].msg_struct_offset, \
@@ -571,7 +571,7 @@ _WEAK void onWaittingOutMessage()
         {
             event_internal_exec();
         }
-        rtosThreadDelay(100);
+        rtosThreadDelay(10);
     }
 }
 
@@ -581,7 +581,7 @@ _WEAK void eventAction()
     {
         event_exec(&EVENT_FLAG, &MSG_FLAG, &mesg_cache.message_union.message_deliver);          // 此处将里面的每一项需求分析出来，并分发任务
         UFLOG_DBG("eventCenter: analyzeSampleNeed Done!");
-        rtosThreadDelay(100);
+        rtosThreadDelay(10);
         event_state = SendingRspMsg; // 进入发送响应消息状态
         break;
     }
@@ -618,12 +618,12 @@ _WEAK void onResetState()
         if (needRsp)
         {
             bool send_ok = false;
-            if (TakeEventosMsgQueueMutex(500))
+            if (TakeEventosMsgQueueMutex(0))
             {
-                send_ok = rtosEventosSendMsg(&mesg_cache, 500);
+                send_ok = rtosEventosSendMsg(&mesg_cache, 0);
                 ReleaseEventosMsgQueueMutex();
             }
-            if (send_ok) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
+            if (send_ok) // 发送成功才会切换状态，保证消息能够发出
             {
                 // 发送成功 一个状态结束
                 UFLOG_DBG("Message sent eventosRspQueue succeed! ID=%d", mesg_cache.ID_Ts);
@@ -636,9 +636,9 @@ _WEAK void onResetState()
             {
                 UFLOG_DBG("Retry sendding!!");
                 event_internal_exec();
-                rtosThreadDelay(100);
+                rtosThreadDelay(10);
             }
-            rtosThreadDelay(100);
+            rtosThreadDelay(10);
         }
         else
         {
@@ -710,7 +710,11 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
     while (1)
     {
         uint32_t remaining_wait = 0;
-        if ((uint32_t)wait == (uint32_t)BLOCK_DELAY)
+        if ((uint32_t)wait == 0U)
+        {
+            remaining_wait = 0U;
+        }
+        else if ((uint32_t)wait == (uint32_t)BLOCK_DELAY)
         {
             remaining_wait = (uint32_t)BLOCK_DELAY;
         }
