@@ -10,9 +10,9 @@
 _SECTION("._entry_event_api")
 #endif
 static EVENT_STATE event_state = OnWattingOutMsg;
-static eventBits_t EVENT_FLAG = {0}; // 外部事件标志
-static eventBits_t MSG_FLAG = {0}; // 外部消息标志
-static message_t mesg_cache = {0};//事件应用消息
+static eventBits_t EVENT_FLAG  = {0}; // 外部事件标志
+static eventBits_t MSG_FLAG    = {0}; // 外部消息标志
+static message_t   mesg_cache  = {0}; // 事件应用消息
 
 
 #undef X
@@ -27,7 +27,7 @@ static uint32_t getRegisterTableNum()
 #undef X
 // 定义 X 宏
 #define X(func, employ_kind, needRsp) \
-    {#func, func, employ_kind,offsetof(messge_deliver_t,func##_msg),(sizeof(func##_msg_t)),needRsp},
+    {#func, func, employ_kind, offsetof(messge_deliver_t, func##_msg), (sizeof(func##_msg_t)), needRsp},
 
 // 用户事件
 static RegisterEntry registerTable[] = 
@@ -37,7 +37,7 @@ static RegisterEntry registerTable[] =
 
 
 
-static void execute_event_func(const char* name, int employ_kind, void* argv) 
+static void execute_event_func(const char* name, int employ_kind, void* argv)
 {
     for (size_t i = 0; i < getRegisterTableNum(); i++) 
     {

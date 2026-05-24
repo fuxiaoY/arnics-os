@@ -9,12 +9,12 @@
   * 该文件定义了事件核心的相关宏定义、结构体和函数声明。
   * 主要用于事件的管理和处理。
   * 
-  * @version        : 1.0.2
-  * @date           : 2025-06-19
+  * @version        : 1.0.3
+  * @date           : 2026-05-24
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 ARSTUDIO.
+  * Copyright (c) 2023 fuxiaoY.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -55,36 +55,38 @@ static inline bool eventBitsIsEmpty(const eventBits_t* bits)
 #define CLR_EVENT_FLAG_ALL(flag_) do { memset(&(flag_), 0, sizeof(flag_)); } while (0)
 #define IS_EVENT_FLAG_CLR(flag_) (eventBitsIsEmpty(&(flag_)))
 /* typedef -----------------------------------------------------------*/
-typedef struct {
-    const char* name;
-    void (*func)(void* argv);
-    int employ_kind;
-    size_t msg_struct_offset;
-    size_t msg_struct_size;
-    bool needRsp;
+typedef struct 
+{
+    const           char* name;
+    void   (*func)(void* argv);
+    int            employ_kind;
+    size_t   msg_struct_offset;
+    size_t     msg_struct_size;
+    bool               needRsp;
 } RegisterEntry;
 
 // 定义事件位映射结构体
-typedef struct {
-    const char* name;
-    int employ_kind;
-    size_t msg_struct_offset;
-    size_t msg_struct_size;
-    uint32_t event_bit;
-    bool needRsp;
+typedef struct 
+{
+    const           char* name;
+    int            employ_kind;
+    size_t   msg_struct_offset;
+    size_t     msg_struct_size;
+    uint32_t         event_bit;
+    bool               needRsp;
     //status
-    bool is_running;
-    void* task_argv;
+    bool            is_running;
+    void*            task_argv;
 } EventBitMapping;
 
 
 
 typedef enum
 {
-    OnWattingOutMsg = 1,// 等待外部消息
-    ActionMsg,          // 执行命令
-    SendingRspMsg,      // 返回外部消息的执行结果
-}EVENT_STATE;
+    OnWattingOutMsg = 1, // 等待外部消息
+    ActionMsg,           // 执行命令
+    SendingRspMsg,       // 返回外部消息的执行结果
+} EVENT_STATE;
 /* define ------------------------------------------------------------*/
 #define PT_END_NORETURN(pt) LC_END((pt)->lc); PT_YIELD_FLAG = 0; \
                    PT_INIT(pt); }
@@ -93,24 +95,24 @@ typedef enum
 #define EVET_END PT_END_NORETURN(ppt);
 
 
-#define EV_WAIT_UNTIL(pt, condition) \
-  do {						         \
-    LC_SET((pt)->lc);				 \
-    if(!(condition)) {			 	 \
-      return ;			             \
-    }      \
-    else   \
-    {      \
+#define EV_WAIT_UNTIL(pt, condition)      \
+  do {						                        \
+    LC_SET((pt)->lc);			        	      \
+    if(!(condition)) {		        	      \
+      return ;			                      \
+    }                                     \
+    else                                  \
+    {                                     \
         _delay_start_ = arnics_getTick(); \
-    }						\
+    }						                          \
   } while(0)
 #define _OUT_IF_TRUE(pt, cond)  EV_WAIT_UNTIL((pt), !(cond))
 // 事件延时只允许在内部员工中使用，外部员工使用将直接退出
 #define EVET_DELAY(ms)  _OUT_IF_TRUE(ppt, (uint32_t)(arnics_getTick() - _delay_start_) < (ms)); 
 
 /* function declaration ---------------------------------------------*/
-extern uint32_t SendEventCallToEventCenter(eventFlag_t eventflag,time_t wait);
-extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv);
+extern uint32_t SendEventCallToEventCenter(eventFlag_t eventflag, time_t wait);
+extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait, void *argv);
 /**
  * @brief  设置事件标志为指定的事件，清除之前所有事件。
  *
@@ -127,7 +129,7 @@ extern bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
  * @note   清空 eventflag 和 msg_flag，然后仅设置指定的事件。
  *
  */
-extern bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) ;
+extern bool add_event_flag(eventFlag_t *eventflag, const char *name, bool ismsg);
 /**
  * @brief  向指定的事件标志中添加一个事件。
  *
@@ -144,7 +146,7 @@ extern bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) 
  * @note   该函数不会清除原有的事件标志，仅在原有基础上添加新事件。
  *
  */
-extern bool set_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) ;
+extern bool set_event_flag(eventFlag_t *eventflag, const char *name, bool ismsg);
 extern void event_process(void);
 
 
@@ -152,4 +154,4 @@ extern void event_process(void);
 }
 #endif
 #endif
-/************************ (C) COPYRIGHT ARSTUDIO *****END OF FILE***************************/
+
