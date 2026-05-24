@@ -7,6 +7,18 @@ extern "C" {
 #include "Inc/typedef.h"
 #include "Inc/projDefine.h"
 
+#ifndef EVENT_MAX_EMPLOYEES
+#define EVENT_MAX_EMPLOYEES 128U
+#endif
+
+#define EVENT_FLAG_WORD_BITS 32U
+#define EVENT_FLAG_WORDS ((EVENT_MAX_EMPLOYEES + EVENT_FLAG_WORD_BITS - 1U) / EVENT_FLAG_WORD_BITS)
+
+typedef struct
+{
+    uint32_t words[EVENT_FLAG_WORDS];
+} eventBits_t;
+
 
 #define MAX_MESSAGE_LENGTH 40
 typedef struct 
@@ -37,8 +49,8 @@ typedef struct
 } messageUnion_u;
 
 typedef struct{
-  uint32_t event_flag;
-  uint32_t msg_flag;
+  eventBits_t event_flag;
+  eventBits_t msg_flag;
   messageUnion_u msg;
 }eventFlag_t;
 
@@ -47,8 +59,8 @@ typedef struct{
 typedef struct 
 {
     time_t ID_Ts;                         //消息ID，可用于检查区分消息传送 
-    uint32_t eventflag;                   //事件
-    uint32_t msgflag;                     //消息
+    eventBits_t eventflag;                //事件
+    eventBits_t msgflag;                  //消息
     messageUnion_u message_union;
 } message_t;
 

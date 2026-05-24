@@ -10,8 +10,8 @@
 _SECTION("._entry_event_api")
 #endif
 static EVENT_STATE event_state = OnWattingOutMsg;
-static uint32_t EVENT_FLAG = 0; // 外部事件标志
-static uint32_t MSG_FLAG = 0; // 外部消息标志
+static eventBits_t EVENT_FLAG = {0}; // 外部事件标志
+static eventBits_t MSG_FLAG = {0}; // 外部消息标志
 static message_t mesg_cache = {0};//事件应用消息
 
 
@@ -94,10 +94,14 @@ uint32_t update_combination_id(uint32_t event_num, uint32_t current_id)
         return event_num;
     }
 
-    // 最大支持组合数量检查
-    if (current_id > ((1 << COUNT_TOTAL_ENTRIES) - 1)) 
+    if (COUNT_TOTAL_ENTRIES > 32U) 
     {
-        return current_id; // 超出支持范围
+        return current_id;
+    }
+    const uint64_t max_id = (1ULL << COUNT_TOTAL_ENTRIES) - 1ULL;
+    if ((uint64_t)current_id > max_id) 
+    {
+        return current_id;
     }
 
     // 存储当前组合中的事件
@@ -208,13 +212,21 @@ uint32_t update_combination_id(uint32_t event_num, uint32_t current_id)
 // 将ID转换为事件组合数组
 void id_to_event_combination(uint32_t id, uint32_t* output, uint32_t* count)
 {
-    if (id == 0 || id > ((1 << COUNT_TOTAL_ENTRIES) - 1) || output == NULL || count == NULL) 
+    if (output == NULL || count == NULL) 
     {
-        *count = 0;
+        return;
+    }
+    *count = 0;
+    if (id == 0 || COUNT_TOTAL_ENTRIES > 32U) 
+    {
+        return;
+    }
+    const uint64_t max_id = (1ULL << COUNT_TOTAL_ENTRIES) - 1ULL;
+    if ((uint64_t)id > max_id) 
+    {
         return;
     }
 
-    *count = 0;
     uint8_t k = 1;
     
     // 找出组合长度
@@ -258,6 +270,8 @@ void event_init(void)
 {
     CLR_EVENT_FLAG_ALL(EVENT_FLAG);
     CLR_EVENT_FLAG_ALL(MSG_FLAG);
+    USER_ASSERT(COUNT_TOTAL_ENTRIES >= 1);
+    USER_ASSERT(COUNT_TOTAL_ENTRIES <= EVENT_MAX_EMPLOYEES);
     event_list_register();
 }
 
@@ -328,6 +342,7 @@ void event_hird_employ_task(uint8_t j,void *argv)
             UFLOG_ERR("event:Memory allocation failed! %s",eventBitMapping[j].name);
             return;
         }
+        memset(hird_employ_data, 0, sizeof(*hird_employ_data));
         hird_employ_data->j = j;
         size_t stack_size = 256;
         rtosPriority_e rtos_priority = rtosPriorityNormal;
@@ -381,107 +396,69 @@ void hird_employ_message_handle(size_t mapping_id,messge_deliver_t *event_mesg_c
     arnicsFree(eventBitMapping[mapping_id].task_argv);
 }
 /*-------------------------------------------------------------------------------------*/
-void event_exec(uint32_t event_flag,uint32_t msg_flag,messge_deliver_t *argv)
+static bool eventBitsTestIndex(const eventBits_t* bits, uint32_t index)
 {
-    uint32_t msgs[COUNT_TOTAL_ENTRIES];
-    uint32_t msg_num = 0;
-    memset(events,0,sizeof(events));
-    memset(msgs,0,sizeof(msgs));
-    event_num = 0;
-    msg_num = 0;
-    id_to_event_combination(event_flag, events, &event_num);
-    id_to_event_combination(msg_flag, msgs, &msg_num);   
-    bool ismsg = false;
+    if (index >= EVENT_MAX_EMPLOYEES)
+    {
+        return false;
+    }
+    return (bits->words[index / EVENT_FLAG_WORD_BITS] & (1UL << (index % EVENT_FLAG_WORD_BITS))) != 0U;
+}
 
-    // 雇佣员工执行
-    for (size_t i = 0; i < event_num; i++)
+static void eventBitsToIndices(const eventBits_t* bits, uint32_t* output, uint32_t* count)
+{
+    *count = 0;
+    for (uint32_t i = 0; i < getRegisterTableNum(); i++)
     {
-        // 遍历查找匹配的 event_bit
-        for (size_t j = 0; j < getRegisterTableNum(); j++)
+        if (eventBitsTestIndex(bits, i))
         {
-            if (events[i] ==  eventBitMapping[j].event_bit)
-            {
-                ismsg = false;
-                for (size_t k = 0; k < msg_num; k++)
-                {
-                    if (msgs[k] ==  eventBitMapping[j].event_bit)
-                    {
-                        // 有消息传递
-                        ismsg = true;
-                        break;
-                    }
-                }
-                if(ismsg)
-                {
-                    event_hird_employ_task(j,argv);
-                }
-                else
-                {
-                    event_hird_employ_task(j,NULL);
-                }
-            }
+            output[(*count)++] = i;
         }
     }
-    // 外部员工执行
+}
+
+void event_exec(const eventBits_t* event_flag, const eventBits_t* msg_flag, messge_deliver_t* argv)
+{
+    memset(events, 0, sizeof(events));
+    event_num = 0;
+    eventBitsToIndices(event_flag, events, &event_num);
+
     for (size_t i = 0; i < event_num; i++)
     {
-        // 遍历查找匹配的 event_bit
-        for (size_t j = 0; j < getRegisterTableNum(); j++)
+        const uint32_t mapping_id = events[i];
+        if (eventBitsTestIndex(msg_flag, mapping_id))
         {
-            if (events[i] ==  eventBitMapping[j].event_bit)
-            {
-                ismsg = false;
-                for (size_t k = 0; k < msg_num; k++)
-                {
-                    if (msgs[k] ==  eventBitMapping[j].event_bit)
-                    {
-                        // 有消息传递
-                        ismsg = true;
-                        break;
-                    }
-                }
-                if(ismsg)
-                {
-                    // 找到匹配的 event_bit，执行对应的函数
-                    execute_event_func(eventBitMapping[j].name, EVENT_EXTERNAL_EMPLOY, ((uint8_t*)argv + eventBitMapping[j].msg_struct_offset));
-                }
-                else
-                {
-                    // 找到匹配的 event_bit，执行对应的函数
-                    execute_event_func(eventBitMapping[j].name, EVENT_EXTERNAL_EMPLOY, NULL);
-                }
-            }
+            event_hird_employ_task(mapping_id, argv);
+        }
+        else
+        {
+            event_hird_employ_task(mapping_id, NULL);
         }
     }
-    // 内部员工执行
+
     for (size_t i = 0; i < event_num; i++)
     {
-        // 遍历查找匹配的 event_bit
-        for (size_t j = 0; j < getRegisterTableNum(); j++)
+        const uint32_t mapping_id = events[i];
+        if (eventBitsTestIndex(msg_flag, mapping_id))
         {
-            if (events[i] ==  eventBitMapping[j].event_bit)
-            {
-                ismsg = false;
-                for (size_t k = 0; k < msg_num; k++)
-                {
-                    if (msgs[k] ==  eventBitMapping[j].event_bit)
-                    {
-                        // 有消息传递
-                        ismsg = true;
-                        break;
-                    }
-                }
-                if(ismsg)
-                {
-                    // 找到匹配的 event_bit，执行对应的函数
-                    execute_event_func(eventBitMapping[j].name, EVENT_INTERNAL_EMPLOY, ((uint8_t*)argv + eventBitMapping[j].msg_struct_offset));
-                }
-                else
-                {
-                    // 找到匹配的 event_bit，执行对应的函数
-                    execute_event_func(eventBitMapping[j].name, EVENT_INTERNAL_EMPLOY, NULL);
-                }
-            }
+            execute_event_func(eventBitMapping[mapping_id].name, EVENT_EXTERNAL_EMPLOY, ((uint8_t*)argv + eventBitMapping[mapping_id].msg_struct_offset));
+        }
+        else
+        {
+            execute_event_func(eventBitMapping[mapping_id].name, EVENT_EXTERNAL_EMPLOY, NULL);
+        }
+    }
+
+    for (size_t i = 0; i < event_num; i++)
+    {
+        const uint32_t mapping_id = events[i];
+        if (eventBitsTestIndex(msg_flag, mapping_id))
+        {
+            execute_event_func(eventBitMapping[mapping_id].name, EVENT_INTERNAL_EMPLOY, ((uint8_t*)argv + eventBitMapping[mapping_id].msg_struct_offset));
+        }
+        else
+        {
+            execute_event_func(eventBitMapping[mapping_id].name, EVENT_INTERNAL_EMPLOY, NULL);
         }
     }
 }
@@ -507,6 +484,17 @@ static int getRegisterEntryIndex(const char *name)
     }
     return -1; // 未找到
 }
+
+static bool eventBitsSetIndex(eventBits_t* bits, uint32_t index)
+{
+    if (index >= EVENT_MAX_EMPLOYEES)
+    {
+        return false;
+    }
+    bits->words[index / EVENT_FLAG_WORD_BITS] |= (1UL << (index % EVENT_FLAG_WORD_BITS));
+    return true;
+}
+
 bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg) 
 {
     int index = getRegisterEntryIndex(name);
@@ -515,11 +503,16 @@ bool add_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg)
         return false; // 未找到对应的 name
     }
 
-    // 设置 eventflag 中对应位置的位
-    eventflag->event_flag = update_combination_id((uint32_t)index, eventflag->event_flag);
-    if(ismsg)
+    if (!eventBitsSetIndex(&eventflag->event_flag, (uint32_t)index))
     {
-        eventflag->msg_flag = update_combination_id((uint32_t)index, eventflag->msg_flag);
+        return false;
+    }
+    if (ismsg)
+    {
+        if (!eventBitsSetIndex(&eventflag->msg_flag, (uint32_t)index))
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -534,11 +527,16 @@ bool set_event_flag(eventFlag_t *eventflag, const char *name,bool ismsg)
     }
     CLR_EVENT_FLAG_ALL(eventflag->event_flag);
     CLR_EVENT_FLAG_ALL(eventflag->msg_flag);
-    // 设置 eventflag 中对应位置的位
-    eventflag->event_flag = update_combination_id((uint32_t)index, eventflag->event_flag);
-    if(ismsg)
+    if (!eventBitsSetIndex(&eventflag->event_flag, (uint32_t)index))
     {
-        eventflag->msg_flag = update_combination_id((uint32_t)index, eventflag->msg_flag);
+        return false;
+    }
+    if (ismsg)
+    {
+        if (!eventBitsSetIndex(&eventflag->msg_flag, (uint32_t)index))
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -581,7 +579,7 @@ _WEAK void eventAction()
 {
     while (1)
     {
-        event_exec(EVENT_FLAG,MSG_FLAG,&mesg_cache.message_union.message_deliver);          // 此处将里面的每一项需求分析出来，并分发任务
+        event_exec(&EVENT_FLAG, &MSG_FLAG, &mesg_cache.message_union.message_deliver);          // 此处将里面的每一项需求分析出来，并分发任务
         UFLOG_DBG("eventCenter: analyzeSampleNeed Done!");
         rtosThreadDelay(100);
         event_state = SendingRspMsg; // 进入发送响应消息状态
@@ -619,7 +617,13 @@ _WEAK void onResetState()
     {
         if (needRsp)
         {
-            if (rtosEventosSendMsg(&mesg_cache, 500)) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
+            bool send_ok = false;
+            if (TakeEventosMsgQueueMutex(500))
+            {
+                send_ok = rtosEventosSendMsg(&mesg_cache, 500);
+                ReleaseEventosMsgQueueMutex();
+            }
+            if (send_ok) // 阻塞500ms发送 直到尝试成功才会切换状态，保证消息能够发出
             {
                 // 发送成功 一个状态结束
                 UFLOG_DBG("Message sent eventosRspQueue succeed! ID=%d", mesg_cache.ID_Ts);
@@ -697,77 +701,86 @@ uint32_t SendEventCallToEventCenter(eventFlag_t eventflag, time_t wait)
  */
 bool GetResponseMessageFromEventCenter(time_t ID, time_t wait,void *argv)
 {
-    message_t receivedMsg;
-    uint32_t numMessages;
-    bool receiveStatus;
-    bool foundMessage = FALSE;
+    if (argv == NULL) 
+    {
+        return FALSE;
+    }
 
-    // 无限循环遍历消息队列
+    const uint32_t start_tick = arnics_getTick();
     while (1)
     {
-        numMessages = CheckEventRspMesgNum();
+        uint32_t remaining_wait = 0;
+        if ((uint32_t)wait == (uint32_t)BLOCK_DELAY)
+        {
+            remaining_wait = (uint32_t)BLOCK_DELAY;
+        }
+        else
+        {
+            const uint32_t elapsed = arnics_getTick() - start_tick;
+            if (elapsed >= (uint32_t)wait)
+            {
+                return FALSE;
+            }
+            remaining_wait = (uint32_t)wait - elapsed;
+        }
+
+        if (!TakeEventosMsgQueueMutex(remaining_wait))
+        {
+            if ((uint32_t)wait == (uint32_t)BLOCK_DELAY)
+            {
+                continue;
+            }
+            return FALSE;
+        }
+
+        const uint32_t numMessages = CheckEventRspMesgNum();
+        message_t receivedMsg;
+        bool foundMessage = FALSE;
+
         for (uint32_t i = 0; i < numMessages; i++)
         {
-            // 使用队列的Peek功能查看消息而不取出
-            receiveStatus = PeekEventRspMesg(&receivedMsg);
-            if (receiveStatus == true)
+            if (rtosTakeMsgFromEventos(&receivedMsg, 0) == true)
             {
                 if (receivedMsg.ID_Ts == ID)
                 {
+                    memcpy(argv, &receivedMsg.message_union, sizeof(messageUnion_u));
                     foundMessage = TRUE;
                     break;
                 }
-            }
-        }
-
-        // 如果找到消息，退出循环
-        if (foundMessage)
-        {
-            break;
-        }
-
-        // 如果没有找到，延时一段时间再重试
-        rtosThreadDelay(10);
-    }
-
-    // 获取信号量
-    if (TakeEventosMsgQueueMutex(wait))
-    {
-        // 查找并取出属于自己的消息
-        for (uint32_t i = 0; i < numMessages; i++)
-        {
-            receiveStatus = rtosTakeMsgFromEventos( &receivedMsg, BLOCK_DELAY);
-            if (receiveStatus == true)
-            {
-                if (receivedMsg.ID_Ts == ID)
-                {
-                    // 找到消息，释放信号量并返回 TRUE
-                    ReleaseEventosMsgQueueMutex();
-                    //消息拷贝
-                    memcpy(argv,&receivedMsg.message_union,sizeof(messageUnion_u));
-                    return TRUE;
-                }
-                else
-                {
-                    // 如果不是自己的消息，重新放回队列
-                    rtosEventosSendMsg( &receivedMsg, BLOCK_DELAY);
-                }
+                rtosEventosSendMsg(&receivedMsg, 0);
             }
             else
             {
-                // 接收失败
-                break; // 无需继续循环
+                break;
             }
         }
 
-        // 没有找到消息，释放信号量并返回 FALSE
         ReleaseEventosMsgQueueMutex();
-        return FALSE;
-    }
-    else
-    {
-        // 如果获取信号量失败，返回 FALSE
-        return FALSE;
+        if (foundMessage)
+        {
+            return TRUE;
+        }
+
+        if ((uint32_t)wait == 0U)
+        {
+            return FALSE;
+        }
+
+        uint32_t delay_ms = 10U;
+        if ((uint32_t)wait != (uint32_t)BLOCK_DELAY)
+        {
+            const uint32_t elapsed = arnics_getTick() - start_tick;
+            const uint32_t remaining = (elapsed >= (uint32_t)wait) ? 0U : ((uint32_t)wait - elapsed);
+            if (remaining == 0U)
+            {
+                return FALSE;
+            }
+            if (remaining < delay_ms)
+            {
+                delay_ms = remaining;
+            }
+        }
+        rtosThreadDelay(delay_ms);
     }
 }
 

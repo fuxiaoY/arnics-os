@@ -40,16 +40,20 @@ extern "C" {
 /* define ------------------------------------------------------------*/
 
 #define EVENT_VERSION "1.0.2"
-// 宏定义，用于清除事件标志 表示将处理过的所有事件无效化
-#define CLR_EVENT_FLAG_ALL(pEvent_) \
-    do                              \
-    {                               \
-        (pEvent_)= 0x00;     \
-    } while (0)
-    
-// 判断事件标志是否清除
-#define IS_EVENT_FLAG_CLR(pEvent_) \
-    ((pEvent_ == 0x00) ? true : false) 
+static inline bool eventBitsIsEmpty(const eventBits_t* bits)
+{
+    for (size_t i = 0; i < EVENT_FLAG_WORDS; i++)
+    {
+        if (bits->words[i] != 0U)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+#define CLR_EVENT_FLAG_ALL(flag_) do { memset(&(flag_), 0, sizeof(flag_)); } while (0)
+#define IS_EVENT_FLAG_CLR(flag_) (eventBitsIsEmpty(&(flag_)))
 /* typedef -----------------------------------------------------------*/
 typedef struct {
     const char* name;
