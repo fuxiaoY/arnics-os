@@ -7,12 +7,15 @@
 #include <sys/syscall.h>
 #include <sys/wait.h>
 #include <semaphore.h>
+#include <time.h>
+#include <sys/timerfd.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "rtosInterface/rtosInterfacePublic.h"
+#include "common/TaskTimer.h"
 #include "dePartment/centerEvent/centerEvent.h"
 #include "dePartment/centerMedia/centerMedia.h"
 #include "dePartment/centerAdministrative/centerAdministrative.h"
@@ -589,8 +592,104 @@ void os_task_create(void)
     printf(" Linux os initialized successfully.\r\n");
 }
 
+/**
+ * @brief Linux 平台下的 1ms systick 刷新线程(基于 timerfd)
+ *
+ * @details
+ * - 使用 `timerfd_create(CLOCK_MONOTONIC, ...)` 创建内核定时器 fd，并配置为 1ms 周期触发。
+ * - 线程通过阻塞 `read(fd, &expirations, sizeof(expirations))` 等待定时器到期。
+ * - `expirations` 表示自上次 read 以来累计到期次数(可能 > 1，代表线程/系统调度延迟导致错过若干个周期)。
+ * - 每次读到的到期次数会累加到 `arnics_systick`(通过 `arnics_addTick`)。
+ *
+ * @note
+ * - 该线程不保证“每 1ms 准时唤醒一次”，但能保证 tick 按实际累计到期次数推进。
+ * - 使用 `CLOCK_MONOTONIC` 避免系统时间调整(NTP/手动改时钟)导致的回退或跳变影响超时计算。
+ *
+ * @param[in] arg 线程参数(未使用)
+ * @return 始终返回 NULL(线程长期运行；出现错误时提前返回)
+ */
+static void* linux_systick_thread(void* arg)
+{
+    (void)arg;
+
+    /* 创建 timerfd：把“时间事件”转换成可读的文件描述符 */
+    const int fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+    if (fd < 0)
+    {
+        return NULL;
+    }
+
+    /* 配置 1ms 周期：it_value 为首次到期时间，it_interval 为后续周期 */
+    struct itimerspec its;
+    memset(&its, 0, sizeof(its));
+    its.it_value.tv_sec = 0;
+    its.it_value.tv_nsec = 1000000L;
+    its.it_interval.tv_sec = 0;
+    its.it_interval.tv_nsec = 1000000L;
+    if (timerfd_settime(fd, 0, &its, NULL) != 0)
+    {
+        close(fd);
+        return NULL;
+    }
+
+    while (1)
+    {
+        uint64_t expirations = 0ull;
+        /* read 将阻塞直到至少发生 1 次到期；返回值为累计到期次数 */
+        const ssize_t n = read(fd, &expirations, sizeof(expirations));
+        if (n == (ssize_t)sizeof(expirations))
+        {
+            /* 到期次数可能很大，避免 uint32_t 溢出(arnics_addTick 形参为 uint32_t) */
+            const uint64_t add = (expirations > (uint64_t)UINT32_MAX) ? (uint64_t)UINT32_MAX : expirations;
+            if (add != 0ull)
+            {
+                arnics_addTick((uint32_t)add);
+            }
+        }
+        else if (n < 0 && errno == EINTR)
+        {
+            /* 被信号中断：继续等待下一次到期 */
+            continue;
+        }
+        else
+        {
+            /* 其它错误：退出线程(例如 fd 被关闭/系统异常) */
+            break;
+        }
+    }
+    close(fd);
+    return NULL;
+}
+
+static pthread_once_t g_linux_systick_once = PTHREAD_ONCE_INIT;
+
+/**
+ * @brief pthread_once 的实际启动函数
+ *
+ * @details
+ * - 创建并 detach systick 线程，避免主线程需要 join。
+ * - 由 `linux_systick_start()` 保证只执行一次。
+ */
+static void linux_systick_start_impl(void)
+{
+    pthread_t tid;
+    if (pthread_create(&tid, NULL, linux_systick_thread, NULL) == 0)
+    {
+        pthread_detach(tid);
+    }
+}
+
+/**
+ * @brief 启动 Linux systick 刷新线程(保证只启动一次)
+ */
+static void linux_systick_start(void)
+{
+    pthread_once(&g_linux_systick_once, linux_systick_start_impl);
+}
+
 void linux_os_init(void)
 {
+    linux_systick_start();
     rtosTaskCreate("initTask",   rtosPriorityRealtime,        (void*)StartInitTask,       500u,  NULL);
 }
 
