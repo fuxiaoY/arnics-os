@@ -39,7 +39,7 @@ extern "C" {
 #include "dePartment/centerEvent/centerEvent.h"
 /* define ------------------------------------------------------------*/
 
-#define EVENT_VERSION "1.0.2"
+#define EVENT_VERSION "1.0.3"
 static inline bool eventBitsIsEmpty(const eventBits_t* bits)
 {
     for (size_t i = 0; i < EVENT_FLAG_WORDS; i++)
