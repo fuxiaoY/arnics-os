@@ -1,6 +1,8 @@
 #include "dataPlat/dataCore/dataStruct.h"
 #include "dataObj.h"
-
+#if PLATFORM_MCU
+#pragma arm section code = "._entry_dataplat_api"
+#endif
 #define DATA_ALL_STRUCT
 #include "dataPlat/dataObj/dataClass.h"
 #undef DATA_ALL_STRUCT

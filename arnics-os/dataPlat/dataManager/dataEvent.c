@@ -1,5 +1,7 @@
 #include "dataEvent.h"
-
+#if PLATFORM_MCU
+#pragma arm section code = "._entry_dataplat_api"
+#endif
 
 
 bool evt_state_get(event_status_t* event, EVT_STA state)

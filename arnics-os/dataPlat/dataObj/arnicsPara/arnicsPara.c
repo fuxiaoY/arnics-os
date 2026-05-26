@@ -1,7 +1,9 @@
 #include "arnicsPara.h"
 #include "port/portInclude.h"
 #include "common/commonInclude.h"
-
+#if PLATFORM_MCU
+#pragma arm section code = "._entry_dataplat_api"
+#endif
 /*-------------------------------------------------------------------------------------*/
 
 /*系统参数-----------------------------------------------------------------------------*/

@@ -8,7 +8,7 @@ extern "C" {
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
 #include "common/drivers_common.h"
-// /* define --------------------------------------------------------*/
+/* define --------------------------------------------------------*/
 #include "component/inc/interface_Include.h"
 #include "bsp/drivers_var.h"
 #ifdef __cplusplus
