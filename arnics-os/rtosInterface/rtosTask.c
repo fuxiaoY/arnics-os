@@ -3,7 +3,7 @@
 #include "core/arnicsCore.h"
 #include "dePartment/centerEvent/entry_event_api.h"
 #include "dePartment/centerBusiness/entry_business_api.h"
-//#include "dePartment/centerConsole/entry_console_api.h"
+#include "dePartment/centerConsole/entry_console_api.h"
 #include "dePartment/centerMedia/entry_media_api.h"
 #include "dePartment/centerGuard/entry_guard_api.h"
 #include "dePartment/centerAdministrative/entry_ad_api.h"
@@ -78,7 +78,7 @@ void StartConsleTask(void const *argument)
 
 while(1)
 {
-  //console_process();
+  console_process();
   rtosThreadDelay(100);
 }
 }
