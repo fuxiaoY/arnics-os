@@ -84,19 +84,9 @@ arnics-os/
 ```c
 #include "Inc/include.h"
 
-#define ARNICS_GLOBAL_REGISTRY(X)                                     \
-    X("peripheralInit", peripheralInit, INIT_TAG, 1)                  \
-    X("preLoadInit",       preLoadInit, INIT_TAG, 1)                  \
-    X("deviceInit",         deviceInit, INIT_TAG, 1)
-
-
-ARNICS_KERNEL_DECLARE_AND_BUILD_TABLE(arnics_init, ARNICS_GLOBAL_REGISTRY);
-
 int main()
 {
-  // 1. 执行所有注册到 INIT_TAG 的初始化能力
-  arnics_core_init();
-  // 2. 启动 OS 调度
+  // 1. 启动 OS
   arnics_task_init();
   while (1)
     {
