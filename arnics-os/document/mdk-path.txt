@@ -543,3 +543,18 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>arnics/department/centerConsole</GroupName>
+          <Files>
+            <File>
+              <FileName>console_process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerConsole\console_process.c</FilePath>
+            </File>
+            <File>
+              <FileName>entry_console_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\arnics-os\dePartment\centerConsole\entry_console_api.c</FilePath>
+            </File>
+          </Files>
+        </Group>
