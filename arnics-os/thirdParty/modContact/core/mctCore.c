@@ -587,7 +587,10 @@ bool CMD_Execute(MctInstance *inst, \
         {
             if(inst->payload_list.have_expected)
             {
-                singleframeListDeal_expected(inst,&inst->payload_list,List,cmdNum,para);
+                if(FRAME_SUCCEED == singleframeListDeal_expected(inst,&inst->payload_list,List,cmdNum,para))
+                {
+                    result = true;
+                }
             }
             if(inst->payload_list.size > 0)
             {
