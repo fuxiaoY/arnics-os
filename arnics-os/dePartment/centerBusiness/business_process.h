@@ -11,7 +11,7 @@ extern "C" {
 
 
 extern void business_process(void);
-extern void business_init();
+extern void business_init(void);
 
 #ifdef __cplusplus
 }
