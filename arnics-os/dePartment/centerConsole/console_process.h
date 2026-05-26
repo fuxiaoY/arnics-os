@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "Inc/ProjDefine.h"
+#include "Inc/projDefine.h"
 #include "Inc/typedef.h"
 #include "core/coreInclude.h"
 #include "rtosInterface/entry_rtos_api.h"
