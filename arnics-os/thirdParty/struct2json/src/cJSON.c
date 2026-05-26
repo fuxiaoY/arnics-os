@@ -66,7 +66,7 @@ void cJSON_InitHooks(cJSON_Hooks* hooks)
         cJSON_free = arnicsFree;
         return;
     }
-	cJSON_malloc = (hooks->malloc_fn)?hooks->malloc_fn:arnicsFree;
+	cJSON_malloc = (hooks->malloc_fn)?hooks->malloc_fn:arnicsMalloc;
 	cJSON_free	 = (hooks->free_fn)?hooks->free_fn:arnicsFree;
 }
 
