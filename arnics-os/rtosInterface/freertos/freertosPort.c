@@ -471,6 +471,7 @@ void freertos_task_init(void)
 {
     osThreadDef(initTask, StartInitTask, osPriorityRealtime, 0, 500);
     initTaskHandle = osThreadCreate(osThread(initTask), NULL);
+    osKernelStart();
 }
 
 

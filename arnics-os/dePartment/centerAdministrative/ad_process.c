@@ -13,7 +13,10 @@ administrativePart_t ad_state = AD_SLEEP;
  */
 void sleep_process()
 {
-
+    while(1)
+    {
+        rtosThreadDelay(1000);
+    }
 }
 // 定义状态列表 
 const static SEPARATE_STATE adList[] = {
