@@ -23,7 +23,7 @@ typedef struct
 #define MAX_MESSAGE_LENGTH 40
 typedef struct 
 {
-    uint8_t reserved;
+    bool illegal_msg;
 } NULL_msg_t;
 /*---------------------------------------*/
 

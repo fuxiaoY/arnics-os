@@ -9,8 +9,8 @@
   * 该文件定义了事件核心的相关宏定义、结构体和函数声明。
   * 主要用于事件的管理和处理。
   * 
-  * @version        : 1.0.3
-  * @date           : 2026-05-24
+  * @version        : 1.0.4
+  * @date           : 2026-05-31
   ******************************************************************************
   * @attention
   *
@@ -39,7 +39,7 @@ extern "C" {
 #include "dePartment/centerEvent/centerEvent.h"
 /* define ------------------------------------------------------------*/
 
-#define EVENT_VERSION "1.0.3"
+#define EVENT_VERSION "1.0.4"
 static inline bool eventBitsIsEmpty(const eventBits_t* bits)
 {
     for (size_t i = 0; i < EVENT_FLAG_WORDS; i++)
@@ -76,6 +76,7 @@ typedef struct
     bool               needRsp;
     //status
     bool            is_running;
+    bool       something_wrong;
     void*            task_argv;
 } EventBitMapping;
 

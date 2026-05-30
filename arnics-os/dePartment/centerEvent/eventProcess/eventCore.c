@@ -328,11 +328,13 @@ void hird_employ_no_argv(void *argument)
 void event_hird_employ_task(uint8_t j,void *argv)
 {
     uint32_t current_hird_task_id = hird_task_id;
+    eventBitMapping[j].something_wrong = false;
     if((EVENT_HIRED_EMPLOY == eventBitMapping[j].employ_kind))
     {
         if(true == eventBitMapping[j].is_running)
         {
             UFLOG_ERR("event:hird_employ task is running! %s",eventBitMapping[j].name);
+            eventBitMapping[j].something_wrong = true;
             return;
         }
         hird_employ_t *hird_employ_data = (hird_employ_t *)arnicsMalloc(sizeof(hird_employ_t));
@@ -340,6 +342,7 @@ void event_hird_employ_task(uint8_t j,void *argv)
         if (hird_employ_data == NULL) 
         {
             UFLOG_ERR("event:Memory allocation failed! %s",eventBitMapping[j].name);
+            eventBitMapping[j].something_wrong = true;
             return;
         }
         memset(hird_employ_data, 0, sizeof(*hird_employ_data));
@@ -375,9 +378,10 @@ void event_hird_employ_task(uint8_t j,void *argv)
             i_count++;
             if(i_count > 20)
             {
-                i_count = 20;
                 UFLOG_ERR("%s task create out of time!",eventBitMapping[j].name);
-                rtosThreadDelay(1000);
+                eventBitMapping[j].something_wrong = true;
+                eventBitMapping[j].is_running      = false;
+                return;
             }
         } while(current_hird_task_id == hird_task_id);
         //任务创建成功，由任务负责释放内存
@@ -393,6 +397,14 @@ void hird_employ_message_handle(size_t mapping_id,messge_deliver_t *event_mesg_c
 
     memcpy((uint8_t*)event_mesg_cache + eventBitMapping[mapping_id].msg_struct_offset, \
     (uint8_t*)eventBitMapping[mapping_id].task_argv +offsetof(hird_employ_t,data) + eventBitMapping[mapping_id].msg_struct_offset,eventBitMapping[mapping_id].msg_struct_size);
+    if(eventBitMapping[mapping_id].something_wrong)
+    {
+        event_mesg_cache->NULL_msg.illegal_msg = true;
+    }
+    else
+    {
+        event_mesg_cache->NULL_msg.illegal_msg = false;
+    }
     arnicsFree(eventBitMapping[mapping_id].task_argv);
 }
 /*-------------------------------------------------------------------------------------*/
