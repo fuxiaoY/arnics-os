@@ -10,7 +10,7 @@ static bool cmd_reqHandle(MctInstance *inst,void *para)
 static bool cmd_revHandle(MctInstance *inst,void *para)
 {
     command_t console_cmd = {0};
-    return mct_console_execute(inst,NULL_CMD_SEEK,&console_cmd);
+    return mct_console_execute(inst,CMD_CONSOLE_ID_REV,&console_cmd);
 }
 
 
