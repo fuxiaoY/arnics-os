@@ -72,6 +72,10 @@ arnics-os/
 ```
 
 ## 4. 快速开始 (Quick Start)
+本项目：
+- 可在windows环境下，直接使用Visual Studio打开，编译运行。
+- 可在linux下，运行build-arnics-os.sh，生成可执行文件后运行。
+- 作为底层系统，嵌入单片机工程环境运行。
 
 ### 4.1 环境准备
 - 支持平台：STM32 (全系列)、Windows、Linux
@@ -99,11 +103,8 @@ int main()
 ## 5. 参与贡献 (Contributing)
 
 欢迎提交 Issue 和 Pull Request，让我们一起完善这个“企业社会”！
-在新增模块时，请遵循以下规则：
-1. 思考您的模块属于哪个部门（Department）。
-2. 将模块的初始化和功能通过 `arnicsCore` 注册到内核表中。
-3. 尽量使用公私有分离的数据管理机制（`DataPlat`）。
 
 ## 6. 开源协议 (License)
 
 本项目遵循 Apache 2.0 开源协议。详情请参阅 [LICENSE](LICENSE) 文件。
+  

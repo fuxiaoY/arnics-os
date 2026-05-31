@@ -72,6 +72,10 @@ arnics-os/
 ```
 
 ## 4. Quick Start
+this project:
+- Can be directly opened, compiled, and run using Visual Studio.
+- Can run `build-arnics-os.sh` on Linux to generate and run the executable file.
+- Can be embedded as an underlying system to run in a microcontroller project environment.
 
 ### 4.1 Environment Setup
 - **Supported Platforms**: STM32 (all series), Windows, Linux
@@ -100,9 +104,6 @@ int main()
 
 Feel free to submit Issues and Pull Requests to help us improve this "corporate society"!
 When adding a new module, please follow these rules:
-1. Determine which Department your module belongs to.
-2. Register your module's initialization and capabilities into the kernel table via `arnicsCore`.
-3. Utilize the public/private data management mechanism (`DataPlat`) as much as possible.
 
 ## 6. License
 
