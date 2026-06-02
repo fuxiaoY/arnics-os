@@ -11,9 +11,9 @@
 #   -h, --help                     : 打印此帮助信息并退出。
 # 
 # 示例用法：
-#   常规编译: ./build_linux.sh -t Release
-#   清理并编译: ./build_linux.sh -c
-#   交叉编译: ./build_linux.sh -x arm-linux-gnueabihf-
+#   常规编译: ./build-arnics-os.sh -t Release
+#   清理并编译: ./build-arnics-os.sh -c
+#   交叉编译: ./build-arnics-os.sh -x arm-linux-gnueabihf-
 # ==============================================================================
 
 # 启用严格模式：
