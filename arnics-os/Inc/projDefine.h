@@ -28,9 +28,9 @@
 #error "PLATFORM_LINUX / PLATFORM_WIN / PLATFORM_MCU must be mutually exclusive (enable only one)."
 #endif
 
+/*强制开发者明确选择平台 */
 #if (PLATFORM_LINUX + PLATFORM_WIN + PLATFORM_MCU) == 0
-#undef PLATFORM_MCU
-#define PLATFORM_MCU     1
+#error "No platform selected. Please define PLATFORM_LINUX, PLATFORM_WIN, or PLATFORM_MCU in projDefine.h"
 #endif
 // +-------------------------------------------------+
 // |                   宏定义列表                     |
