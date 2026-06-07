@@ -15,13 +15,6 @@
 
 
 /*port --------------------------------------------------------------*/
-// void uflog_get_timestamp(char *timestamp, int timestamp_len)
-// {
-//     if (timestamp && timestamp_len > 0) 
-//     {
-//         snprintf(timestamp, timestamp_len, "9999-01-01 00:00:00");
-//     }
-// }
 void uflog_get_timestamp(char *timestamp, int timestamp_len)
 {
 #if PLATFORM_MCU
