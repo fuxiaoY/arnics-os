@@ -53,22 +53,28 @@ dataPlat/
   │   │   ├── systemStatus.h   # 私有头文件
   │   │   ├── systemStatus.c   # 实现文件
   │   │   └── systemStatusPublic.h # 公共头文件
-  │   └── dataClass.h          # 数据对象的统一定义
+  │   ├── dataObj.h            # 数据对象接口
+  │   ├── dataObj.c            # 数据对象实现
+  │   └── dataClass.h          # 数据对象的统一定义 (X-macro)
   ├── dataManager/             # 数据管理层
   │   ├── dataManagerList.h    # 数据管理列表
+  │   ├── dataManagerList.c    # 数据管理列表实现
   │   ├── dataStore.h          # 数据存储接口
-  │   └── dataStore.c          # 数据存储实现
+  │   ├── dataStore.c          # 数据存储实现
+  │   ├── dataJson.h           # JSON 数据接口
+  │   ├── dataJson.c           # JSON 数据实现
+  │   ├── dataEvent.h          # 事件驱动数据接口
+  │   └── dataEvent.c          # 事件驱动数据实现
   ├── dataCore/                # 数据核心层
   │   ├── dataCore.h           # 核心接口定义
+  │   ├── dataCore.c           # 核心实现
   │   └── dataStruct.h         # 数据结构定义
   ├── dataApi/                 # 数据访问接口
   │   ├── dataApi.h            # 数据访问接口定义
   │   └── dataPublic.h         # 公共数据访问接口
-  └── thirdParty/              # 第三方库
-      ├── AlgorithmLib/        # 算法库
-      │   └── crc16.h          # CRC16 校验算法
-      └── fal/                 # Flash 抽象层
-          ├── fal.h            # FAL 接口定义
+  ├── dataPlatInclude.h        # 数据平台统一包含头文件
+  ├── dataPlat.md              # 中文文档 (本文件)
+  └── dataPlat.en.md           # English documentation
 ```
 
 ---

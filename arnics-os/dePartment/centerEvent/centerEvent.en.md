@@ -1,5 +1,5 @@
 # Event Center User Manual
-English | [中文文档](centerEvent.en.md)
+English | [中文文档](centerEvent.md)
 ## 1. Overview
 
 Event Center is one of the core components in the arnics-os system. This department accepts event execution requests, is responsible for processing and managing various events, and replies with execution results. It adopts an employee model to handle different types of events, including hired employees, internal employees, and external employees. The following is the Event Center model

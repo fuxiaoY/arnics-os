@@ -68,13 +68,19 @@ BSP层位于`bsp`目录下，负责与具体硬件平台对接，实现硬件相
 - UART：串口通信设备
 - GPIO：通用输入输出
 - SPI：串行外设接口
+- IIC（软件）：软件模拟I2C接口
 - Flash：内部Flash存储器
 - IWDG：独立看门狗
 - RTC：实时时钟
 - ADC：模数转换器
-- IIC（软件）：软件模拟I2C接口
 - RNG：随机数生成器
 - SDMMC：SD/MMC存储卡接口
+- CAN：CAN总线通信接口
+- LTDC：LCD-TFT显示控制器接口
+- SDRAM：外部SDRAM存储器接口
+- TIM：通用定时器接口
+- DMA2D：Chrom-Art 2D图形加速接口
+- Delay：微秒/毫秒延时接口
 
 ## 使用方法
 

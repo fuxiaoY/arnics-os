@@ -1,5 +1,5 @@
 # 事件中心使用手册
-中文 | [English Documentation](readme.en.md)
+中文 | [English Documentation](centerEvent.en.md)
 ## 1. 概述
 
 事件中心是arnics-os系统中的核心组件之一，该部门接受事件的执行申请，负责处理和管理各种事件，并回复执行结果。它采用了员工模型来处理不同类型的事件，包括雇佣工、内部员工和外部员工。以下为事件中心模型
@@ -144,14 +144,14 @@ void example_handler(void *argv)
 
 事件中心提供了以下API接口：
 
-#### 4.4.1 事件处理相关
+#### 4.5.1 事件处理相关
 
 ```c
 // 事件处理主函数
 void event_process();
 ```
 
-#### 4.4.2 事件标志管理
+#### 4.5.2 事件标志管理
 
 ```c
 // 添加事件标志到现有事件集合
@@ -161,7 +161,7 @@ bool add_event_flag(eventFlag_t *eventflag, const char *name, bool ismsg);
 bool set_event_flag(eventFlag_t *eventflag, const char *name, bool ismsg);
 ```
 
-#### 4.4.3 消息通信
+#### 4.5.3 消息通信
 
 ```c
 // 向事件中心发送消息
@@ -175,7 +175,7 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait, void *argv);
 
 ### 5.1 注册事件处理函数
 
-在eventList.h文件中，使用X宏注册事件处理员工函数：
+在 eventProcess/eventList.h 文件中，使用X宏注册事件处理员工函数：
 
 ```c
 // 员工函数注册
@@ -187,7 +187,7 @@ bool GetResponseMessageFromEventCenter(time_t ID, time_t wait, void *argv);
 
 ### 5.2 雇佣工配置
 
-如果使用雇佣工，可以在eventList.h中配置雇佣工的任务参数：
+如果使用雇佣工，可以在 eventProcess/eventList.h 中配置雇佣工的任务参数：
 
 ```c
 #define HIRD_EMPLOY_STATIC_REFERENCE     

@@ -51,22 +51,28 @@ dataPlat/
   │   │   ├── systemStatus.h   # Private header file
   │   │   ├── systemStatus.c   # Implementation file
   │   │   └── systemStatusPublic.h # Public header file
-  │   └── dataClass.h          # Unified data object definitions
+  │   ├── dataObj.h            # Data object interface
+  │   ├── dataObj.c            # Data object implementation
+  │   └── dataClass.h          # Unified data object definitions (X-macro)
   ├── dataManager/             # Data management layer
   │   ├── dataManagerList.h    # Data management list
+  │   ├── dataManagerList.c    # Data management list implementation
   │   ├── dataStore.h          # Data storage interface
-  │   └── dataStore.c          # Data storage implementation
+  │   ├── dataStore.c          # Data storage implementation
+  │   ├── dataJson.h           # JSON data interface
+  │   ├── dataJson.c           # JSON data implementation
+  │   ├── dataEvent.h          # Event-driven data interface
+  │   └── dataEvent.c          # Event-driven data implementation
   ├── dataCore/                # Data core layer
   │   ├── dataCore.h           # Core interface definitions
+  │   ├── dataCore.c           # Core implementation
   │   └── dataStruct.h         # Data structure definitions
   ├── dataApi/                 # Data access interface
   │   ├── dataApi.h            # Data access interface definitions
   │   └── dataPublic.h         # Public data access interface
-  └── thirdParty/              # Third-party libraries
-      ├── AlgorithmLib/        # Algorithm library
-      │   └── crc16.h          # CRC16 checksum algorithm
-      └── fal/                 # Flash Abstraction Layer
-          ├── fal.h            # FAL interface definitions
+  ├── dataPlatInclude.h        # Data platform unified include header
+  ├── dataPlat.md              # Chinese documentation
+  └── dataPlat.en.md           # English documentation (this file)
 ```
 
 ---

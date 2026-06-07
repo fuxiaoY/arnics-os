@@ -46,23 +46,31 @@ ________________________________________________
 - [了解数据平台细节](arnics-os/dataPlat/dataPlat.md)
 
 ### 2.5 部门抽象 (Departments)
-系统功能被具象化为四大核心部门：
-- **事件中心 (Center Event)**：作为调度枢纽，采用“员工模型（雇佣工、内部员工、外部员工）”分配和处理系统事件。[查看详情](arnics-os/dePartment/centerEvent/centerEvent.md)
+系统功能被具象化为七大核心部门：
+- **事件中心 (Center Event)**：作为调度枢纽，采用”员工模型（雇佣工、内部员工、外部员工）”分配和处理系统事件。[查看详情](arnics-os/dePartment/centerEvent/centerEvent.md)
 - **决策层 (Center Business)**：处理核心决策与业务逻辑，专注于产品特定功能的实现。[查看详情](arnics-os/dePartment/centerBusiness/centerBusiness.md)
 - **媒体中心 (Center Media)**：负责所有对外的人机交互（HMI）、UI 显示、音频提示与多媒体策略。[查看详情](arnics-os/dePartment/centerMedia/centerMedia.md)
 - **督察中心 (Center Guard)**：负责系统看门狗、异常监控、错误恢复与日志审计。[查看详情](arnics-os/dePartment/centerGuard/centerGuard.md)
+- **行政管理 (Center Administrative)**：负责系统休眠/唤醒管理、消息路由分发与跨部门协调。
+- **控制台 (Center Console)**：提供 CLI 命令行接口，支持运行时调试与系统控制。
+- **消息总线 (Center Bus)**：统一消息总线，编译期路由表 + O(1) 分发，替代硬编码的跨部门队列直接访问。
 
 ## 3. 目录结构 (Directory Structure)
 
 ```text
 arnics-os/
+  ├── Inc/             # 全局头文件 (projDefine.h, typedef.h, include.h)
   ├── core/            # 极轻量表驱动内核 (arnicsCore)
+  ├── common/          # 通用组件 (TaskTimer 软件定时器等)
   ├── dataPlat/        # 数据管理平台 (参数、状态、持久化)
   ├── dePartment/      # 业务部门 (仿生架构核心)
-  │   ├── centerEvent/    # 事件中心
-  │   ├── centerBusiness/ # 决策层
-  │   ├── centerMedia/    # 媒体中心
-  │   └── centerGuard/    # 督察中心
+  │   ├── centerEvent/         # 事件中心
+  │   ├── centerBusiness/      # 决策层
+  │   ├── centerMedia/         # 媒体中心
+  │   ├── centerGuard/         # 督察中心
+  │   ├── centerAdministrative/# 行政管理
+  │   ├── centerConsole/       # 控制台
+  │   └── centerBus/           # 消息总线
   ├── drivers/         # 跨平台驱动框架 (类Unix风格)
   ├── port/            # 内存与基础接口移植层
   ├── routine/         # 系统任务管理与初始化清单

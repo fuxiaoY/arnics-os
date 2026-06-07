@@ -3,8 +3,8 @@
 arnicsCore 是一个极轻量的“表驱动执行内核”。你把系统能力写进一张函数表里，运行时再按规则去查表并执行。
 
 源码入口：
-- 核心接口与宏： [arnicsCore.h](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.h)
-- 核心实现： [arnicsCore.c](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.c)
+- 核心接口与宏： [arnicsCore.h](arnicsCore.h)
+- 核心实现： [arnicsCore.c](arnicsCore.c)
 
 ## 你能用它做什么
 
@@ -19,7 +19,7 @@ arnicsCore 是一个极轻量的“表驱动执行内核”。你把系统能力
 ### 1) 注册表（Registry Table）
 
 把系统能力描述成一条条“可执行条目”。每条条目最重要的四个信息是：
-- department：能力属于哪个域/部门（例如 `INIT_TAG`、`MEDIA_TAG` 等，见 [ProjDefine.h](file:///d:/Code/arnics-os-max/arnics-os/Inc/projDefine.h)）
+- department：能力属于哪个域/部门（例如 `INIT_TAG`、`MEDIA_TAG` 等，见 [ProjDefine.h](../Inc/projDefine.h)）
 - name：这条能力的名字（用于精确点名调用）
 - level：等级/阶段（用于分层触发、分阶段初始化）
 - func：真正执行的回调（带一个通用参数 `argv`，让调用方能透传上下文）
@@ -35,10 +35,10 @@ arnicsCore 是一个极轻量的“表驱动执行内核”。你把系统能力
 
 ## 最常见的用法：把系统启动做成“初始化注册表”
 
-仓库里的默认启动入口是 [arnics_core_init](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.c#L98-L102)：
+仓库里的默认启动入口是 [arnics_core_init](arnicsCore.c#L98-L102)：
 
 - 执行 `INIT_TAG`（即 `"init"`）部门的所有条目
-- 打印 Logo 与版本号（见 [logo_print](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.c#L3-L13)）
+- 打印 Logo 与版本号（见 [logo_print](arnicsCore.c#L3-L13)）
 
 这套模式的价值在于：启动顺序与参与者从“写死的调用链”变成“可扩展的清单”。
 
@@ -48,14 +48,14 @@ arnicsCore 是一个极轻量的“表驱动执行内核”。你把系统能力
 
 ### 第一步：给你的模块选一个 department
 
-用项目已经定义好的 tag（见 [ProjDefine.h](file:///d:/Code/arnics-os-max/arnics-os/Inc/projDefine.h)），例如：
+用项目已经定义好的 tag（见 [ProjDefine.h](../Inc/projDefine.h)），例如：
 - `INIT_TAG`：启动初始化
 - `MEDIA_TAG`：媒体相关
 - `DEVICES_TAG`：设备相关
 
 ### 第二步：把能力注册成表项
 
-在一个集中位置维护“注册清单”（建议按模块拆分为多个 registry，再汇总成一个表）。arnicsCore 支持用 X-macro 把清单写成一处，然后自动生成表与句柄（宏定义在 [arnicsCore.h](file:///d:/Code/arnics-os-max/arnics-os/core/arnicsCore.h)）。
+在一个集中位置维护“注册清单”（建议按模块拆分为多个 registry，再汇总成一个表）。arnicsCore 支持用 X-macro 把清单写成一处，然后自动生成表与句柄（宏定义在 [arnicsCore.h](arnicsCore.h)）。
 
 只要确保每条表项明确回答这四个问题：
 - 这是谁的能力（department）？
