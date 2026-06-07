@@ -29,7 +29,7 @@ In the "corporate society" model, three departments with independent queues comm
 - **Event Center (Eventos)**: `rtosEventosGetMsg()`, `rtosEventosSendMsg()`, `rtosTakeMsgFromEventos()`, `rtosDeliverMsgToEventos()`, `TakeEventosMsgQueueMutex()`, `ReleaseEventosMsgQueueMutex()`, `TakeEventosMutex()`, `ReleaseEventosMutex()`, `CheckEventRspMesgNum()`, `PeekEventRspMesg()`, `CheckEventQueueSpacesAvailable()`
 - **Media Center (Media)**: `rtosMediaGetMsg()`, `rtosMediaSendMsg()`, `rtosTakeMsgFromMedia()`, `rtosDeliverMsgToMedia()`, `TakeMediaMutex()`, `ReleaseMediaMsgQueueMutex()`, `CheckMediaRspMesgNum()`, `CheckMediaReqMesgNum()`, `PeekMediaRspMesg()`, `CheckMediaQueueSpacesAvailable()`
 
-> **Note**: Decision Layer (Business), Guard Center, and Console do not own independent queues. They communicate through the Event Center or the Message Bus (centerBus).
+> **Note**: Decision Layer (Business), Guard Center, and Console do not own independent queues. They communicate through the Event Center.
 
 ## 3. Platform Support
 

@@ -50,7 +50,7 @@ BSP层位于`bsp`目录下，负责与具体硬件平台对接，实现硬件相
 - `int dev_open(device_t *dev)` — 打开设备。
 - `int dev_close(device_t *dev)` — 关闭设备。
 - `int dev_read(device_t *dev, void *buf, size_t count)` — 读取操作。
-- `int dev_write(device_t *dev, const void *buf, size_t count)` — 写入操作。
+- `int dev_write(device_t *dev, void *buf, size_t count)` — 写入操作。
 - `int dev_ctl(device_t *dev, int cmd, ...)` — 设备控制，定制化传参。
 - `void dev_irq(device_t *dev)` — 设备中断处理。
 

@@ -46,14 +46,13 @@ The architecture of `arnics-os` is divided into the following layers from bottom
 - [Learn more about the Data Platform](arnics-os/dataPlat/dataPlat.en.md)
 
 ### 2.5 Department Abstraction
-System functions are materialized into seven core departments:
+System functions are materialized into six core departments:
 - **Event Center**: Acts as the scheduling hub, using an "employee model" (hired, internal, external employees) to allocate and process system events. [Details](arnics-os/dePartment/centerEvent/centerEvent.en.md)
 - **Decision Layer (Center Business)**: Handles core decision logic, focusing on product-specific feature implementation. [Details](arnics-os/dePartment/centerBusiness/centerBusiness.en.md)
 - **Media Center**: Responsible for all Human-Machine Interaction (HMI), UI display, audio prompts, and multimedia strategies. [Details](arnics-os/dePartment/centerMedia/centerMedia.en.md)
 - **Guard Center**: Manages the system watchdog, exception monitoring, error recovery, and audit logs. [Details](arnics-os/dePartment/centerGuard/centerGuard.en.md)
 - **Administrative Center**: Manages sleep/wake control, message routing, and cross-department coordination.
 - **Console Center**: Provides CLI command-line interface for runtime debugging and system control.
-- **Message Bus (Center Bus)**: Unified message bus with compile-time route table and O(1) dispatch, replacing hardcoded cross-department queue access.
 
 ## 3. Directory Structure
 
@@ -69,8 +68,7 @@ arnics-os/
   │   ├── centerMedia/         # Media Center
   │   ├── centerGuard/         # Guard Center
   │   ├── centerAdministrative/# Administrative Center
-  │   ├── centerConsole/       # Console Center
-  │   └── centerBus/           # Message Bus
+  │   └── centerConsole/       # Console Center
   ├── drivers/         # Cross-platform driver framework (Unix style)
   ├── port/            # Memory and basic interface porting layer
   ├── routine/         # System task management and initialization list

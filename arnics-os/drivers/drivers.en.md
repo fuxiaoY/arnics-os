@@ -50,7 +50,7 @@ The BSP layer is located in the `bsp` directory, responsible for interfacing wit
 - `int dev_open(device_t *dev)` — Open device.
 - `int dev_close(device_t *dev)` — Close device.
 - `int dev_read(device_t *dev, void *buf, size_t count)` — Read operation.
-- `int dev_write(device_t *dev, const void *buf, size_t count)` — Write operation.
+- `int dev_write(device_t *dev, void *buf, size_t count)` — Write operation.
 - `int dev_ctl(device_t *dev, int cmd, ...)` — Device control with customizable parameters.
 - `void dev_irq(device_t *dev)` — Device interrupt handling.
 
@@ -68,13 +68,19 @@ All interfaces typically return >=0 for success (data length or status), <0 indi
 - UART: Serial communication devices
 - GPIO: General Purpose Input/Output
 - SPI: Serial Peripheral Interface
+- IIC (Software): Software simulated I2C interface
 - Flash: Internal Flash memory
 - IWDG: Independent Watchdog
 - RTC: Real-Time Clock
 - ADC: Analog-to-Digital Converter
-- IIC (Software): Software simulated I2C interface
 - RNG: Random Number Generator
 - SDMMC: SD/MMC memory card interface
+- CAN: CAN bus communication interface
+- LTDC: LCD-TFT display controller interface
+- SDRAM: External SDRAM memory interface
+- TIM: General purpose timer interface
+- DMA2D: Chrom-Art 2D graphics accelerator interface
+- Delay: Microsecond/millisecond delay interface
 
 ## Usage Methods
 

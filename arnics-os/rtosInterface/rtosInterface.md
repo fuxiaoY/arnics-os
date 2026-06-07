@@ -29,7 +29,7 @@
 - **事件中心 (Eventos)**：`rtosEventosGetMsg()`, `rtosEventosSendMsg()`, `rtosTakeMsgFromEventos()`, `rtosDeliverMsgToEventos()`, `TakeEventosMsgQueueMutex()`, `ReleaseEventosMsgQueueMutex()`, `TakeEventosMutex()`, `ReleaseEventosMutex()`, `CheckEventRspMesgNum()`, `PeekEventRspMesg()`, `CheckEventQueueSpacesAvailable()`
 - **媒体中心 (Media)**：`rtosMediaGetMsg()`, `rtosMediaSendMsg()`, `rtosTakeMsgFromMedia()`, `rtosDeliverMsgToMedia()`, `TakeMediaMutex()`, `ReleaseMediaMsgQueueMutex()`, `CheckMediaRspMesgNum()`, `CheckMediaReqMesgNum()`, `PeekMediaRspMesg()`, `CheckMediaQueueSpacesAvailable()`
 
-> **注意**：决策层 (Business)、督察中心 (Guard)、控制台 (Console) 不拥有独立队列，它们通过事件中心或消息总线 (centerBus) 进行通信。
+> **注意**：决策层 (Business)、督察中心 (Guard)、控制台 (Console) 不拥有独立队列，它们通过事件中心进行通信。
 
 ## 3. 平台支持
 
