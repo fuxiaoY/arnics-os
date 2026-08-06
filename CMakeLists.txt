@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: arnics-os 的 CMake 项目，在此处包括源代码并定义
+# CMakeList.txt: arnics-os 的 CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
 cmake_minimum_required(VERSION 3.8)
@@ -10,6 +10,13 @@ if (POLICY CMP0141)
 endif()
 
 project(arnics-os LANGUAGES C CXX)
+
+include(CTest)
+option(ARNICS_BUILD_TESTS "Build Unity unit tests" OFF)
+
+if (ARNICS_BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
 
 #
 # =========================
