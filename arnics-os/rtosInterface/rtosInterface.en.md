@@ -23,8 +23,15 @@ All cross-module APIs are exposed through a function pointer table (`tRTOSEntry`
 - The instance `entry_rtos_list` is a const global, initialized with `INIT_MEMBER()` macros in `entry_rtos_api.c`
 - Upper layers call through macros (e.g., `#define rtosThreadDelay RTOS_MICRODEF(rtosThreadDelay)`) to achieve compile-time polymorphism
 
-### 2.3 Department Communication Queues
-In the "corporate society" model, three departments with independent queues communicate through request/response queue pairs. Each department provides ~10 queue operation functions:
+### 2.3 Unified Queue Abstraction Layer
+Drawing inspiration from the Zephyr device model, we've introduced a unified queue abstraction layer to standardize cross-platform queue operations:
+- **Shared Queue Layer**: `queue/queue_defs.h` (queue definitions), `queue/queue_port.h` (unified interface), `queue/queue_port.c` (queue registry and initialization)
+- **Unified API**: `queue_t` queue descriptor, `queue_ops_t` function table, `queue_init_all()`, `queue_get()`
+- **Platform Adaptations**: `win/queue_win.c`, `linux/queue_linux.c`, `freertos/queue_freertos.c`
+- **Compatibility Layer**: `queue/compat_queue.c` provides queue compatibility APIs, while root-level `compat_mutex.c` provides mutex compatibility APIs
+
+### 2.4 Department Communication Queues
+In the "corporate society" model, three departments with independent queues communicate through request/response queue pairs. Each department provides ~10 queue operation functions (now implemented via the unified queue abstraction):
 - **Administration (Ad)**: `rtosAdGetMsg()`, `rtosAdSendMsg()`, `rtosTakeMsgFromAd()`, `rtosDeliverMsgToAd()`, `TakeAdMsgQueueMutex()`, `ReleaseAdMsgQueueMutex()`, `CheckAdRspMesgNum()`, `CheckAdReqMesgNum()`, `PeekAdRspMesg()`, `CheckAdQueueSpacesAvailable()`
 - **Event Center (Eventos)**: `rtosEventosGetMsg()`, `rtosEventosSendMsg()`, `rtosTakeMsgFromEventos()`, `rtosDeliverMsgToEventos()`, `TakeEventosMsgQueueMutex()`, `ReleaseEventosMsgQueueMutex()`, `TakeEventosMutex()`, `ReleaseEventosMutex()`, `CheckEventRspMesgNum()`, `PeekEventRspMesg()`, `CheckEventQueueSpacesAvailable()`
 - **Media Center (Media)**: `rtosMediaGetMsg()`, `rtosMediaSendMsg()`, `rtosTakeMsgFromMedia()`, `rtosDeliverMsgToMedia()`, `TakeMediaMutex()`, `ReleaseMediaMsgQueueMutex()`, `CheckMediaRspMesgNum()`, `CheckMediaReqMesgNum()`, `PeekMediaRspMesg()`, `CheckMediaQueueSpacesAvailable()`
@@ -34,9 +41,9 @@ In the "corporate society" model, three departments with independent queues comm
 ## 3. Platform Support
 
 Currently, the system has built-in support for the following platforms:
-- `freertos/`: Native encapsulation based on FreeRTOS (480 lines), CMSIS-OS style.
-- `linux/`: Encapsulation based on pthreads and POSIX condition variables (696 lines), systick via `timerfd`.
-- `win/`: Encapsulation based on Windows APIs (705 lines), systick via `CreateWaitableTimer`.
+- `freertos/`: Native encapsulation based on FreeRTOS (+ queue_freertos.c), CMSIS-OS style.
+- `linux/`: Encapsulation based on pthreads and POSIX condition variables (+ queue_linux.c), systick via `timerfd`.
+- `win/`: Encapsulation based on Windows APIs (+ queue_win.c), systick via `CreateWaitableTimer`.
 
 ## 4. Porting Guide
 

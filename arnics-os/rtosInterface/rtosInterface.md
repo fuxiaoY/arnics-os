@@ -23,8 +23,15 @@
 - 实例 `entry_rtos_list` 为 const 全局变量，在 `entry_rtos_api.c` 中用 `INIT_MEMBER()` 宏初始化
 - 上层通过宏间接调用（如 `#define rtosThreadDelay RTOS_MICRODEF(rtosThreadDelay)`），实现编译期多态
 
-### 2.3 部门通信队列
-“企业社会”模型中拥有独立队列的三个部门通过请求/响应队列对进行通信。每个部门提供约 10 个队列操作函数：
+### 2.3 统一队列抽象层
+参考 Zephyr 设备模型，引入统一的队列抽象层，实现跨平台队列操作的标准化：
+- **队列公共层**：`queue/queue_defs.h`（队列定义）、`queue/queue_port.h`（统一接口）、`queue/queue_port.c`（队列注册与初始化）
+- **统一接口**：`queue_t` 队列描述符、`queue_ops_t` 函数表、`queue_init_all()`、`queue_get()`
+- **平台适配**：`win/queue_win.c`、`linux/queue_linux.c`、`freertos/queue_freertos.c`
+- **兼容层**：`queue/compat_queue.c` 提供队列兼容 API，根目录 `compat_mutex.c` 提供互斥兼容 API
+
+### 2.4 部门通信队列
+“企业社会”模型中拥有独立队列的三个部门通过请求/响应队列对进行通信。每个部门提供约 10 个队列操作函数（底层已通过统一队列抽象实现）：
 - **行政管理 (Ad)**：`rtosAdGetMsg()`, `rtosAdSendMsg()`, `rtosTakeMsgFromAd()`, `rtosDeliverMsgToAd()`, `TakeAdMsgQueueMutex()`, `ReleaseAdMsgQueueMutex()`, `CheckAdRspMesgNum()`, `CheckAdReqMesgNum()`, `PeekAdRspMesg()`, `CheckAdQueueSpacesAvailable()`
 - **事件中心 (Eventos)**：`rtosEventosGetMsg()`, `rtosEventosSendMsg()`, `rtosTakeMsgFromEventos()`, `rtosDeliverMsgToEventos()`, `TakeEventosMsgQueueMutex()`, `ReleaseEventosMsgQueueMutex()`, `TakeEventosMutex()`, `ReleaseEventosMutex()`, `CheckEventRspMesgNum()`, `PeekEventRspMesg()`, `CheckEventQueueSpacesAvailable()`
 - **媒体中心 (Media)**：`rtosMediaGetMsg()`, `rtosMediaSendMsg()`, `rtosTakeMsgFromMedia()`, `rtosDeliverMsgToMedia()`, `TakeMediaMutex()`, `ReleaseMediaMsgQueueMutex()`, `CheckMediaRspMesgNum()`, `CheckMediaReqMesgNum()`, `PeekMediaRspMesg()`, `CheckMediaQueueSpacesAvailable()`
@@ -34,9 +41,9 @@
 ## 3. 平台支持
 
 目前系统已内置以下平台的适配：
-- `freertos/`：基于 FreeRTOS 的原生封装（480 行），CMSIS-OS 风格。
-- `linux/`：基于 pthread 及 POSIX 条件变量的封装（696 行），systick 使用 `timerfd`。
-- `win/`：基于 Windows API 的封装（705 行），systick 使用 `CreateWaitableTimer`。
+- `freertos/`：基于 FreeRTOS 的原生封装（+ queue_freertos.c），CMSIS-OS 风格。
+- `linux/`：基于 pthread 及 POSIX 条件变量的封装（+ queue_linux.c），systick 使用 `timerfd`。
+- `win/`：基于 Windows API 的封装（+ queue_win.c），systick 使用 `CreateWaitableTimer`。
 
 ## 4. 移植说明
 

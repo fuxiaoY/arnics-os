@@ -6,6 +6,7 @@ extern "C" {
 #endif
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
+#include "rtosInterface/rtosInterfacePublic.h"
 
 extern void arnics_task_init(void);
 /*---------------------------------------------------------------------------------------*/
@@ -36,7 +37,6 @@ extern bool TakeAdMsgQueueMutex(time_t waitTime);
 // 释放读队列互斥信号量
 extern void ReleaseAdMsgQueueMutex(void);
 // 检查请求队列中是否有可用空间
-extern bool CheckAdqueueSpacesAvailable(void);
 extern uint32_t  CheckAdRspMesgNum(void);
 extern uint32_t  CheckAdReqMesgNum(void);
 extern bool  PeekAdRspMesg(void *receivedMsg);

@@ -7,39 +7,14 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "rtosInterface/rtosInterfacePublic.h"
+#include "rtosInterface/queue/queue_port.h"
 #include "dePartment/centerEvent/entry_event_api.h"
 #include "dePartment/centerMedia/entry_media_api.h"
 #include "dePartment/centerAdministrative/entry_ad_api.h"
 
 
 
-/* Private define ------------------------------------------------------------*/
-osThreadId                    initTaskHandle;
-osThreadId                  consleTaskHandle;
-osThreadId                   GuardTaskHandle;
-osThreadId                    mainTaskHandle;
-osThreadId                   eventTaskHandle;
-osThreadId                   sleepTaskHandle;
-osThreadId                   MediaTaskHandle;
-//消息中心队列
-QueueHandle_t                eventosReqQueue;
-QueueHandle_t                eventosRspQueue;
-//媒体中心队列
-QueueHandle_t                  MediaReqQueue;
-QueueHandle_t                  MediaRspQueue;
-//行政中心队列
-QueueHandle_t                     adReqQueue;
-QueueHandle_t                     adRspQueue;
-
-// 消息中心信号量
-SemaphoreHandle_t eventosRspQueue_xSemaphore; //读消息中心队列锁
-SemaphoreHandle_t            eventosID_mutex;   //消息ID锁
-// 媒体中心信号量
-SemaphoreHandle_t   MediaRspQueue_xSemaphore; //读媒体中心队列锁
-// 行政中心信号量
-SemaphoreHandle_t      AdRspQueue_xSemaphore; //读行政中心队列锁
-//sfud锁
-SemaphoreHandle_t              flashDB_mutex;  
+/* 句柄不再在框架层保存：任务自删除用 vTaskDelete(NULL)，调试可经 vTaskList 按名查看 */
 /*---------------------------------------------------------------------------------------*/
 
 /*-系统监控-------------------------------------------------------------------------------*/
@@ -92,210 +67,27 @@ void rtosThreadDelay(uint32_t ms)
 {
     osDelay(ms);
 }
+
 void rtosTaskCreate(char* name, \
                             rtosPriority_e priority, \
                             void* func, \
                             uint32_t stackSize, \
                             void* arg)
 {
-    if (func == NULL || stackSize == 0) 
+    const osThreadDef_t os_thread_def =
+    {(name), (os_pthread)(func), (osPriority)(priority), 0, (stackSize)};
+
+    if (func == NULL || stackSize == 0u)
     {
         return;
     }
-    const osThreadDef_t os_thread_def = 
-    {(name), (os_pthread)(func),(osPriority)(priority),0,(stackSize)};
-    osThreadCreate(&os_thread_def, arg);
+
+    (void)osThreadCreate(&os_thread_def, arg);
 }
 void rtosTaskSelfDelete(void)
 {
     vTaskDelete(NULL);
 }
-
-/*---------------------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------------------*/
-// 消息队列
-
-/*---------------------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------------------*/
-// 行政管理部门队列
-bool rtosAdGetMsg(void *msg,uint32_t delay)
-{
-    return (xQueueReceive(adReqQueue, msg, delay) == pdTRUE);
-}
-bool rtosAdSendMsg(void *msg,uint32_t delay)
-{
-    return (xQueueSend(adRspQueue, msg, delay) == pdPASS);
-}
-bool rtosTakeMsgFromAd(void *msg,uint32_t delay)
-{
-    return (xQueueReceive(adRspQueue, msg, delay) == pdTRUE);
-}
-bool rtosDeliverMsgToAd(void *msg,uint32_t delay)
-{
-    return (xQueueSend(adReqQueue, msg, delay) == pdTRUE);
-}
-// 获取读队列互斥信号量
-bool TakeAdMsgQueueMutex(time_t waitTime)
-{
-    return (xSemaphoreTake(AdRspQueue_xSemaphore, waitTime) == pdTRUE);
-}
-
-// 释放读队列互斥信号量
-void ReleaseAdMsgQueueMutex(void)
-{
-    xSemaphoreGive(AdRspQueue_xSemaphore);
-}
-
-
-// 检查请求队列中是否有可用空间
-bool CheckAdqueueSpacesAvailable(void)
-{
-    return uxQueueSpacesAvailable(adReqQueue);
-}
-uint32_t  CheckAdRspMesgNum(void)
-{
-    return (uint32_t)uxQueueMessagesWaiting(adRspQueue);
-}
-
-uint32_t  CheckAdReqMesgNum(void)
-{
-    return (uint32_t)uxQueueMessagesWaiting(adReqQueue);
-}
-bool  PeekAdRspMesg(void *receivedMsg)
-{
-    // 使用队列的Peek功能查看消息而不取出
-    return  (uint32_t)xQueuePeek(adRspQueue, receivedMsg, 0)== pdTRUE;
-}
-
-// 检查请求队列中是否有可用空间
-bool CheckAdQueueSpacesAvailable(void)
-{
-    return uxQueueSpacesAvailable(adReqQueue);
-}
-
-/*---------------------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------------------*/
-// 事件中心队列
-
-bool rtosEventosGetMsg(void *msg,uint32_t delay)
-{
-    return (xQueueReceive(eventosReqQueue, msg, delay) == pdTRUE);
-}
-
-bool rtosEventosSendMsg(void *msg,uint32_t delay)
-{
-    return (xQueueSend(eventosRspQueue, msg, delay) == pdPASS);
-}
-
-bool rtosTakeMsgFromEventos(void *msg,uint32_t delay)
-{
-    return (xQueueReceive(eventosRspQueue, msg, delay) == pdTRUE);
-}
-bool rtosDeliverMsgToEventos(void *msg,uint32_t delay)
-{
-    return (xQueueSend(eventosReqQueue, msg, delay) == pdTRUE);
-}
-
-// 获取读队列互斥信号量
-bool TakeEventosMsgQueueMutex(time_t waitTime)
-{
-    return (xSemaphoreTake(eventosRspQueue_xSemaphore, waitTime) == pdTRUE);
-}
-
-// 释放读队列互斥信号量
-void ReleaseEventosMsgQueueMutex(void)
-{
-    xSemaphoreGive(eventosRspQueue_xSemaphore);
-}
-
-
-// 获取事件中心id互斥信号量
-bool TakeEventosMutex(time_t waitTime)
-{
-    return (xSemaphoreTake(eventosID_mutex, waitTime) == pdTRUE);
-}
-
-// 释放事件中心id互斥信号量
-void ReleaseEventosMutex(void)
-{
-    xSemaphoreGive(eventosID_mutex);
-}
-
-uint32_t  CheckEventRspMesgNum(void)
-{
-    return (uint32_t)uxQueueMessagesWaiting(eventosRspQueue);
-}
-
-bool  PeekEventRspMesg(void *receivedMsg)
-{
-    // 使用队列的Peek功能查看消息而不取出
-    return  (uint32_t)xQueuePeek(eventosRspQueue, receivedMsg, 0)== pdTRUE;
-}
-
-// 检查请求队列中是否有可用空间
-bool CheckEventQueueSpacesAvailable(void)
-{
-    return uxQueueSpacesAvailable(eventosReqQueue);
-}
-/*---------------------------------------------------------------------------------------*/
-
-/*---------------------------------------------------------------------------------------*/
-// 媒体中心队列
-bool rtosMediaGetMsg(void *msg,uint32_t delay)
-{
-    return (xQueueReceive(MediaReqQueue, msg, delay) == pdTRUE);
-}
-
-bool rtosMediaSendMsg(void *msg,uint32_t delay)
-{
-    return (xQueueSend(MediaRspQueue, msg, delay) == pdPASS);
-}
-
-bool rtosTakeMsgFromMedia(void *msg,uint32_t delay)
-{
-    return (xQueueReceive(MediaRspQueue, msg, delay) == pdTRUE);
-}
-
-bool rtosDeliverMsgToMedia(void *msg,uint32_t delay)
-{
-    return (xQueueSend(MediaReqQueue, msg, delay) == pdTRUE);
-}
-
-// 获取读队列互斥信号量
-bool TakeMediaMutex(time_t waitTime)
-{
-    return (xSemaphoreTake(MediaRspQueue_xSemaphore, waitTime) == pdTRUE);
-}
-// 释放读队列互斥信号量
-void ReleaseMediaMsgQueueMutex(void)
-{
-    xSemaphoreGive(MediaRspQueue_xSemaphore);
-}
-
-uint32_t  CheckMediaRspMesgNum(void)
-{
-    return (uint32_t)uxQueueMessagesWaiting(MediaRspQueue);
-}
-
-uint32_t  CheckMediaReqMesgNum(void)
-{
-    return (uint32_t)uxQueueMessagesWaiting(MediaReqQueue);
-}
-bool  PeekMediaRspMesg(void *receivedMsg)
-{
-    // 使用队列的Peek功能查看消息而不取出
-    return  (uint32_t)xQueuePeek(MediaRspQueue, receivedMsg, 0)== pdTRUE;
-}
-// 检查请求队列中是否有可用空间
-bool CheckMediaQueueSpacesAvailable(void)
-{
-    return uxQueueSpacesAvailable(MediaReqQueue);
-}
-
-
 
 /* 钩子函数，当内存分配失败时被调用 */
 void vApplicationMallocFailedHook(void)
@@ -403,74 +195,31 @@ void CPU_Task(void const *argument)
   }
 }
 #endif
-/**
-  * @brief  信号量初始化
-  * @param  None
-  * @retval None
-  */
-
-void initSemaphore() 
-{
-    // Create the semaphore
-    eventosRspQueue_xSemaphore = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    eventosID_mutex            = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    MediaRspQueue_xSemaphore   = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    AdRspQueue_xSemaphore      = xSemaphoreCreateMutex(); // Create a mutex semaphore
-    flashDB_mutex              = xSemaphoreCreateMutex(); // Create a mutex semaphore
-}
-/**
-  * @brief  队列初始化
-  * @param  None
-  * @retval None
-  */
-
-void initQueue() 
-{
-    eventosReqQueue = xQueueCreate(3, sizeof(message_t));  // 创建一个可以存储 3 个 message_t 类型消息的队列
-    eventosRspQueue = xQueueCreate(3, sizeof(message_t));     // 创建一个可以存储 3 个 message_t 类型消息的队列
-
-    MediaReqQueue   = xQueueCreate(3, sizeof(mediaMessage_t));  // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列
-    MediaRspQueue   = xQueueCreate(3, sizeof(mediaMessage_t));     // 创建一个可以存储 3 个 mediaMessage_t 类型消息的队列  
-
-    adReqQueue      = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
-    adRspQueue      = xQueueCreate(1, sizeof(adMessage_t));  // 创建一个可以存储 1 个 adMessage_t 类型消息的队列
-}
-
 void os_task_create(void)
 {
-    initSemaphore();
-    initQueue();
-    /* definition and creation of defaultTask */
-    osThreadDef(ConsleTask, StartConsleTask, osPriorityNormal, 0, 1024);
-    consleTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
-  
-    osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
-    eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
-    
-    osThreadDef(MediaTask, StartMediaTask, osPriorityNormal, 0, 640);
-    MediaTaskHandle = osThreadCreate(osThread(MediaTask), NULL);
-  
-    osThreadDef(mainTask, StartMaintTask, osPriorityNormal, 0, 640);
-    mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
-  
-    osThreadDef(GuardTask, StartGuardTask, osPriorityLow, 0, 512);
-    GuardTaskHandle = osThreadCreate(osThread(GuardTask), NULL);
-  #ifdef _USE_FREERTOS_MONITOR_
-    osThreadDef(CPUTask, CPU_Task, osPriorityHigh, 0, 256);
-    cpuTaskHandle = osThreadCreate(osThread(CPUTask), NULL);
-  #endif
-    osThreadDef(AdTask, StartAdTask, osPriorityRealtime, 0, 128);
-    sleepTaskHandle = osThreadCreate(osThread(AdTask), NULL);
+    /* 统一队列初始化 */
+    queue_init_all();
+    /* 统一互斥锁初始化 */
+    compat_init_mutexes();
+
+    rtosTaskCreate("ConsleTask", rtosPriorityNormal,   (void*)StartConsleTask, 1024u, NULL);
+    rtosTaskCreate("EventTask",  rtosPriorityNormal,   (void*)StartEventTask,   640u, NULL);
+    rtosTaskCreate("MediaTask",  rtosPriorityNormal,   (void*)StartMediaTask,   640u, NULL);
+    rtosTaskCreate("MainTask",   rtosPriorityNormal,   (void*)StartMaintTask,   640u, NULL);
+    rtosTaskCreate("GuardTask",  rtosPriorityHigh,      (void*)StartGuardTask,   512u, NULL);
+#ifdef _USE_FREERTOS_MONITOR_
+    rtosTaskCreate("CPUTask",    rtosPriorityHigh,     (void*)CPU_Task,         256u, NULL);
+#endif
+    rtosTaskCreate("AdTask",     rtosPriorityHigh, (void*)StartAdTask,      128u, NULL);
 }
 /**
   * @brief  FreeRTOS initialization
   * @param  None
   * @retval None
   */
-void freertos_task_init(void) 
+void freertos_task_init(void)
 {
-    osThreadDef(initTask, StartInitTask, osPriorityRealtime, 0, 500);
-    initTaskHandle = osThreadCreate(osThread(initTask), NULL);
+    rtosTaskCreate("initTask", rtosPriorityRealtime, (void*)StartInitTask, 500u, NULL);
     osKernelStart();
 }
 
