@@ -14,14 +14,7 @@
 
 
 
-/* Private define ------------------------------------------------------------*/
-osThreadId                    initTaskHandle;
-osThreadId                  consleTaskHandle;
-osThreadId                   GuardTaskHandle;
-osThreadId                    mainTaskHandle;
-osThreadId                   eventTaskHandle;
-osThreadId                   sleepTaskHandle;
-osThreadId                   MediaTaskHandle;
+/* 句柄不再在框架层保存：任务自删除用 vTaskDelete(NULL)，调试可经 vTaskList 按名查看 */
 /*---------------------------------------------------------------------------------------*/
 
 /*-系统监控-------------------------------------------------------------------------------*/
@@ -74,19 +67,22 @@ void rtosThreadDelay(uint32_t ms)
 {
     osDelay(ms);
 }
+
 void rtosTaskCreate(char* name, \
                             rtosPriority_e priority, \
                             void* func, \
                             uint32_t stackSize, \
                             void* arg)
 {
-    if (func == NULL || stackSize == 0) 
+    const osThreadDef_t os_thread_def =
+    {(name), (os_pthread)(func), (osPriority)(priority), 0, (stackSize)};
+
+    if (func == NULL || stackSize == 0u)
     {
         return;
     }
-    const osThreadDef_t os_thread_def = 
-    {(name), (os_pthread)(func),(osPriority)(priority),0,(stackSize)};
-    osThreadCreate(&os_thread_def, arg);
+
+    (void)osThreadCreate(&os_thread_def, arg);
 }
 void rtosTaskSelfDelete(void)
 {
@@ -205,37 +201,25 @@ void os_task_create(void)
     queue_init_all();
     /* 统一互斥锁初始化 */
     compat_init_mutexes();
-    /* definition and creation of defaultTask */
-    osThreadDef(ConsleTask, StartConsleTask, osPriorityNormal, 0, 1024);
-    consleTaskHandle = osThreadCreate(osThread(ConsleTask), NULL);
-  
-    osThreadDef(eventTask, StartEventTask, osPriorityNormal, 0, 640);
-    eventTaskHandle = osThreadCreate(osThread(eventTask), NULL);
-    
-    osThreadDef(MediaTask, StartMediaTask, osPriorityNormal, 0, 640);
-    MediaTaskHandle = osThreadCreate(osThread(MediaTask), NULL);
-  
-    osThreadDef(mainTask, StartMaintTask, osPriorityNormal, 0, 640);
-    mainTaskHandle = osThreadCreate(osThread(mainTask), NULL);
-  
-    osThreadDef(GuardTask, StartGuardTask, osPriorityLow, 0, 512);
-    GuardTaskHandle = osThreadCreate(osThread(GuardTask), NULL);
-  #ifdef _USE_FREERTOS_MONITOR_
-    osThreadDef(CPUTask, CPU_Task, osPriorityHigh, 0, 256);
-    cpuTaskHandle = osThreadCreate(osThread(CPUTask), NULL);
-  #endif
-    osThreadDef(AdTask, StartAdTask, osPriorityRealtime, 0, 128);
-    sleepTaskHandle = osThreadCreate(osThread(AdTask), NULL);
+
+    rtosTaskCreate("ConsleTask", rtosPriorityNormal,   (void*)StartConsleTask, 1024u, NULL);
+    rtosTaskCreate("EventTask",  rtosPriorityNormal,   (void*)StartEventTask,   640u, NULL);
+    rtosTaskCreate("MediaTask",  rtosPriorityNormal,   (void*)StartMediaTask,   640u, NULL);
+    rtosTaskCreate("MainTask",   rtosPriorityNormal,   (void*)StartMaintTask,   640u, NULL);
+    rtosTaskCreate("GuardTask",  rtosPriorityHigh,      (void*)StartGuardTask,   512u, NULL);
+#ifdef _USE_FREERTOS_MONITOR_
+    rtosTaskCreate("CPUTask",    rtosPriorityHigh,     (void*)CPU_Task,         256u, NULL);
+#endif
+    rtosTaskCreate("AdTask",     rtosPriorityHigh, (void*)StartAdTask,      128u, NULL);
 }
 /**
   * @brief  FreeRTOS initialization
   * @param  None
   * @retval None
   */
-void freertos_task_init(void) 
+void freertos_task_init(void)
 {
-    osThreadDef(initTask, StartInitTask, osPriorityRealtime, 0, 500);
-    initTaskHandle = osThreadCreate(osThread(initTask), NULL);
+    rtosTaskCreate("initTask", rtosPriorityRealtime, (void*)StartInitTask, 500u, NULL);
     osKernelStart();
 }
 

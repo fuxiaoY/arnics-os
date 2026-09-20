@@ -160,8 +160,8 @@ void os_task_create(void)
     rtosTaskCreate("EventTask",   rtosPriorityNormal, (void*)StartEventTask,   640u, NULL);
     rtosTaskCreate("MediaTask",   rtosPriorityNormal, (void*)StartMediaTask,   640u, NULL);
     rtosTaskCreate("MainTask",    rtosPriorityNormal, (void*)StartMaintTask,   640u, NULL);
-    rtosTaskCreate("GuardTask",      rtosPriorityLow, (void*)StartGuardTask,   512u, NULL);
-    rtosTaskCreate("AdTask",    rtosPriorityRealtime, (void*)StartAdTask,      128u, NULL);
+    rtosTaskCreate("GuardTask",     rtosPriorityHigh, (void*)StartGuardTask,   512u, NULL);
+    rtosTaskCreate("AdTask",        rtosPriorityHigh, (void*)StartAdTask,      128u, NULL);
 
     printf(" Linux os initialized successfully.\r\n");
 }
