@@ -1,3 +1,17 @@
+/**
+ * @file    queue_linux.c
+ * @brief   队列抽象层的 Linux/POSIX(PLATFORM_LINUX) 后端。
+ *
+ * @details
+ * 用定长环形缓冲 + pthread_mutex_t + pthread_cond_t 实现线程安全 FIFO，
+ * 供主机侧开发/单元测试使用，行为与 win 后端、FreeRTOS 后端对齐：
+ *   - send/recv 支持超时(毫秒，pthread_cond_timedwait)与永久等待
+ *     (#BLOCK_DELAY)；0 表示不等待；
+ *   - peek 仅窥探队首而不移除；count 返回当前元素数。
+ * 队列控制块与数据缓冲通过 malloc 分配。
+ *
+ * @copyright (c) 2026 arnics-os. Licensed under the project LICENSE.
+ */
 
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
@@ -10,18 +24,26 @@
 #include <stdlib.h>
 #include "rtosInterface/queue/queue_port.h"
 
-typedef struct {
-    uint32_t length;
-    uint32_t item_size;
-    uint8_t* buffer;
-    uint32_t head;
-    uint32_t tail;
-    uint32_t count;
-    pthread_mutex_t lock;
-    pthread_cond_t not_empty;
-    pthread_cond_t not_full;
+/**
+ * @brief Linux 环形队列控制块。
+ */
+typedef struct
+{
+    uint32_t length;            // 队列深度(元素个数)
+    uint32_t item_size;         // 单个元素大小(字节)
+    uint8_t* buffer;            // 数据缓冲(按值存放全部元素)
+    uint32_t head;              // 队尾写入位置
+    uint32_t tail;              // 队首读取位置
+    uint32_t count;             // 当前元素数
+    pthread_mutex_t lock;       // 保护本结构的互斥量
+    pthread_cond_t not_empty;   // 队列非空，唤醒接收方
+    pthread_cond_t not_full;    // 队列非满，唤醒发送方
 } linux_queue_t;
 
+/**
+ * @brief 获取当前单调时间戳。
+ * @return 毫秒时间戳
+ */
 static inline uint64_t linux_now_ms(void)
 {
     struct timeval tv;
@@ -29,6 +51,11 @@ static inline uint64_t linux_now_ms(void)
     return (uint64_t)tv.tv_sec * 1000ull + (uint64_t)tv.tv_usec / 1000ull;
 }
 
+/**
+ * @brief 把统一超时换算为相对毫秒。
+ * @param[in] delay 统一超时(0 不等待，#BLOCK_DELAY 永久等待)
+ * @return 0 不等待；-1 永久等待；正数为毫秒
+ */
 static int64_t linux_delay_to_timeout_ms(uint32_t delay)
 {
     if (delay == 0u) return 0;
@@ -36,6 +63,12 @@ static int64_t linux_delay_to_timeout_ms(uint32_t delay)
     return (int64_t)delay;
 }
 
+/**
+ * @brief 创建 Linux 队列。
+ * @param[in] item_size 元素大小(字节)
+ * @param[in] len       队列深度(元素个数)
+ * @return 队列句柄(不透明返回)；参数非法或内存不足时为 NULL
+ */
 static void* linux_queue_create(uint32_t item_size, uint32_t len)
 {
     const uint64_t alloc_size_64 = (uint64_t)len * (uint64_t)item_size;
@@ -46,7 +79,11 @@ static void* linux_queue_create(uint32_t item_size, uint32_t len)
     if (!q) return NULL;
 
     q->buffer = (uint8_t*)malloc((size_t)alloc_size_64);
-    if (!q->buffer) { free(q); return NULL; }
+    if (!q->buffer)
+    {
+        free(q);
+        return NULL;
+    }
 
     q->length = len;
     q->item_size = item_size;
@@ -60,6 +97,13 @@ static void* linux_queue_create(uint32_t item_size, uint32_t len)
     return (void*)q;
 }
 
+/**
+ * @brief 入队一个元素。
+ * @param[in] q     队列句柄
+ * @param[in] item  元素指针
+ * @param[in] delay 超时(毫秒)，0 不等待，#BLOCK_DELAY 永久等待
+ * @return true 成功；false 参数非法、队列满或超时
+ */
 static bool linux_queue_send(void* q, const void* item, uint32_t delay)
 {
     linux_queue_t* queue = (linux_queue_t*)q;
@@ -109,6 +153,13 @@ static bool linux_queue_send(void* q, const void* item, uint32_t delay)
     return true;
 }
 
+/**
+ * @brief 出队一个元素。
+ * @param[in] q     队列句柄
+ * @param[out] out  接收缓冲区
+ * @param[in] delay 超时(毫秒)，0 不等待，#BLOCK_DELAY 永久等待
+ * @return true 成功；false 参数非法、队列空或超时
+ */
 static bool linux_queue_recv(void* q, void* out, uint32_t delay)
 {
     linux_queue_t* queue = (linux_queue_t*)q;
@@ -158,6 +209,12 @@ static bool linux_queue_recv(void* q, void* out, uint32_t delay)
     return true;
 }
 
+/**
+ * @brief 窥探队首但不移除。
+ * @param[in] q   队列句柄
+ * @param[out] out 接收缓冲区
+ * @return true 队列非空；false 参数非法或队列为空
+ */
 static bool linux_queue_peek(void* q, void* out)
 {
     linux_queue_t* queue = (linux_queue_t*)q;
@@ -176,6 +233,11 @@ static bool linux_queue_peek(void* q, void* out)
     return true;
 }
 
+/**
+ * @brief 查询当前消息数。
+ * @param[in] q 队列句柄
+ * @return 已入队元素个数；参数非法时为 0
+ */
 static uint32_t linux_queue_count(void* q)
 {
     linux_queue_t* queue = (linux_queue_t*)q;
@@ -187,7 +249,11 @@ static uint32_t linux_queue_count(void* q)
     return count;
 }
 
-const queue_ops_t queue_ops_linux = {
+/**
+ * @brief Linux 后端操作表，queue_port.c 经 CURRENT_QUEUE_OPS 引用。
+ */
+const queue_ops_t queue_ops_linux =
+{
     .create = linux_queue_create,
     .send = linux_queue_send,
     .recv = linux_queue_recv,

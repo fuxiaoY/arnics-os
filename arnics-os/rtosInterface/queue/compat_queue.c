@@ -1,7 +1,18 @@
+/**
+ * @file    compat_queue.c
+ * @brief   消息队列统一收发 API。
+ *
+ * @copyright (c) 2026 arnics-os. Licensed under the project LICENSE.
+ */
 
 #include "rtosInterface/rtosInterface.h"
 #include "rtosInterface/queue/queue_port.h"
 
+/**
+ * @brief 查询队列是否有空闲槽位。
+ * @param id 队列 ID
+ * @return true 有空闲；false 已满或无效
+ */
 static bool queue_spaces_available(queue_id_t id)
 {
     const queue_t *q = queue_get(id);

@@ -1,13 +1,20 @@
+/**
+ * @file    queue_port.c
+ * @brief   队列注册表、按 ID 查找与统一初始化。
+ *
+ * @copyright (c) 2026 arnics-os. Licensed under the project LICENSE.
+ */
 
 #include "rtosInterface/queue/queue_port.h"
 #include "dePartment/centerAdministrative/centerAdministrative.h"
 #include "dePartment/centerEvent/centerEvent.h"
 #include "dePartment/centerMedia/centerMedia.h"
 
-extern const queue_ops_t queue_ops_win;
-extern const queue_ops_t queue_ops_linux;
-extern const queue_ops_t queue_ops_freertos;
+extern const queue_ops_t queue_ops_win;       // Windows 后端操作表
+extern const queue_ops_t queue_ops_linux;     // Linux 后端操作表
+extern const queue_ops_t queue_ops_freertos;  // FreeRTOS 后端操作表
 
+/* 按当前平台选择后端操作表。 */
 #if PLATFORM_WIN
 #define CURRENT_QUEUE_OPS (&queue_ops_win)
 #elif PLATFORM_LINUX
@@ -18,6 +25,7 @@ extern const queue_ops_t queue_ops_freertos;
 #error "Unknown platform"
 #endif
 
+/** @brief 全部队列描述符表，由 QUEUE_TABLE 展开生成。 */
 static queue_t g_queues[QUEUE_ID_COUNT] = {
 #define X(queue_name, queue_len, queue_size) \
     { .name = #queue_name, .item_size = queue_size, .len = queue_len, .handle = NULL, .ops = CURRENT_QUEUE_OPS },
