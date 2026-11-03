@@ -5,8 +5,8 @@
   * 
   * 
   * 
-  * @version        : 1.0.2
-  * @date           : 2025-05-26
+  * @version        : 1.0.5
+  * @date           : 2026-09-26
   ******************************************************************************
   * @attention
   *
@@ -25,10 +25,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "thirdParty/modContact/list/mctList.h"
-#include "thirdParty/modContact/port/mctDriver.h"
-#include "thirdParty/modContact/core/mctCore.h"
-
+#include "../core/mctCore.h"
+#include "../list/mctList.h"
+#include "../port/mctDriver.h"
 /**
  * @fn mct_reg
  * @brief 接口注册

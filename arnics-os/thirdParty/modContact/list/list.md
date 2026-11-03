@@ -86,6 +86,62 @@ CMD_ADD(CMD_CONSOLE_ID_REV, 2,  "$$COMX$$","*#*#",  NULL,  RecvSend,  RevFlow ,S
 CMD_HEX_ADD(CMD_CONSOLE_ID_REV2,   2,  &header,sizeof(header),      &tail,sizeof(header),       NULL,0,   RecvSend RevHexFlow),
 ```
 
+## 用户自定义切帧（CUSTOM）
+当帧边界不是固定的“头+尾”（例如要按帧内**长度字段**决定帧长、需要转义还原、查表等），可使用自定义切帧：**框架先定位帧头，再调用用户提供的切帧回调，由回调决定帧的结束位置**。
+
+### 切帧回调
+```c
+/**
+ * @brief 用户切帧回调
+ * @param[in]  buffer  已定位到的帧头第一字节：buffer[0] 即帧头
+ * @param[in]  len     从帧头起当前可用的字节数
+ * @param[out] start   回填帧起始（相对 buffer），一般填 0
+ * @param[out] end     回填帧结束（相对 buffer，半开区间），帧长 = end - start
+ * @param[in]  user_arg 用户上下文（在宏中注册），原样透传，可为 NULL
+ * @return FRAME_SCAN_MATCH 帧完整；FRAME_SCAN_NEED_MORE 未到齐继续等；FRAME_SCAN_NO_HEAD 无有效帧
+ */
+static frame_scan_result_t my_frame_cb(const uint8_t *buffer, uint16_t len,
+                                      uint16_t *start, uint16_t *end, void *user_arg);
+```
+要点：
+- 所有偏移都**相对 `buffer`（帧头第一字节）**，无需关心全局缓冲或游标。
+- 数据没收全时返回 `FRAME_SCAN_NEED_MORE`，框架继续等待，**不切半帧、不丢字节**。
+- 回调返回后框架统一校验 `start < end` 且 `end <= len`，越界结果不会被采用（无需担心回调写错导致越界/死循环）。
+
+### 两个宏（ASCII 头 / Hex 头）
+```
+CMD_CUSTOM_ADD(id, 超时, 帧头字符串, 回调, 回调上下文, 帧类型, FunName, ...)
+CMD_CUSTOM_HEX_ADD(id, 超时, 帧头, 帧头字长, 回调, 回调上下文, 帧类型, FunName, ...)
+```
+- 帧头由框架按与 `CMD_ADD / CMD_HEX_ADD` 相同的方式定位；**找不到帧头时不调用回调**。
+- `FunName` 仍需提供对应的 `cmd_PackFunName / cmd_AnalyzeFunName`。
+- `...` 处可照常使用 `STICKY_VAR / STICKY_CB`。
+
+### 完整示例
+帧格式 `7E 08 cmd rsv len payload.. crc`，第 5 字节（相对帧头偏移 4）是 payload 长度：
+```c
+static frame_scan_result_t my_frame_cb(const uint8_t *b, uint16_t len,
+                                      uint16_t *start, uint16_t *end, void *arg)
+{
+    uint8_t payload_len = 0;
+    uint16_t total = 0;
+    (void)arg;
+
+    if (len < 5) { return FRAME_SCAN_NEED_MORE; } /* 头2+cmd+rsv+长度字段 */
+    payload_len = b[4];                          /* 第5字节为长度 */
+    total = (uint16_t)(6 + payload_len);         /* 5前缀 + payload + crc */
+    if (total > len) { return FRAME_SCAN_NEED_MORE; }
+
+    *start = 0;
+    *end = total;
+    return FRAME_SCAN_MATCH;
+}
+
+static const uint8_t my_head[] = { 0x7E, 0x08 };
+CMD_CUSTOM_HEX_ADD(CMD_MY_ID, 2, my_head, sizeof(my_head),
+                   my_frame_cb, NULL, RecvSend, MyFlow, STICKY_VAR(&my_ctx)),
+```
+
 ## 粘帧处理
 由于 mct 库存在粘帧自动处理机制，所以在处理粘帧时，pack / Analyze 函数会自动收到在 CMD_ADD 中定义的 STICKY 参数（如 STICKY_VAR(&echo) 或 STICKY_CB(get_echo)）作为数据指针，而不是主流程中传入的参数。
 强烈建议拥有粘帧风险的帧均添加该字段！

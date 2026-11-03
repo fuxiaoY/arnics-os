@@ -88,6 +88,62 @@ Frame ID | Timeout | Header | Header Len | Tail | Tail Len | Error Field | Error
 CMD_HEX_ADD(CMD_CONSOLE_ID_REV2,   2,  &header,sizeof(header),      &tail,sizeof(header),       NULL,0,   RecvSend RevHexFlow),
 ```
 
+## User-defined Framing (CUSTOM)
+Use custom framing when the boundary is not a fixed "header + tail" (e.g. the frame length comes from a **length field** inside the frame, or you need unescaping / table lookup). **The framework first locates the header, then calls your framing callback; the callback decides where the frame ends.**
+
+### Framing callback
+```c
+/**
+ * @brief User framing callback
+ * @param[in]  buffer  First byte of the located header: buffer[0] is the header
+ * @param[in]  len     Bytes currently available starting from the header
+ * @param[out] start   [out] frame start (relative to buffer), normally 0
+ * @param[out] end     [out] frame end (relative to buffer, half-open); frame length = end - start
+ * @param[in]  user_arg User context registered in the macro, passed through as-is; may be NULL
+ * @return FRAME_SCAN_MATCH frame complete; FRAME_SCAN_NEED_MORE wait for more; FRAME_SCAN_NO_HEAD no valid frame
+ */
+static frame_scan_result_t my_frame_cb(const uint8_t *buffer, uint16_t len,
+                                      uint16_t *start, uint16_t *end, void *user_arg);
+```
+Notes:
+- All offsets are **relative to `buffer` (the first header byte)**; you do not deal with the global buffer or cursor.
+- Return `FRAME_SCAN_NEED_MORE` while data is incomplete; the framework keeps waiting and **never cuts a half frame or drops bytes**.
+- After the callback returns, the framework checks `start < end` and `end <= len`; an out-of-range result is rejected (so a buggy callback cannot cause an overflow or an infinite loop).
+
+### Two macros (ASCII header / Hex header)
+```
+CMD_CUSTOM_ADD(id, timeout, header_str, callback, cb_arg, type, FunName, ...)
+CMD_CUSTOM_HEX_ADD(id, timeout, header, header_len, callback, cb_arg, type, FunName, ...)
+```
+- The framework locates the header the same way as `CMD_ADD / CMD_HEX_ADD`; **the callback is not invoked when the header is not found**.
+- `FunName` still requires the corresponding `cmd_PackFunName / cmd_AnalyzeFunName`.
+- You can still use `STICKY_VAR / STICKY_CB` in the `...` position.
+
+### Full example
+Frame `7E 08 cmd rsv len payload.. crc`; the 5th byte (offset 4 from the header) is the payload length:
+```c
+static frame_scan_result_t my_frame_cb(const uint8_t *b, uint16_t len,
+                                      uint16_t *start, uint16_t *end, void *arg)
+{
+    uint8_t payload_len = 0;
+    uint16_t total = 0;
+    (void)arg;
+
+    if (len < 5) { return FRAME_SCAN_NEED_MORE; } /* header2+cmd+rsv+length field */
+    payload_len = b[4];                          /* 5th byte is the length */
+    total = (uint16_t)(6 + payload_len);         /* 5 prefix + payload + crc */
+    if (total > len) { return FRAME_SCAN_NEED_MORE; }
+
+    *start = 0;
+    *end = total;
+    return FRAME_SCAN_MATCH;
+}
+
+static const uint8_t my_head[] = { 0x7E, 0x08 };
+CMD_CUSTOM_HEX_ADD(CMD_MY_ID, 2, my_head, sizeof(my_head),
+                   my_frame_cb, NULL, RecvSend, MyFlow, STICKY_VAR(&my_ctx)),
+```
+
 ## Sticky-frame handling
 Because the mct library includes an automatic sticky-frame handling mechanism, when handling sticky frames the pack/analyze functions automatically receive the STICKY parameter defined in CMD_ADD (for example STICKY_VAR(&echo) or STICKY_CB(get_echo)) as the data pointer, rather than the main-flow parameter.
 

@@ -82,7 +82,7 @@ bool sd_Parse(const void *src, const void *dst, uint16_t len_src, uint16_t len_d
  *         - true: 验证成功
  *         - false: 验证失败
  */
-bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,
+bool cmd_ComformRes(const uint8_t *srcaddr, size_t src_len,
                             const char *phase, const char *subphase,
                             uint16_t *PhaseOffset, uint16_t *SubphaseOffset)
 {
@@ -152,7 +152,7 @@ bool cmd_ComformRes(uint8_t *srcaddr, size_t src_len,
  *         - true: 验证成功
  *         - false: 验证失败
  */
-bool cmd_ComformResUint8(uint8_t *srcaddr, size_t src_len,
+bool cmd_ComformResUint8(const uint8_t *srcaddr, size_t src_len,
                             const uint8_t *phase, size_t phase_len,
                             const uint8_t *subphase, size_t subphase_len,
                             uint16_t *PhaseOffset, uint16_t *SubphaseOffset)
