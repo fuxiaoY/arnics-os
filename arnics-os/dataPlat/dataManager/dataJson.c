@@ -304,7 +304,7 @@ static cJSON *jsonMethod(const char *ArgReq, const dataParaList_t *unityPara, ui
             {
                 if (strcmp(item->string, unityPara[i].key) == 0)
                 {
-                    if (strcmp(item->valuestring, "~") == 0)
+                    if ((item->type == cJSON_String) && strcmp(item->valuestring, "~") == 0)
                     {
                         // 获取该值
                         packToJSON(json_obj, &unityPara[i]);
