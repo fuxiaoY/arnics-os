@@ -4,12 +4,24 @@
 // +-------------------------------------------------+
 // |                   平台定义                       |
 // +-------------------------------------------------+
-// | 跨平台环境识别宏 (请根据实际编译环境开启其一) |
+// | 跨平台环境识别宏(自动识别，可手工/命令行覆盖) |
 // +-------------------------------------------------+
 
+// 手工覆盖(可选)：取消注释即可强制指定平台，优先级高于下面的自动识别
 // #define PLATFORM_LINUX   1     // 启用 Linux/OS 环境 
-#define PLATFORM_WIN     1     // 启用 Windows/OS 环境 
+// #define PLATFORM_WIN     1     // 启用 Windows/OS 环境 
 // #define PLATFORM_MCU     1     // 启用 MCU 环境 
+
+// 三者都未定义时才自动识别，保证"同一份源码在三端都能直接编译"
+#if !defined(PLATFORM_LINUX) && !defined(PLATFORM_WIN) && !defined(PLATFORM_MCU)
+  #if defined(_WIN32)
+    #define PLATFORM_WIN     1       // 启用 Windows/OS 环境
+  #elif defined(__linux__)
+    #define PLATFORM_LINUX   1       // 启用 Linux/OS 环境
+  #else
+    #define PLATFORM_MCU     1       // 启用 MCU 环境
+  #endif
+#endif
 
 // +-------------------------------------------------+
 // |            平台宏内部校验                         |
@@ -28,10 +40,6 @@
 #error "PLATFORM_LINUX / PLATFORM_WIN / PLATFORM_MCU must be mutually exclusive (enable only one)."
 #endif
 
-/*强制开发者明确选择平台 */
-#if (PLATFORM_LINUX + PLATFORM_WIN + PLATFORM_MCU) == 0
-#error "No platform selected. Please define PLATFORM_LINUX, PLATFORM_WIN, or PLATFORM_MCU in projDefine.h"
-#endif
 // +-------------------------------------------------+
 // |                   宏定义列表                     |
 // +-------------------------------------------------+
