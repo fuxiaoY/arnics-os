@@ -1,12 +1,22 @@
+/**
+ * @file    linuxPort.c
+ * @brief   任务/时钟抽象层的 Linux/POSIX(PLATFORM_LINUX) 后端。
+ *
+ * @details
+ * 用 pthread 线程 + timerfd 周期定时器实现任务创建与 1ms systick，
+ * 供主机侧开发/单元测试使用。
+ * 本文件用到的 POSIX 特性宏(_GNU_SOURCE)由 CMakeLists.txt 统一在编译期定义，
+ * 源码中不再出现，避免与严格 ISO C 标准(C_EXTENSIONS=OFF)冲突。
+ *
+ * @copyright (c) 2026 arnics-os. Licensed under the project LICENSE.
+ */
+
 #include "Inc/projDefine.h"
 #include "Inc/typedef.h"
 #if PLATFORM_LINUX
 #include <pthread.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <sys/syscall.h>
-#include <sys/wait.h>
-#include <semaphore.h>
 #include <time.h>
 #include <sys/timerfd.h>
 #include <errno.h>
@@ -28,6 +38,28 @@ static inline uint64_t linux_now_ms(void)
     return (uint64_t)tv.tv_sec * 1000ull + (uint64_t)tv.tv_usec / 1000ull;
 }
 
+/**
+ * @brief 毫秒级休眠。
+ *
+ * @details 用 nanosleep 代替 usleep：
+ *   - usleep 形参为 useconds_t(32 位)，ms*1000 在大延时下会溢出；
+ *   - 被信号中断时按剩余时间继续休眠，保证实际休眠时长。
+ *
+ * @note 用 nanosleep 封装的原因：usleep 在 -std=c11 下无原型，且 useconds_t 为 32 位、大延时溢出。
+ *
+ * @param[in] ms 休眠毫秒数
+ */
+static void linux_sleep_ms(uint64_t ms)
+{
+    struct timespec req;
+    req.tv_sec = (time_t)(ms / 1000ull);
+    req.tv_nsec = (long)((ms % 1000ull) * 1000000ull);
+    while (nanosleep(&req, &req) != 0 && errno == EINTR)
+    {
+        /* 被信号打断：nanosleep 已把剩余时间写回 req，继续休眠 */
+    }
+}
+
 static pthread_mutex_t g_suspend_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static void linux_suspend_all(void)
@@ -38,12 +70,6 @@ static void linux_suspend_all(void)
 static void linux_resume_all(void)
 {
     pthread_mutex_unlock(&g_suspend_lock);
-}
-
-static int linux_priority_to_native(rtosPriority_e priority)
-{
-    (void)priority;
-    return 0;
 }
 
 typedef void (*linux_task_fn_t)(void const* argument);
@@ -98,13 +124,13 @@ void rtosThreadDelayUntil(uint32_t time)
     if (next_wake_ms > now)
     {
         const uint64_t delta = next_wake_ms - now;
-        usleep(((delta > 2000ull) ? 2000ull * 1000ull : delta * 1000ull));
+        linux_sleep_ms((delta > 2000ull) ? 2000ull : delta);
     }
 }
 
 void rtosThreadDelay(uint32_t ms)
 {
-    usleep(ms * 1000);
+    linux_sleep_ms((uint64_t)ms);
 }
 
 void rtosTaskCreate(char* name,
@@ -140,7 +166,6 @@ void rtosTaskCreate(char* name,
         return;
     }
 
-    (void)linux_priority_to_native;
     pthread_detach(thread);
 }
 

@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: arnics-os 的 CMake 项目，在此处包括源代码并定义
+# CMakeList.txt: arnics-os 的 CMake 项目，在此处包括源代码并定义
 # 项目特定的逻辑。
 #
 cmake_minimum_required(VERSION 3.8)
@@ -105,6 +105,27 @@ set_property(TARGET arnics-os PROPERTY C_STANDARD 11)
 set_property(TARGET arnics-os PROPERTY C_STANDARD_REQUIRED ON)
 set_property(TARGET arnics-os PROPERTY C_EXTENSIONS OFF)
 
+#
+# =========================
+# 6) Linux 后端的 POSIX 特性宏(不写进源码)
+# =========================
+# rtosInterface/linux 下的三个文件用到 POSIX.1-2008 / glibc 接口
+# (clock_gettime、pthread_mutex_timedlock、nanosleep、pthread_attr_* 等)。
+# 由于上面 C_EXTENSIONS=OFF，编译按严格 ISO C 进行，glibc 会把它们的原型隐藏，
+# 从而出现"隐式声明"的问题。特性宏必须在任何系统头文件之前生效，最合适的落点是
+# 构建系统：这里只对这三个文件定义 _GNU_SOURCE——源码保持干净，也不会影响
+# thirdParty 等其它代码的 strerror_r 之类的语义。
+set(_LINUX_BACKEND_COUNT 0)
+foreach(_os_src IN LISTS ARNICS_OS_GLOB_SOURCES)
+  if (_os_src MATCHES "/rtosInterface/linux/[^/]+[.]c$")
+    set_source_files_properties("${_os_src}" PROPERTIES COMPILE_DEFINITIONS "_GNU_SOURCE=1")
+    math(EXPR _LINUX_BACKEND_COUNT "${_LINUX_BACKEND_COUNT} + 1")
+  endif()
+endforeach()
+if (_LINUX_BACKEND_COUNT EQUAL 0)
+  message(WARNING "未在源文件列表中找到 rtosInterface/linux/*.c，该后端的 _GNU_SOURCE 特性宏未生效")
+endif()
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET arnics-os PROPERTY CXX_STANDARD 20)
   set_property(TARGET arnics-os PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -113,7 +134,7 @@ endif()
 
 #
 # =========================
-# 6) 编码/字符集(解决中文注释/字符串在 MSVC 下的编码问题)
+# 7) 编码/字符集(解决中文注释/字符串在 MSVC 下的编码问题)
 # =========================
 #
 # 你看到的“该文件包含不能在当前代码页(936)中表示的字符”通常和字符集有关。

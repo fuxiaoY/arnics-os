@@ -17,11 +17,11 @@
 #include "Inc/typedef.h"
 #if PLATFORM_LINUX
 #include <pthread.h>
-#include <sys/time.h>
-#include <unistd.h>
 #include <time.h>
+#include <errno.h>                              /* ETIMEDOUT */
 #include <string.h>
 #include <stdlib.h>
+#include "rtosInterface/rtosInterfacePublic.h" /* BLOCK_DELAY */
 #include "rtosInterface/queue/queue_port.h"
 
 /**
@@ -42,13 +42,42 @@ typedef struct
 
 /**
  * @brief 获取当前单调时间戳。
- * @return 毫秒时间戳
+ * @return 毫秒时间戳(CLOCK_MONOTONIC，不受系统时间调整影响)
+ *
+ * @note 改用 CLOCK_MONOTONIC：超时只关心流逝时长，避免系统时间调整造成回退或跳变。
  */
 static inline uint64_t linux_now_ms(void)
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (uint64_t)tv.tv_sec * 1000ull + (uint64_t)tv.tv_usec / 1000ull;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000ull + (uint64_t)ts.tv_nsec / 1000000ull;
+}
+
+/**
+ * @brief 生成 pthread_cond_timedwait 所需的绝对超时时刻。
+ *
+ * @details pthread_cond_timedwait 的 timespec 是“绝对时刻”(默认 CLOCK_REALTIME)，
+ * 而不是相对超时；直接传入相对毫秒会被当作 1970 年附近的时间而立即超时。
+ * 这里把“剩余毫秒”换算为当前绝对时刻。
+ *
+ * @param[in] offset_ms 相对当前时刻的偏移(毫秒，需 >= 0)
+ * @return 绝对超时时刻
+ *
+ * @note timedwait 的 timespec 是绝对时刻(CLOCK_REALTIME)，原实现直接传相对毫秒，
+ *       会被当成 1970 年附近而立即超时，这里统一换算一次。
+ */
+static struct timespec linux_abs_timespec(int64_t offset_ms)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    ts.tv_sec += (time_t)(offset_ms / 1000);
+    ts.tv_nsec += (long)((offset_ms % 1000) * 1000000);
+    if (ts.tv_nsec >= 1000000000L)
+    {
+        ts.tv_sec += 1;
+        ts.tv_nsec -= 1000000000L;
+    }
+    return ts;
 }
 
 /**
@@ -133,9 +162,8 @@ static bool linux_queue_send(void* q, const void* item, uint32_t delay)
                 pthread_mutex_unlock(&queue->lock);
                 return false;
             }
-            struct timespec ts;
-            ts.tv_sec = (time_t)((timeout_ms - (int64_t)elapsed) / 1000);
-            ts.tv_nsec = (long)(((timeout_ms - (int64_t)elapsed) % 1000) * 1000000);
+            const int64_t remain_ms = timeout_ms - (int64_t)elapsed;
+            const struct timespec ts = linux_abs_timespec(remain_ms);
             const int rc = pthread_cond_timedwait(&queue->not_full, &queue->lock, &ts);
             if (rc == ETIMEDOUT)
             {
@@ -189,9 +217,8 @@ static bool linux_queue_recv(void* q, void* out, uint32_t delay)
                 pthread_mutex_unlock(&queue->lock);
                 return false;
             }
-            struct timespec ts;
-            ts.tv_sec = (time_t)((timeout_ms - (int64_t)elapsed) / 1000);
-            ts.tv_nsec = (long)(((timeout_ms - (int64_t)elapsed) % 1000) * 1000000);
+            const int64_t remain_ms = timeout_ms - (int64_t)elapsed;
+            const struct timespec ts = linux_abs_timespec(remain_ms);
             const int rc = pthread_cond_timedwait(&queue->not_empty, &queue->lock, &ts);
             if (rc == ETIMEDOUT)
             {

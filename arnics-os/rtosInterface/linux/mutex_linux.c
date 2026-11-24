@@ -16,6 +16,7 @@
 #include "Inc/typedef.h"
 #if PLATFORM_LINUX
 #include <pthread.h>
+#include <time.h>   /* clock_gettime / struct timespec */
 #include <stdlib.h>
 
 static pthread_mutex_t *g_ad_rsp_mutex = NULL;       // 行政管理队列互斥量
@@ -32,6 +33,32 @@ static pthread_mutex_t *linux_mutex_create(void)
     pthread_mutex_t *mutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
     if (mutex) pthread_mutex_init(mutex, NULL);
     return mutex;
+}
+
+/**
+ * @brief 生成 pthread_mutex_timedlock 所需的绝对超时时刻。
+ *
+ * @details pthread_mutex_timedlock 的 timespec 是“绝对时刻”(CLOCK_REALTIME)，
+ * 而不是相对超时；直接传相对毫秒会被当成 1970 年而立即超时。
+ *
+ * @param[in] wait_ms 相对超时(毫秒)
+ * @return 绝对超时时刻
+ *
+ * @note timedlock 的 timespec 是绝对时刻(CLOCK_REALTIME)，原实现直接传相对毫秒，
+ *       会被当成 1970 年而立即超时，这里改为在当前时刻上加 wait_ms。
+ */
+static struct timespec linux_abs_timespec(time_t wait_ms)
+{
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    ts.tv_sec += (time_t)(wait_ms / 1000);
+    ts.tv_nsec += (long)((wait_ms % 1000) * 1000000);
+    if (ts.tv_nsec >= 1000000000L)
+    {
+        ts.tv_sec += 1;
+        ts.tv_nsec -= 1000000000L;
+    }
+    return ts;
 }
 
 /**
@@ -53,9 +80,7 @@ static bool linux_mutex_take(pthread_mutex_t *mutex, time_t wait_time)
     }
     else
     {
-        struct timespec ts;
-        ts.tv_sec = (time_t)(wait_time / 1000);
-        ts.tv_nsec = (long)((wait_time % 1000) * 1000000);
+        const struct timespec ts = linux_abs_timespec(wait_time);
         return (pthread_mutex_timedlock(mutex, &ts) == 0);
     }
 }
