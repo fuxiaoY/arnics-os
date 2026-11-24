@@ -5,7 +5,7 @@
 # 
 # 可用参数：
 #   -t, --type <Debug|Release|...> : 指定 CMake 构建类型（默认: Debug）。
-#   -b, --build-dir <dir>          : 指定自定义的构建输出目录（默认: 自动生成如 out/build/linux-debug）。
+#   -b, --build-dir <dir>          : 指定自定义的构建输出目录（默认: out/<构建类型>，如 out/Debug）。
 #   -c, --clean                    : 编译前先清理（删除）构建目录。
 #   -x, --cross <prefix>           : 启用交叉编译并指定工具链前缀，例如: arm-linux-gnueabihf-
 #   -h, --help                     : 打印此帮助信息并退出。
@@ -76,8 +76,13 @@ fi
 
 # 如果未指定构建目录，则根据当前构建类型自动生成一个默认的目录路径
 if [[ -z "${BUILD_DIR}" ]]; then
-  # 路径格式示例： out/build/linux-debug
-  BUILD_DIR="${ROOT_DIR}/out/build/linux-$(echo "${BUILD_TYPE}" | tr '[:upper:]' '[:lower:]')"
+  # 路径格式示例： out/Debug、out/Release（可执行文件即 out/Debug/arnics-os）
+  # 交叉编译时追加工具链前缀，避免与主机构建的产物混在一起，例如 out/Debug-arm-linux-gnueabihf
+  _BUILD_SUFFIX=""
+  if [[ -n "${CROSS_COMPILE}" ]]; then
+    _BUILD_SUFFIX="-${CROSS_COMPILE%-}"
+  fi
+  BUILD_DIR="${ROOT_DIR}/out/${BUILD_TYPE}${_BUILD_SUFFIX}"
 fi
 
 # 检查环境中是否安装了 cmake 工具
@@ -87,6 +92,8 @@ if ! command -v cmake >/dev/null 2>&1; then
 fi
 
 # 检查平台宏定义，确保 Linux 平台已启用
+# 说明：projDefine.h 里的平台宏现在按编译器内建宏自动识别，Linux 分支中
+# 仍然保留 "#define PLATFORM_LINUX 1" 一行，因此这里按文本匹配依然有效。
 PROJ_DEFINE_H="${ROOT_DIR}/arnics-os/Inc/projDefine.h"
 if [[ -f "${PROJ_DEFINE_H}" ]]; then
   # 使用正则匹配是否定义了 PLATFORM_LINUX 为 1
@@ -131,3 +138,11 @@ cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" \
 # --build: 执行编译过程
 # -j: 开启多线程编译，默认使用当前系统的 CPU 核心数，获取不到则默认使用 4 线程
 cmake --build "${BUILD_DIR}" -- -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
+
+# 提示可执行文件的最终路径（构建目录即产物目录，方便直接运行）
+BIN_PATH="${BUILD_DIR}/arnics-os"
+if [[ -f "${BIN_PATH}" ]]; then
+  echo ""
+  echo "构建完成，可执行文件： ${BIN_PATH}"
+  echo "  相对路径： ${BIN_PATH#"${ROOT_DIR}/"}"
+fi
